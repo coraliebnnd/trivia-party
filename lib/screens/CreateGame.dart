@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+
+import '../Routes.dart';
+
+class CreateGame extends StatelessWidget {
+  const CreateGame({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Title
+              Text(
+                'TRIVIA\nPARTY',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Game Pin
+              Text(
+                'Game Pin',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '5JK63M',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Players List
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  _buildPlayerCircle('Coralie', Colors.purple),
+                  _buildPlayerCircle('Niklas', Colors.blue),
+                  _buildPlayerCircle('Jane', Colors.orange),
+                  _buildPlayerCircle('Marianne', Colors.pink),
+                  _buildPlayerCircle('John', Colors.green),
+                  _buildPlayerCircle('Michel', Colors.yellow),
+                ],
+              ),
+              const SizedBox(height: 30),
+              // Number of Questions
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Number of questions',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  DropdownButton<int>(
+                    dropdownColor: Colors.grey[900],
+                    value: 5,
+                    onChanged: (value) {
+                      // Handle dropdown change
+                    },
+                    items: List.generate(
+                      10,
+                          (index) => DropdownMenuItem(
+                        value: index + 1,
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              // Start Game Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pink,
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, Routes.voteCategory);
+                  // Handle Start Game
+                },
+                child: Text(
+                  'Start game',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlayerCircle(String name, Color color) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: color,
+          child: Text(
+            name[0], // First letter of the name
+            style: TextStyle(fontSize: 24, color: Colors.white),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          name,
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+      ],
+    );
+  }
+}
