@@ -1,75 +1,66 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/CircularCountdown.dart';
+
 class CategoryPreparation extends StatelessWidget {
-  final String category; // The name of the selected category
-  final Color categoryColor; // The color associated with the category
-  final int countdown; // Countdown number
+  final String category;
+  final Color categoryColor;
+  final int countdown;
 
   const CategoryPreparation({
     Key? key,
     required this.category,
     required this.categoryColor,
-    this.countdown = 2, // Default countdown value is 2
+    this.countdown = 2,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: categoryColor, // Background color based on category
+      backgroundColor: categoryColor,
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Next Question's Category Text
-            const Text(
-              "Next question’s\ncategory :",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Category Name
-            Text(
-              category,
-              style: const TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            const Spacer(),
-
-            // Countdown Timer
-            Column(
+        child: Center(
+          // Added Center widget
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 20.0), // Added horizontal padding
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '$countdown',
-                  style: const TextStyle(
-                    fontSize: 40,
+                // Next Question's Category Text
+                const Text(
+                  "Next question's\ncategory :",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  "⟳", // Representing circular countdown
-                  style: TextStyle(
+
+                const SizedBox(height: 20),
+
+                // Category Name
+                Text(
+                  category,
+                  textAlign: TextAlign.center, // Added text alignment
+                  style: const TextStyle(
                     fontSize: 50,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
+
+                const SizedBox(height: 30),
+
+                // Countdown Timer
+                Padding(
+                  padding: const EdgeInsets.all(40.0),
+                  child: CircularCountdown(duration: 10),
+                ),
               ],
             ),
-
-            const SizedBox(height: 50), // Adjust spacing as needed
-          ],
+          ),
         ),
       ),
     );
