@@ -5,4 +5,5 @@ class Routes {
   static const String howToPlay = '/how-to-play';
   static const String voteCategory = "/vote";
   static const String categoryPreparation = "/category-preparation";
+  static const String question = "/question";
 }

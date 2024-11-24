@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Routes.dart';
 import '../widgets/CircularCountdown.dart';
 
 class CategoryPreparation extends StatelessWidget {
@@ -56,7 +57,11 @@ class CategoryPreparation extends StatelessWidget {
                 // Countdown Timer
                 Padding(
                   padding: const EdgeInsets.all(40.0),
-                  child: CircularCountdown(duration: 10),
+                  child: CircularCountdown(
+                      duration: 5,
+                      onCountdownComplete: () {
+                        Navigator.pushNamed(context, Routes.question);
+                      }),
                 ),
               ],
             ),

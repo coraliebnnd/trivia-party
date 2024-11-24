@@ -3,13 +3,20 @@ import 'dart:math';
 
 class CircularCountdown extends StatefulWidget {
   final int duration; // Duration in seconds
-  const CircularCountdown({Key? key, required this.duration}) : super(key: key);
+  final VoidCallback? onCountdownComplete; // Add callback property
+
+  const CircularCountdown({
+    Key? key,
+    required this.duration,
+    this.onCountdownComplete, // Optional callback
+  }) : super(key: key);
 
   @override
   _CircularCountdownState createState() => _CircularCountdownState();
 }
 
-class _CircularCountdownState extends State<CircularCountdown> with SingleTickerProviderStateMixin {
+class _CircularCountdownState extends State<CircularCountdown>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final GlobalKey _containerKey = GlobalKey();
   Offset _containerPosition = Offset.zero;
@@ -22,14 +29,23 @@ class _CircularCountdownState extends State<CircularCountdown> with SingleTicker
       duration: Duration(seconds: widget.duration),
     )..forward();
 
+    // Add listener for countdown completion
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        widget.onCountdownComplete
+            ?.call(); // Call the callback when countdown ends
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _calculatePosition());
   }
 
   void _calculatePosition() {
-    RenderBox renderBox = _containerKey.currentContext!.findRenderObject() as RenderBox;
-    Offset position = renderBox.localToGlobal(Offset.zero); // Get global position
+    RenderBox renderBox =
+        _containerKey.currentContext!.findRenderObject() as RenderBox;
+    Offset position = renderBox.localToGlobal(Offset.zero);
     setState(() {
-      _containerPosition = position; // Store position for painter
+      _containerPosition = position;
     });
   }
 
@@ -57,7 +73,10 @@ class _CircularCountdownState extends State<CircularCountdown> with SingleTicker
             child: Center(
               child: Text(
                 '${(widget.duration * (1 - _controller.value)).ceil()}s',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ),
           );
@@ -93,7 +112,8 @@ class CircularCountdownPainter extends CustomPainter {
     // Adjust radius or drawing dynamically based on position
     // For example, make the arc bigger if it's closer to the top of the screen
     double distanceFromTop = position.dy;
-    double scale = (1 - (distanceFromTop / 1000).clamp(0.0, 1.0)); // Scale by distance
+    double scale =
+        (1 - (distanceFromTop / 1000).clamp(0.0, 1.0)); // Scale by distance
     double adjustedRadius = radius * (1 + scale * 0.5);
 
     // Draw background circle

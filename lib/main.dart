@@ -3,6 +3,7 @@ import 'package:trivia_party/screens/CategoryPreparation.dart';
 import 'package:trivia_party/screens/CreateGame.dart';
 import 'package:trivia_party/screens/Home.dart';
 import 'package:trivia_party/screens/HowToPlay.dart';
+import 'package:trivia_party/screens/Question.dart';
 import 'package:trivia_party/screens/VoteCategory.dart';
 
 import 'Routes.dart';
@@ -29,7 +30,9 @@ class TriviaPartyApp extends StatelessWidget {
         Routes.createGame: (context) => const CreateGame(),
         Routes.howToPlay: (context) => const HowToPlay(),
         Routes.voteCategory: (context) => const VoteCategory(),
-        Routes.categoryPreparation: (context) => const CategoryPreparation(category: "Art", categoryColor: Colors.yellow)
+        Routes.question: (context) => const Question(),
+        Routes.categoryPreparation: (context) => const CategoryPreparation(
+            category: "Art", categoryColor: Colors.yellow)
       },
     );
   }
