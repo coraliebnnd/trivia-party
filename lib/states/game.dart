@@ -1,5 +1,6 @@
 // lib/blocs/game/game_bloc.dart
 import 'dart:async';
+import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/states/states.dart';
 
@@ -8,6 +9,15 @@ import 'game_state.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   Timer? _timer;
+  final colors = [
+    Colors.blue,
+    Colors.red,
+    Colors.yellow,
+    Colors.amber,
+    Colors.deepPurpleAccent,
+    Colors.lightGreen,
+  ];
+  int color_index = 0;
 
   GameBloc() : super(const GameState()) {
     on<CreateGameEvent>(_onCreateGame);
@@ -40,6 +50,31 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       players: [currentPlayer],
       numberOfQuestions: event.numberOfQuestions,
     ));
+
+    emit(state.copyWith(status: GameStatus.creating));
+
+    emit(state.copyWith(
+      status: GameStatus.creating,
+      gamePin: gamePin,
+      currentPlayer: currentPlayer,
+      players: [currentPlayer],
+      numberOfQuestions: event.numberOfQuestions,
+    ));
+
+    // List of other players to join
+    final newPlayers = [
+      'Coralie',
+      'Niklas',
+      'Jane',
+      'Marianne',
+      'John',
+      'Michel',
+    ];
+
+    int color_index = 0;
+    for (var name in newPlayers) {
+      add(JoinGameEvent(playerName: name, gamePin: gamePin));
+    }
   }
 
   Future<void> _onJoinGame(
@@ -50,9 +85,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     // Create new player
     final newPlayer = Player(
-      name: event.playerName,
-      id: DateTime.now().toString(),
-    );
+        name: event.playerName,
+        id: DateTime.now().toString(),
+        color: colors[color_index]);
+    color_index += 1;
 
     // Add player to the game
     final updatedPlayers = List<Player>.from(state.players)..add(newPlayer);

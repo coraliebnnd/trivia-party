@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/states/game_event.dart';
 import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
 
 import '../Routes.dart';
@@ -128,7 +129,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         LinearGradient(
                           colors: [Colors.pink, Colors.pinkAccent.shade700],
                         ),
-                        () => Navigator.pushNamed(context, Routes.createGame),
+                        () {
+                          BlocProvider.of<GameBloc>(context).add(
+                              CreateGameEvent(
+                                  playerName: "Niklas", numberOfQuestions: 10));
+                          Navigator.pushNamed(context, Routes.createGame);
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildButton(

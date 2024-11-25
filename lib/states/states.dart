@@ -1,5 +1,6 @@
 // lib/blocs/game/game_state.dart
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 enum GameStatus {
   initial,
@@ -16,13 +17,14 @@ class Player extends Equatable {
   final String id;
   final List<String> completedCategories;
   final int score;
+  final Color color;
 
-  const Player({
-    required this.name,
-    required this.id,
-    this.completedCategories = const [],
-    this.score = 0,
-  });
+  const Player(
+      {required this.name,
+      required this.id,
+      this.completedCategories = const [],
+      this.score = 0,
+      this.color = Colors.blue});
 
   @override
   List<Object?> get props => [name, id, completedCategories, score];
