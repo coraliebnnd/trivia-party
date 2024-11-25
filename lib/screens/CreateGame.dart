@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
 
 import '../Routes.dart';
 
@@ -15,16 +16,7 @@ class CreateGame extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Title
-              Text(
-                'TRIVIA\nPARTY',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              TriviaPartyTitle(),
               const SizedBox(height: 20),
               // Game Pin
               Text(
@@ -79,7 +71,7 @@ class CreateGame extends StatelessWidget {
                     },
                     items: List.generate(
                       10,
-                          (index) => DropdownMenuItem(
+                      (index) => DropdownMenuItem(
                         value: index + 1,
                         child: Text(
                           '${index + 1}',
@@ -95,7 +87,8 @@ class CreateGame extends StatelessWidget {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.pink,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

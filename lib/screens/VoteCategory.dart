@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_party/widgets/RainbowWheel.dart';
 
 import '../Routes.dart';
 
@@ -162,22 +163,10 @@ class VoteCategory extends StatelessWidget {
         Stack(
           alignment: Alignment.center,
           children: [
-            CircleAvatar(
-              radius: isMainPlayer ? 36 : 24,
-              backgroundColor: Colors.black,
-              child: CircleAvatar(
-                radius: isMainPlayer ? 34 : 22,
-                backgroundColor: Colors.white,
-                child: Text(
-                  '⬤⬤⬤\n⬤⬤⬤',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: isMainPlayer ? 12 : 8,
-                    color: color,
-                  ),
-                ),
-              ),
-            ),
+            const RainbowWheel(
+                size: 50, // Size of the rainbow circle
+                borderWidth: 3, // Border width
+                borderColor: Color(0xFFE91E63)) // Pink/magenta color),
           ],
         ),
         const SizedBox(height: 5),

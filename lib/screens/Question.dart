@@ -1,5 +1,6 @@
 // lib/screens/question_screen.dart
 import 'package:flutter/material.dart';
+import 'package:trivia_party/widgets/RainbowWheel.dart';
 
 class Question extends StatefulWidget {
   const Question({Key? key}) : super(key: key);
@@ -82,19 +83,10 @@ class _QuestionState extends State<Question> {
                     .toList(),
                 const Spacer(),
                 // Bottom rainbow circle
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Color(0xFFE91E63),
-                      width: 3,
-                    ),
-                  ),
-                  child: CustomPaint(
-                    painter: RainbowWheelPainter(),
-                  ),
+                const RainbowWheel(
+                  size: 50, // Size of the rainbow circle
+                  borderWidth: 3, // Border width
+                  borderColor: Color(0xFFE91E63), // Pink/magenta color
                 ),
                 const SizedBox(height: 20),
               ],
@@ -104,54 +96,4 @@ class _QuestionState extends State<Question> {
       ),
     );
   }
-}
-
-// Custom painter for the rainbow wheel
-class RainbowWheelPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..style = PaintingStyle.fill;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    // Colors for the wheel segments
-    final colors = [
-      Colors.red,
-      Colors.orange,
-      Colors.yellow,
-      Colors.green,
-      Colors.blue,
-      Colors.purple,
-    ];
-
-    // Draw segments
-    for (var i = 0; i < colors.length; i++) {
-      final startAngle = (i * 2 * 3.14159) / colors.length;
-      final sweepAngle = (2 * 3.14159) / colors.length;
-
-      paint.color = colors[i];
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        sweepAngle,
-        true,
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-void main() {
-  runApp(const MaterialApp(
-    home: Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Question(), // 10 seconds countdown
-      ),
-    ),
-  ));
 }
