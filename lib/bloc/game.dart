@@ -2,8 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
-import 'package:trivia_party/states/states.dart';
-
+import 'package:trivia_party/bloc/player.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
@@ -71,8 +70,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Michel',
     ];
 
-    int color_index = 0;
+    addPlayersAsync(newPlayers, gamePin);
+  }
+
+  Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
     for (var name in newPlayers) {
+      await Future.delayed(Duration(seconds: 1)); // Add a 1-second delay
       add(JoinGameEvent(playerName: name, gamePin: gamePin));
     }
   }

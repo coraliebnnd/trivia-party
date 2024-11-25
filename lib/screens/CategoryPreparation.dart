@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/game_state.dart';
 
 import '../Routes.dart';
-import '../states/game.dart';
-import '../states/game_state.dart';
 import '../widgets/CircularCountdown.dart';
 
 class CategoryPreparation extends StatelessWidget {

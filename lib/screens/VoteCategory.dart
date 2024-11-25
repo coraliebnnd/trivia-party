@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/states/game.dart';
-import 'package:trivia_party/states/game_event.dart';
+import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/game_event.dart';
+import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
-import '../states/game_state.dart';
 
 class VoteCategory extends StatelessWidget {
   const VoteCategory({Key? key}) : super(key: key);

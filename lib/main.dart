@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/screens/CategoryPreparation.dart';
 import 'package:trivia_party/screens/CreateGame.dart';
 import 'package:trivia_party/screens/Home.dart';
 import 'package:trivia_party/screens/HowToPlay.dart';
 import 'package:trivia_party/screens/Question.dart';
 import 'package:trivia_party/screens/VoteCategory.dart';
-import 'package:trivia_party/states/game.dart';
 
 import 'Routes.dart';
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/states/game_event.dart';
+import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/game_event.dart';
+import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
 
 import '../Routes.dart';
-import '../states/game.dart';
-import '../states/game_state.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);

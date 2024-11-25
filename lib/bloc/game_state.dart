@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:trivia_party/states/states.dart';
+import 'package:trivia_party/bloc/player.dart';
 
 class GameState extends Equatable {
   final GameStatus status;

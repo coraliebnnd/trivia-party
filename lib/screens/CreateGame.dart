@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/states/game.dart';
-import '../states/game_state.dart';
+import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/game_state.dart';
 import '../widgets/TriviaPartyTitle.dart';
 import '../Routes.dart';
 
