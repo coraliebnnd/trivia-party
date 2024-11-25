@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/Routes.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
 
 class VoteCategory extends StatelessWidget {
@@ -33,12 +35,11 @@ class VoteCategory extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Orange separator line
-                Container(
-                  height: 4,
-                  width: 150,
-                  color: Colors.orange,
-                ),
+                CountdownWithLoadingBar(
+                    countdownSeconds: 10,
+                    height: 20,
+                    onCountdownComplete: () => Navigator.pushNamed(
+                        context, Routes.categoryPreparation)),
                 const SizedBox(height: 20),
                 // Categories
                 Expanded(
