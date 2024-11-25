@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../Routes.dart';
+import '../states/game.dart';
+import '../states/game_state.dart';
 import '../widgets/CircularCountdown.dart';
 
 class CategoryPreparation extends StatelessWidget {
@@ -17,57 +20,59 @@ class CategoryPreparation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: categoryColor,
-      body: SafeArea(
-        child: Center(
-          // Added Center widget
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 20.0), // Added horizontal padding
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Next Question's Category Text
-                const Text(
-                  "Next question's\ncategory :",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+    return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
+      return Scaffold(
+        backgroundColor: categoryColor,
+        body: SafeArea(
+          child: Center(
+            // Added Center widget
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0), // Added horizontal padding
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Next Question's Category Text
+                  const Text(
+                    "Next question's\ncategory :",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // Category Name
-                Text(
-                  category,
-                  textAlign: TextAlign.center, // Added text alignment
-                  style: const TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  // Category Name
+                  Text(
+                    category,
+                    textAlign: TextAlign.center, // Added text alignment
+                    style: const TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
-                // Countdown Timer
-                Padding(
-                  padding: const EdgeInsets.all(40.0),
-                  child: CircularCountdown(
-                      duration: 5,
-                      onCountdownComplete: () {
-                        Navigator.pushNamed(context, Routes.question);
-                      }),
-                ),
-              ],
+                  // Countdown Timer
+                  Padding(
+                    padding: const EdgeInsets.all(40.0),
+                    child: CircularCountdown(
+                        duration: 5,
+                        onCountdownComplete: () {
+                          Navigator.pushNamed(context, Routes.question);
+                        }),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

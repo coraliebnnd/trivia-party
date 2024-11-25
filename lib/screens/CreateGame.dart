@@ -1,112 +1,117 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
 
 import '../Routes.dart';
+import '../states/game.dart';
+import '../states/game_state.dart';
 
 class CreateGame extends StatelessWidget {
   const CreateGame({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TriviaPartyTitle(),
-              const SizedBox(height: 20),
-              // Game Pin
-              Text(
-                'Game Pin',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '5JK63M',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 30),
-              // Players List
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 16,
-                runSpacing: 16,
-                children: [
-                  _buildPlayerCircle('Coralie', Colors.purple),
-                  _buildPlayerCircle('Niklas', Colors.blue),
-                  _buildPlayerCircle('Jane', Colors.orange),
-                  _buildPlayerCircle('Marianne', Colors.pink),
-                  _buildPlayerCircle('John', Colors.green),
-                  _buildPlayerCircle('Michel', Colors.yellow),
-                ],
-              ),
-              const SizedBox(height: 30),
-              // Number of Questions
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Number of questions',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
+    return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TriviaPartyTitle(),
+                const SizedBox(height: 20),
+                // Game Pin
+                Text(
+                  'Game Pin',
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.white,
                   ),
-                  const SizedBox(width: 10),
-                  DropdownButton<int>(
-                    dropdownColor: Colors.grey[900],
-                    value: 5,
-                    onChanged: (value) {
-                      // Handle dropdown change
-                    },
-                    items: List.generate(
-                      10,
-                      (index) => DropdownMenuItem(
-                        value: index + 1,
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '5JK63M',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Players List
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    _buildPlayerCircle('Coralie', Colors.purple),
+                    _buildPlayerCircle('Niklas', Colors.blue),
+                    _buildPlayerCircle('Jane', Colors.orange),
+                    _buildPlayerCircle('Marianne', Colors.pink),
+                    _buildPlayerCircle('John', Colors.green),
+                    _buildPlayerCircle('Michel', Colors.yellow),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                // Number of Questions
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Number of questions',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    DropdownButton<int>(
+                      dropdownColor: Colors.grey[900],
+                      value: 5,
+                      onChanged: (value) {
+                        // Handle dropdown change
+                      },
+                      items: List.generate(
+                        10,
+                        (index) => DropdownMenuItem(
+                          value: index + 1,
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                // Start Game Button
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pink,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              // Start Game Button
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pink,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.voteCategory);
+                    // Handle Start Game
+                  },
+                  child: Text(
+                    'Start game',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, Routes.voteCategory);
-                  // Handle Start Game
-                },
-                child: Text(
-                  'Start game',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildPlayerCircle(String name, Color color) {

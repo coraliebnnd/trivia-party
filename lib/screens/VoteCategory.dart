@@ -1,112 +1,117 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
 
 import '../Routes.dart';
+import '../states/game.dart';
+import '../states/game_state.dart';
 
 class VoteCategory extends StatelessWidget {
   const VoteCategory({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 40),
-            // Title
-            Center(
-              child: Text(
-                "Vote for the next\nquestion's category!",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+    return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 40),
+              // Title
+              Center(
+                child: Text(
+                  "Vote for the next\nquestion's category!",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            // Orange separator line
-            Container(
-              height: 4,
-              width: 150,
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 20),
-            // Categories
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 2.5,
+              const SizedBox(height: 10),
+              // Orange separator line
+              Container(
+                height: 4,
+                width: 150,
+                color: Colors.orange,
+              ),
+              const SizedBox(height: 20),
+              // Categories
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 2.5,
+                  children: [
+                    _buildCategoryButton('Art', Colors.pink,
+                        votes: 0,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                    _buildCategoryButton('Video game', Colors.purple,
+                        votes: 0,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                    _buildCategoryButton('Movies / TV', Colors.blue,
+                        votes: 2,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                    _buildCategoryButton('Sport', Colors.orange,
+                        votes: 0,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                    _buildCategoryButton('Music', Colors.lightBlue,
+                        votes: 2,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                    _buildCategoryButton('Books', Colors.green,
+                        votes: 0,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                    _buildCategoryButton('Random', Colors.grey,
+                        onTap: () => {
+                              Navigator.pushNamed(
+                                  context, Routes.categoryPreparation)
+                            }),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Players and their pies
+              Wrap(
+                spacing: 20,
+                alignment: WrapAlignment.center,
                 children: [
-                  _buildCategoryButton('Art', Colors.pink,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Video game', Colors.purple,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Movies / TV', Colors.blue,
-                      votes: 2,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Sport', Colors.orange,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Music', Colors.lightBlue,
-                      votes: 2,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Books', Colors.green,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Random', Colors.grey,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
+                  _buildPlayerPie('Coralie', Colors.purple),
+                  _buildPlayerPie('Niklas', Colors.blue),
+                  _buildPlayerPie('Jane', Colors.orange),
+                  _buildPlayerPie('Marianne', Colors.pink, isMainPlayer: true),
+                  _buildPlayerPie('Michel', Colors.yellow),
+                  _buildPlayerPie('John', Colors.green),
                 ],
               ),
-            ),
-            const SizedBox(height: 10),
-            // Players and their pies
-            Wrap(
-              spacing: 20,
-              alignment: WrapAlignment.center,
-              children: [
-                _buildPlayerPie('Coralie', Colors.purple),
-                _buildPlayerPie('Niklas', Colors.blue),
-                _buildPlayerPie('Jane', Colors.orange),
-                _buildPlayerPie('Marianne', Colors.pink, isMainPlayer: true),
-                _buildPlayerPie('Michel', Colors.yellow),
-                _buildPlayerPie('John', Colors.green),
-              ],
-            ),
-            const SizedBox(height: 30),
-          ],
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildCategoryButton(String text, Color color,
