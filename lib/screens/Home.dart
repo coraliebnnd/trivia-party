@@ -46,8 +46,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             end: Alignment.bottomRight,
             colors: [
               Colors.black,
-              Color(0xFF1A1A2E),
-              Color(0xFF16213E),
+              Color(0xFF313131),
             ],
           ),
         ),
