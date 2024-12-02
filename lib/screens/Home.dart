@@ -128,7 +128,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         LinearGradient(
                           colors: [Colors.pink, Colors.pinkAccent.shade700],
                         ),
-                        () => Navigator.pushNamed(context, Routes.createGame),
+                        () {
+                          BlocProvider.of<GameBloc>(context).add(
+                              CreateGameEvent(
+                                  playerName: "testPlayer",
+                                  numberOfQuestions: 10));
+                          Navigator.pushNamed(context, Routes.createGame);
+                        },
                       ),
                       const SizedBox(height: 16),
                       _buildButton(
