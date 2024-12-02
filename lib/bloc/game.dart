@@ -1,8 +1,10 @@
 // lib/blocs/game/game_bloc.dart
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/player.dart';
+import 'package:trivia_party/categories.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
@@ -27,6 +29,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<TimerTickEvent>(_onTimerTick);
     on<CreateQuestionEvent>(_onCreateQuestion);
     on<RevealAnswerEvent>(_onRevealAnswer);
+    on<VoteCategoryFinishedEvent>(_onVoteCategoryFinished);
   }
 
   Future<void> _onCreateGame(
@@ -217,7 +220,32 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _onRevealAnswer(RevealAnswerEvent event, Emitter<GameState> emit) {
-    print("Reveal Answer called");
     emit(state.copyWith(isAnswerRevealed: true));
+  }
+
+  void _onVoteCategoryFinished(
+      VoteCategoryFinishedEvent event, Emitter<GameState> emit) {
+    String currentCategory = "";
+    int currentMaxVotes = -1;
+    state.categoryVotes.forEach((category, votes) {
+      if (votes > currentMaxVotes) {
+        currentCategory = category;
+        currentMaxVotes = votes;
+      }
+    });
+
+    if (currentMaxVotes == 0 || currentCategory == "Random") {
+      var categories_for_choice = [
+        Categories.books,
+        Categories.sport,
+        Categories.music,
+        Categories.movies_tv,
+        Categories.video_game,
+        Categories.art
+      ];
+      currentCategory =
+          categories_for_choice[Random().nextInt(categories_for_choice.length)];
+    }
+    emit(state.copyWith(selectedCategory: currentCategory));
   }
 }
