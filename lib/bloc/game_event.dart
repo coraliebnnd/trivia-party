@@ -42,6 +42,21 @@ class VoteCategoryEvent extends GameEvent {
   List<Object?> get props => [category];
 }
 
+class Answer {
+  final String text;
+  final bool isTrue;
+  Answer(this.text, this.isTrue);
+}
+
+class CreateQuestionEvent extends GameEvent {
+  final String question;
+  final List<Answer> answers;
+  CreateQuestionEvent(this.question, this.answers);
+
+  @override
+  List<Object?> get props => [question, answers];
+}
+
 class SubmitAnswerEvent extends GameEvent {
   final String answer;
 
@@ -59,3 +74,5 @@ class TimerTickEvent extends GameEvent {
   @override
   List<Object?> get props => [remaining];
 }
+
+class RevealAnswerEvent extends GameEvent {}

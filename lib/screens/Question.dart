@@ -1,104 +1,200 @@
-// lib/screens/question_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/Routes.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
 
 class Question extends StatefulWidget {
   const Question({Key? key}) : super(key: key);
 
   @override
-  State<Question> createState() => _QuestionState();
+  _QuestionState createState() => _QuestionState();
 }
 
-class _QuestionState extends State<Question> {
-  final List<String> answers = [
-    'Michaelangelo',
-    'Botticelli',
-    'Leonardo da Vinci',
-    'Donatello',
-  ];
+class _QuestionState extends State<Question>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _colorController;
+  late Animation<double> _colorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize color animation controller
+    _colorController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // Create a curved animation for smooth color blending
+    _colorAnimation = CurvedAnimation(
+      parent: _colorController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _colorController.dispose();
+    super.dispose();
+  }
+
+  void _revealAnswer(BuildContext context) {
+    print("reveal answer");
+    context.read<GameBloc>().add(RevealAnswerEvent());
+
+    // Trigger color animation when answer is revealed
+    _colorController.forward();
+
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pushNamed(Routes.voteCategory);
+    });
+  }
+
+  Color _blendColors(Color baseColor, Color targetColor, double t) {
+    // Enhanced color blending with more natural transition and animation support
+    return Color.lerp(baseColor, targetColor, t) ?? baseColor;
+  }
+
+  Color _getButtonColor(String answer, GameState state) {
+    // Advanced color selection logic with animated color transitions
+    if (state.isAnswerRevealed) {
+      if (answer == state.correctAnswer) {
+        if (answer == state.selectedAnswer) {
+          // Animate to a green-yellow blend for correct selected answer
+          return _blendColors(
+              Colors.yellow, Colors.green, _colorAnimation.value);
+        }
+        // Animate to a green-white blend for correct unselected answer
+        return _blendColors(Colors.white, Colors.green, _colorAnimation.value);
+      } else if (answer == state.selectedAnswer) {
+        // Animate to a red-yellow blend for incorrect selected answer
+        return _blendColors(Colors.yellow, Colors.red, _colorAnimation.value);
+      }
+      // Subtle desaturation for non-selected answers when revealed
+      return Colors.grey.withOpacity(0.5 * (1 - _colorAnimation.value));
+    } else {
+      if (answer == state.selectedAnswer) {
+        // Blend between white and yellow for selection
+        return _blendColors(Colors.white, Colors.yellow, 0.5);
+      }
+      return Colors.white;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
-      return Scaffold(
-        body: Container(
-          color: Colors.black87,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  // Top status bar style content
-                  const SizedBox(height: 20),
-                  // Question container
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 20,
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: Container(
+            color: Colors.black87,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Animated Question Container with Blended Color
+                    AnimatedBuilder(
+                      animation: _colorAnimation,
+                      builder: (context, child) {
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 20,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE91E63),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            state.currentQuestion ?? 'Loading question...',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFE91E63), // Pink/magenta color
-                      borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 10),
+                    // Countdown Timer
+                    CountdownWithLoadingBar(
+                      countdownSeconds: 10,
+                      height: 20,
+                      onCountdownComplete: () => _revealAnswer(context),
                     ),
-                    child: const Text(
-                      'Who painted\nthe Mona Lisa?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 20),
+                    // Answer Buttons with Advanced Color Blending
+                    if (state.currentAnswers != null)
+                      ...state.currentAnswers!.map((answer) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: AnimatedBuilder(
+                            animation: _colorAnimation,
+                            builder: (context, child) {
+                              return ElevatedButton(
+                                onPressed: () {
+                                  if (!state.isAnswerRevealed) {
+                                    context
+                                        .read<GameBloc>()
+                                        .add(SubmitAnswerEvent(answer));
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      _getButtonColor(answer, state),
+                                  foregroundColor: Colors.black87,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                    horizontal: 24,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  minimumSize: const Size(double.infinity, 50),
+                                ),
+                                child: Text(
+                                  answer,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: state.isAnswerRevealed
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    const Spacer(),
+                    // Animated Rainbow Circle
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      child: const RainbowWheel(
+                        size: 50,
+                        borderWidth: 3,
+                        borderColor: Color(0xFFE91E63),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Answer buttons
-                  ...answers
-                      .map((answer) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Handle answer selection
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black87,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                  horizontal: 24,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                minimumSize: Size(double.infinity, 50),
-                              ),
-                              child: Text(
-                                answer,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                  const Spacer(),
-                  // Bottom rainbow circle
-                  const RainbowWheel(
-                    size: 50, // Size of the rainbow circle
-                    borderWidth: 3, // Border width
-                    borderColor: Color(0xFFE91E63), // Pink/magenta color
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

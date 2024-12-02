@@ -11,7 +11,10 @@ class GameState extends Equatable {
   final String? selectedCategory;
   final String? currentQuestion;
   final List<String>? currentAnswers;
+  final String? selectedAnswer;
   final String? correctAnswer;
+  final bool isAnswerCorrect;
+  final bool isAnswerRevealed;
   final int timeRemaining;
 
   const GameState({
@@ -25,6 +28,9 @@ class GameState extends Equatable {
     this.currentQuestion,
     this.currentAnswers,
     this.correctAnswer,
+    this.selectedAnswer,
+    this.isAnswerCorrect = false,
+    this.isAnswerRevealed = false,
     this.timeRemaining = 30,
   });
 
@@ -41,6 +47,9 @@ class GameState extends Equatable {
         currentAnswers,
         correctAnswer,
         timeRemaining,
+        selectedAnswer,
+        isAnswerRevealed,
+        isAnswerCorrect
       ];
 
   GameState copyWith({
@@ -55,6 +64,9 @@ class GameState extends Equatable {
     List<String>? currentAnswers,
     String? correctAnswer,
     int? timeRemaining,
+    bool? isAnswerCorrect,
+    String? selectedAnswer,
+    bool? isAnswerRevealed,
   }) {
     return GameState(
       status: status ?? this.status,
@@ -67,6 +79,9 @@ class GameState extends Equatable {
       currentQuestion: currentQuestion ?? this.currentQuestion,
       currentAnswers: currentAnswers ?? this.currentAnswers,
       correctAnswer: correctAnswer ?? this.correctAnswer,
+      isAnswerCorrect: isAnswerCorrect ?? this.isAnswerCorrect,
+      isAnswerRevealed: isAnswerRevealed ?? this.isAnswerRevealed,
+      selectedAnswer: selectedAnswer ?? this.selectedAnswer,
       timeRemaining: timeRemaining ?? this.timeRemaining,
     );
   }

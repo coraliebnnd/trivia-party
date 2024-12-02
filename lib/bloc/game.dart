@@ -25,6 +25,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<VoteCategoryEvent>(_onVoteCategory);
     on<SubmitAnswerEvent>(_onSubmitAnswer);
     on<TimerTickEvent>(_onTimerTick);
+    on<CreateQuestionEvent>(_onCreateQuestion);
+    on<RevealAnswerEvent>(_onRevealAnswer);
   }
 
   Future<void> _onCreateGame(
@@ -71,6 +73,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ];
 
     addPlayersAsync(newPlayers, gamePin);
+    add(CreateQuestionEvent("Does this question appear?",
+        [Answer("yes", true), Answer("no", false)]));
   }
 
   Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
@@ -130,26 +134,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     SubmitAnswerEvent event,
     Emitter<GameState> emit,
   ) async {
-    if (state.correctAnswer == event.answer) {
-      // Update player score
-      final updatedPlayer = state.currentPlayer?.copyWith(
-        score: (state.currentPlayer?.score ?? 0) + 1,
-      );
-
-      final updatedPlayers = state.players.map((player) {
-        // Compare the IDs of the players to find the one to update
-        if (player.id == updatedPlayer?.id) {
-          return updatedPlayer!; // Safely unwrap the nullable updatedPlayer
-        }
-        return player;
-      }).toList();
-
-      // Emit the new state with updated values
-      emit(state.copyWith(
-        currentPlayer: updatedPlayer,
-        players: updatedPlayers,
-      ));
-    }
+    print("submit Answer called");
+    emit(state.copyWith(selectedAnswer: event.answer));
   }
 
   void _onTimerTick(
@@ -191,5 +177,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Future<void> close() {
     _timer?.cancel();
     return super.close();
+  }
+
+  Future<void> _onCreateQuestion(
+      CreateQuestionEvent event, Emitter<GameState> emit) async {
+    // Update the state with the new question and answers
+    emit(state.copyWith(
+      currentQuestion: event.question,
+      currentAnswers: event.answers.map((answer) => answer.text).toList(),
+      correctAnswer: event.answers.firstWhere((answer) => answer.isTrue).text,
+      status: GameStatus.questioning, // Optional: Update status if needed
+    ));
+  }
+
+  void _onRevealAnswer(RevealAnswerEvent event, Emitter<GameState> emit) {
+    print("Reveal Answer called");
+    emit(state.copyWith(isAnswerRevealed: true));
   }
 }
