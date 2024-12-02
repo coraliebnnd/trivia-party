@@ -36,10 +36,11 @@ class VoteCategory extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 CountdownWithLoadingBar(
-                    countdownSeconds: 10,
-                    height: 20,
-                    onCountdownComplete: () => Navigator.pushNamed(
-                        context, Routes.categoryPreparation)),
+                  countdownSeconds: 10,
+                  height: 20,
+                  onCountdownComplete: () =>
+                      Navigator.pushNamed(context, Routes.categoryPreparation),
+                ),
                 const SizedBox(height: 20),
                 // Categories
                 Expanded(
@@ -49,27 +50,49 @@ class VoteCategory extends StatelessWidget {
                     crossAxisSpacing: 10,
                     childAspectRatio: 2.5,
                     children: [
-                      _buildCategoryButton('Art', Colors.pink,
-                          votes: state.categoryVotes['Art'] ?? 0,
-                          onTap: () => _voteForCategory(context, 'Art')),
-                      _buildCategoryButton('Video game', Colors.purple,
-                          votes: state.categoryVotes['Video game'] ?? 0,
-                          onTap: () => _voteForCategory(context, 'Video game')),
-                      _buildCategoryButton('Movies / TV', Colors.blue,
-                          votes: state.categoryVotes['Movies / TV'] ?? 0,
-                          onTap: () =>
-                              _voteForCategory(context, 'Movies / TV')),
-                      _buildCategoryButton('Sport', Colors.orange,
-                          votes: state.categoryVotes['Sport'] ?? 0,
-                          onTap: () => _voteForCategory(context, 'Sport')),
-                      _buildCategoryButton('Music', Colors.lightBlue,
-                          votes: state.categoryVotes['Music'] ?? 0,
-                          onTap: () => _voteForCategory(context, 'Music')),
-                      _buildCategoryButton('Books', Colors.green,
-                          votes: state.categoryVotes['Books'] ?? 0,
-                          onTap: () => _voteForCategory(context, 'Books')),
-                      _buildCategoryButton('Random', Colors.grey,
-                          onTap: () => _voteForCategory(context, 'Random')),
+                      _buildCategoryButton(
+                        'Art',
+                        Colors.pink,
+                        votes: state.categoryVotes['Art'] ?? 0,
+                        onTap: () => _voteForCategory(context, 'Art', state),
+                      ),
+                      _buildCategoryButton(
+                        'Video game',
+                        Colors.purple,
+                        votes: state.categoryVotes['Video game'] ?? 0,
+                        onTap: () =>
+                            _voteForCategory(context, 'Video game', state),
+                      ),
+                      _buildCategoryButton(
+                        'Movies / TV',
+                        Colors.blue,
+                        votes: state.categoryVotes['Movies / TV'] ?? 0,
+                        onTap: () =>
+                            _voteForCategory(context, 'Movies / TV', state),
+                      ),
+                      _buildCategoryButton(
+                        'Sport',
+                        Colors.orange,
+                        votes: state.categoryVotes['Sport'] ?? 0,
+                        onTap: () => _voteForCategory(context, 'Sport', state),
+                      ),
+                      _buildCategoryButton(
+                        'Music',
+                        Colors.lightBlue,
+                        votes: state.categoryVotes['Music'] ?? 0,
+                        onTap: () => _voteForCategory(context, 'Music', state),
+                      ),
+                      _buildCategoryButton(
+                        'Books',
+                        Colors.green,
+                        votes: state.categoryVotes['Books'] ?? 0,
+                        onTap: () => _voteForCategory(context, 'Books', state),
+                      ),
+                      _buildCategoryButton(
+                        'Random',
+                        Colors.grey,
+                        onTap: () => _voteForCategory(context, 'Random', state),
+                      ),
                     ],
                   ),
                 ),
@@ -96,8 +119,12 @@ class VoteCategory extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryButton(String text, Color color,
-      {int votes = 0, VoidCallback? onTap}) {
+  Widget _buildCategoryButton(
+    String text,
+    Color color, {
+    int votes = 0,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -151,9 +178,10 @@ class VoteCategory extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             RainbowWheel(
-                size: 50, // Size of the rainbow circle
-                borderWidth: 3, // Border width
-                borderColor: color),
+              size: 50, // Size of the rainbow circle
+              borderWidth: 3, // Border width
+              borderColor: color,
+            ),
           ],
         ),
         const SizedBox(height: 5),
@@ -169,7 +197,16 @@ class VoteCategory extends StatelessWidget {
     );
   }
 
-  void _voteForCategory(BuildContext context, String category) {
-    BlocProvider.of<GameBloc>(context).add(VoteCategoryEvent(category));
+  void _voteForCategory(
+      BuildContext context, String category, GameState state) {
+    final currentPlayer = state.currentPlayer;
+    if (currentPlayer != null) {
+      BlocProvider.of<GameBloc>(context)
+          .add(VoteCategoryEvent(category, currentPlayer));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to vote: No current player!')),
+      );
+    }
   }
 }

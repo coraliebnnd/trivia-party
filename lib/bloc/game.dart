@@ -121,12 +121,38 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     VoteCategoryEvent event,
     Emitter<GameState> emit,
   ) async {
-    // Update category votes
-    final updatedVotes = Map<String, int>.from(state.categoryVotes);
-    updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
+    final currentPlayer = state.currentPlayer;
 
+    // Ensure the current player exists
+    if (currentPlayer == null) return;
+
+    // Create a copy of the current votes
+    final updatedVotes = Map<String, int>.from(state.categoryVotes);
+    final updatedPlayerVotes = Map<String, String>.from(state.playerVotes);
+
+    // Check if the player has already voted
+    if (updatedPlayerVotes.containsKey(currentPlayer.id)) {
+      // Remove the player's previous vote from the categoryVotes
+      final previousCategory = updatedPlayerVotes[currentPlayer.id];
+      if (previousCategory != null &&
+          updatedVotes.containsKey(previousCategory)) {
+        updatedVotes[previousCategory] = (updatedVotes[previousCategory]! - 1)
+            .clamp(0, double.infinity)
+            .toInt();
+        if (updatedVotes[previousCategory] == 0) {
+          updatedVotes.remove(previousCategory);
+        }
+      }
+    }
+
+    // Register the player's new vote
+    updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
+    updatedPlayerVotes[currentPlayer.id] = event.category;
+
+    // Emit the updated state
     emit(state.copyWith(
       categoryVotes: updatedVotes,
+      playerVotes: updatedPlayerVotes,
     ));
   }
 

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:trivia_party/bloc/player.dart';
 
 abstract class GameEvent extends Equatable {
   @override
@@ -35,11 +36,12 @@ class StartGameEvent extends GameEvent {}
 
 class VoteCategoryEvent extends GameEvent {
   final String category;
+  final Player player;
 
-  VoteCategoryEvent(this.category);
+  VoteCategoryEvent(this.category, this.player);
 
   @override
-  List<Object?> get props => [category];
+  List<Object?> get props => [category, player];
 }
 
 class Answer {

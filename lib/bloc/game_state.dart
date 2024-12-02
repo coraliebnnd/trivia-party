@@ -6,7 +6,8 @@ class GameState extends Equatable {
   final String? gamePin;
   final List<Player> players;
   final Player? currentPlayer;
-  final Map<String, int> categoryVotes;
+  final Map<String, int> categoryVotes; // Tracks category votes
+  final Map<String, String> playerVotes; // Tracks each player's vote
   final int numberOfQuestions;
   final String? selectedCategory;
   final String? currentQuestion;
@@ -23,6 +24,7 @@ class GameState extends Equatable {
     this.players = const [],
     this.currentPlayer,
     this.categoryVotes = const {},
+    this.playerVotes = const {}, // Initialize playerVotes as an empty map
     this.numberOfQuestions = 5,
     this.selectedCategory,
     this.currentQuestion,
@@ -41,6 +43,7 @@ class GameState extends Equatable {
         players,
         currentPlayer,
         categoryVotes,
+        playerVotes, // Add playerVotes to props for comparison
         numberOfQuestions,
         selectedCategory,
         currentQuestion,
@@ -58,6 +61,7 @@ class GameState extends Equatable {
     List<Player>? players,
     Player? currentPlayer,
     Map<String, int>? categoryVotes,
+    Map<String, String>? playerVotes, // Allow updating playerVotes
     int? numberOfQuestions,
     String? selectedCategory,
     String? currentQuestion,
@@ -74,6 +78,7 @@ class GameState extends Equatable {
       players: players ?? this.players,
       currentPlayer: currentPlayer ?? this.currentPlayer,
       categoryVotes: categoryVotes ?? this.categoryVotes,
+      playerVotes: playerVotes ?? this.playerVotes, // Copy updated playerVotes
       numberOfQuestions: numberOfQuestions ?? this.numberOfQuestions,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       currentQuestion: currentQuestion ?? this.currentQuestion,
