@@ -44,123 +44,118 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
       return Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.black,
-                Color(0xFF1A1A2E),
-                Color(0xFF16213E),
-              ],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.black,
+              Color(0xFF313131),
+            ],
           ),
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TriviaPartyTitle(),
-                      const SizedBox(height: 60),
-                      // Name Input Section
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
+        ),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TriviaPartyTitle(),
+                    const SizedBox(height: 60),
+                    // Name Input Section
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Your Name',
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Your Name',
+                          const SizedBox(height: 15),
+                          Form(
+                            key: _formKey,
+                            child: TextFormField(
+                              textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 22,
+                                fontSize: 18,
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            const SizedBox(height: 15),
-                            Form(
-                              key: _formKey,
-                              child: TextFormField(
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
+                              decoration: InputDecoration(
+                                hintText: 'Enter your name',
+                                hintStyle: TextStyle(
+                                  color: Colors.white.withOpacity(0.5),
                                 ),
-                                decoration: InputDecoration(
-                                  hintText: 'Enter your name',
-                                  hintStyle: TextStyle(
-                                    color: Colors.white.withOpacity(0.5),
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white.withOpacity(0.1),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.3),
-                                      width: 2,
-                                    ),
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.1),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 2,
                                   ),
                                 ),
-                                onChanged: (value) => _name = value,
                               ),
+                              onChanged: (value) => _name = value,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 40),
-                      // Buttons Section
-                      _buildButton(
-                        'Create Game',
-                        LinearGradient(
-                          colors: [Colors.pink, Colors.pinkAccent.shade700],
-                        ),
-                        () {
-                          BlocProvider.of<GameBloc>(context).add(
-                              CreateGameEvent(
-                                  playerName: "Niklas", numberOfQuestions: 10));
-                          Navigator.pushNamed(context, Routes.createGame);
-                        },
+                    ),
+                    const SizedBox(height: 40),
+                    // Buttons Section
+                    _buildButton(
+                      'Create Game',
+                      LinearGradient(
+                        colors: [Colors.pink, Colors.pinkAccent.shade700],
                       ),
-                      const SizedBox(height: 16),
-                      _buildButton(
-                        'Join Game',
-                        LinearGradient(
-                          colors: [Colors.purple, Colors.deepPurple],
-                        ),
-                        () {},
+                      () => Navigator.pushNamed(context, Routes.createGame),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildButton(
+                      'Join Game',
+                      LinearGradient(
+                        colors: [Colors.purple, Colors.deepPurple],
                       ),
-                      const SizedBox(height: 16),
-                      _buildButton(
-                        'How to Play',
-                        LinearGradient(
-                          colors: [Colors.blue, Colors.blueAccent.shade700],
-                        ),
-                        () => Navigator.pushNamed(context, Routes.howToPlay),
+                      () {},
+                    ),
+                    const SizedBox(height: 16),
+                    _buildButton(
+                      'How to Play',
+                      LinearGradient(
+                        colors: [Colors.blue, Colors.blueAccent.shade700],
                       ),
-                    ],
-                  ),
+                      () => Navigator.pushNamed(context, Routes.howToPlay),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
-      );
-    });
+      ),
+    );
+    }
+    );
   }
 
   Widget _buildButton(
