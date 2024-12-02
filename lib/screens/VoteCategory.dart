@@ -6,9 +6,30 @@ import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
+import 'dart:math';
 
 class VoteCategory extends StatelessWidget {
   const VoteCategory({Key? key}) : super(key: key);
+
+  // List of potential categories when 'Random' is selected
+  static final List<String> _randomCategories = [
+    'Art',
+    'Video game',
+    'Movies / TV',
+    'Sport',
+    'Music',
+    'Books',
+    'Science',
+    'History',
+    'Geography',
+    'Pop Culture'
+  ];
+
+  // Method to get a truly random category
+  String _getRandomCategory() {
+    final random = Random();
+    return _randomCategories[random.nextInt(_randomCategories.length)];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +112,7 @@ class VoteCategory extends StatelessWidget {
                       _buildCategoryButton(
                         'Random',
                         Colors.grey,
+                        votes: state.categoryVotes['Random'] ?? 0,
                         onTap: () => _voteForCategory(context, 'Random', state),
                       ),
                     ],
@@ -104,8 +126,7 @@ class VoteCategory extends StatelessWidget {
                   children: state.players.map((player) {
                     return _buildPlayerPie(
                       player.name,
-                      player
-                          .color, // Ensure your Player model has a `color` field
+                      player.color,
                       isMainPlayer: player.id == state.currentPlayer?.id,
                     );
                   }).toList(),
@@ -125,46 +146,51 @@ class VoteCategory extends StatelessWidget {
     int votes = 0,
     VoidCallback? onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(12),
           ),
-          if (votes > 0)
-            Positioned(
-              top: 4,
-              right: 4,
-              child: CircleAvatar(
-                radius: 12,
-                backgroundColor: Colors.white,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
                 child: Text(
-                  '$votes',
+                  text,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
+                    color: Colors.white,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
-        ],
+              if (votes > 0)
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      '$votes',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -201,6 +227,7 @@ class VoteCategory extends StatelessWidget {
       BuildContext context, String category, GameState state) {
     final currentPlayer = state.currentPlayer;
     if (currentPlayer != null) {
+      // If 'Random' is selected, choose a truly random category
       BlocProvider.of<GameBloc>(context)
           .add(VoteCategoryEvent(category, currentPlayer));
     } else {
