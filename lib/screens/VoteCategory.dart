@@ -1,111 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/Routes.dart';
+import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/game_event.dart';
+import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
-
-import '../Routes.dart';
 
 class VoteCategory extends StatelessWidget {
   const VoteCategory({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 40),
-            // Title
-            Center(
-              child: Text(
-                "Vote for the next\nquestion's category!",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Orange separator line
-            Container(
-              height: 4,
-              width: 150,
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 20),
-            // Categories
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: 2.5,
-                children: [
-                  _buildCategoryButton('Art', Colors.pink,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Video game', Colors.purple,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Movies / TV', Colors.blue,
-                      votes: 2,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Sport', Colors.orange,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Music', Colors.lightBlue,
-                      votes: 2,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Books', Colors.green,
-                      votes: 0,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                  _buildCategoryButton('Random', Colors.grey,
-                      onTap: () => {
-                            Navigator.pushNamed(
-                                context, Routes.categoryPreparation)
-                          }),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Players and their pies
-            Wrap(
-              spacing: 20,
-              alignment: WrapAlignment.center,
+    return BlocBuilder<GameBloc, GameState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildPlayerPie('Coralie', Colors.purple),
-                _buildPlayerPie('Niklas', Colors.blue),
-                _buildPlayerPie('Jane', Colors.orange),
-                _buildPlayerPie('Marianne', Colors.pink, isMainPlayer: true),
-                _buildPlayerPie('Michel', Colors.yellow),
-                _buildPlayerPie('John', Colors.green),
+                const SizedBox(height: 40),
+                // Title
+                Center(
+                  child: Text(
+                    "Vote for the next\nquestion's category!",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                CountdownWithLoadingBar(
+                    countdownSeconds: 10,
+                    height: 20,
+                    onCountdownComplete: () => Navigator.pushNamed(
+                        context, Routes.categoryPreparation)),
+                const SizedBox(height: 20),
+                // Categories
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 2.5,
+                    children: [
+                      _buildCategoryButton('Art', Colors.pink,
+                          votes: state.categoryVotes['Art'] ?? 0,
+                          onTap: () => _voteForCategory(context, 'Art')),
+                      _buildCategoryButton('Video game', Colors.purple,
+                          votes: state.categoryVotes['Video game'] ?? 0,
+                          onTap: () => _voteForCategory(context, 'Video game')),
+                      _buildCategoryButton('Movies / TV', Colors.blue,
+                          votes: state.categoryVotes['Movies / TV'] ?? 0,
+                          onTap: () =>
+                              _voteForCategory(context, 'Movies / TV')),
+                      _buildCategoryButton('Sport', Colors.orange,
+                          votes: state.categoryVotes['Sport'] ?? 0,
+                          onTap: () => _voteForCategory(context, 'Sport')),
+                      _buildCategoryButton('Music', Colors.lightBlue,
+                          votes: state.categoryVotes['Music'] ?? 0,
+                          onTap: () => _voteForCategory(context, 'Music')),
+                      _buildCategoryButton('Books', Colors.green,
+                          votes: state.categoryVotes['Books'] ?? 0,
+                          onTap: () => _voteForCategory(context, 'Books')),
+                      _buildCategoryButton('Random', Colors.grey,
+                          onTap: () => _voteForCategory(context, 'Random')),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Players and their pies
+                Wrap(
+                  spacing: 20,
+                  alignment: WrapAlignment.center,
+                  children: state.players.map((player) {
+                    return _buildPlayerPie(
+                      player.name,
+                      player
+                          .color, // Ensure your Player model has a `color` field
+                      isMainPlayer: player.id == state.currentPlayer?.id,
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 30),
               ],
             ),
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -163,10 +150,10 @@ class VoteCategory extends StatelessWidget {
         Stack(
           alignment: Alignment.center,
           children: [
-            const RainbowWheel(
+            RainbowWheel(
                 size: 50, // Size of the rainbow circle
                 borderWidth: 3, // Border width
-                borderColor: Color(0xFFE91E63)) // Pink/magenta color),
+                borderColor: color),
           ],
         ),
         const SizedBox(height: 5),
@@ -180,5 +167,9 @@ class VoteCategory extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _voteForCategory(BuildContext context, String category) {
+    BlocProvider.of<GameBloc>(context).add(VoteCategoryEvent(category));
   }
 }
