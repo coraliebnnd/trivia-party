@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 enum GameStatus {
   initial,
   creating,
+  created,
   joining,
   inProgress,
   voting,
@@ -15,6 +16,7 @@ enum GameStatus {
 class Player extends Equatable {
   final String name;
   final String id;
+  final bool isHost;
   final List<String> completedCategories;
   final int score;
   final Color color;
@@ -22,6 +24,7 @@ class Player extends Equatable {
   const Player(
       {required this.name,
       required this.id,
+      required this.isHost,
       this.completedCategories = const [],
       this.score = 0,
       this.color = Colors.blue});
@@ -32,12 +35,14 @@ class Player extends Equatable {
   Player copyWith({
     String? name,
     String? id,
+    bool? isHost,
     List<String>? completedCategories,
     int? score,
   }) {
     return Player(
       name: name ?? this.name,
       id: id ?? this.id,
+      isHost: isHost ?? this.isHost,
       completedCategories: completedCategories ?? this.completedCategories,
       score: score ?? this.score,
     );
