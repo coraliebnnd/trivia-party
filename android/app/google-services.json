@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "326750254794",
+    "firebase_url": "https://trivia-party-522a9-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "trivia-party-522a9",
+    "storage_bucket": "trivia-party-522a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326750254794:android:3d17ae332aa01439f5e633",
+        "android_client_info": {
+          "package_name": "de.mad.triviaparty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsgZKXsovl4zRhov037uMnFWHcc29UHyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
