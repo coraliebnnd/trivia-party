@@ -1,4 +1,4 @@
-package de.mad.trivia_party
+package de.mad.triviaparty
 
 import io.flutter.embedding.android.FlutterActivity
 
