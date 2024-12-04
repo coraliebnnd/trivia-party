@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/player.dart';
 import 'package:trivia_party/categories.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
 import 'package:trivia_party/networking/question_loader.dart';
 import 'game_event.dart';
 import 'game_state.dart';
@@ -38,46 +39,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     CreateGameEvent event,
     Emitter<GameState> emit,
   ) async {
-    emit(state.copyWith(status: GameStatus.creating));
-
-    // Generate a random game PIN
-    final gamePin = _generateGamePin();
-
-    // Create current player
-    final currentPlayer = Player(
-      name: event.playerName,
-      id: DateTime.now().toString(),
+    final currentPLayer = Player(
+        name: event.playerName,
+        id: DateTime.now().toString(),
+        isHost: true
     );
 
     emit(state.copyWith(
       status: GameStatus.creating,
-      gamePin: gamePin,
-      currentPlayer: currentPlayer,
-      players: [currentPlayer],
-      numberOfQuestions: event.numberOfQuestions,
+      currentPlayer: currentPLayer
     ));
 
-    emit(state.copyWith(status: GameStatus.creating));
+    String gamePin = await createLobby(currentPLayer.name);
 
     emit(state.copyWith(
-      status: GameStatus.creating,
-      gamePin: gamePin,
-      currentPlayer: currentPlayer,
-      players: [currentPlayer],
-      numberOfQuestions: event.numberOfQuestions,
+      status: GameStatus.created,
+      currentPlayer: currentPLayer,
+      gamePin: gamePin
     ));
-
-    // List of other players to join
-    final newPlayers = [
-      'Coralie',
-      'Niklas',
-      'Jane',
-      'Marianne',
-      'John',
-      'Michel',
-    ];
-
-    addPlayersAsync(newPlayers, gamePin);
   }
 
   Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
@@ -97,6 +76,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final newPlayer = Player(
         name: event.playerName,
         id: DateTime.now().toString(),
+        isHost: true,
         color: colors[color_index]);
     color_index += 1;
 
@@ -189,16 +169,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       remaining--;
       add(TimerTickEvent(remaining));
     });
-  }
-
-  String _generateGamePin() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = DateTime.now().millisecondsSinceEpoch;
-    final result = List.generate(6, (index) {
-      final randomIndex = (random + index) % chars.length;
-      return chars[randomIndex];
-    });
-    return result.join();
   }
 
   @override

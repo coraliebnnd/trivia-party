@@ -94,7 +94,10 @@ class CreateGame extends StatelessWidget {
                   // Start Game Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pink,
+                      backgroundColor:
+                      (state.currentPlayer?.isHost ?? false)
+                            ? Colors.pink
+                            : Colors.grey,
                       padding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 40),
                       shape: RoundedRectangleBorder(

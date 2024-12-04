@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/bloc/player.dart';
 import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
 
 import '../Routes.dart';
@@ -20,6 +21,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late Animation<double> _fadeAnimation;
   final _formKey = GlobalKey<FormState>();
   String? _name;
+  final TextEditingController _playerNameController = TextEditingController();
 
   @override
   void initState() {
@@ -91,6 +93,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             Form(
                               key: _formKey,
                               child: TextFormField(
+                                controller: _playerNameController,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 18,
@@ -123,18 +126,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                       const SizedBox(height: 40),
                       // Buttons Section
-                      _buildButton(
-                        'Create Game',
-                        LinearGradient(
-                          colors: [Colors.pink, Colors.pinkAccent.shade700],
-                        ),
-                        () {
-                          BlocProvider.of<GameBloc>(context).add(
-                              CreateGameEvent(
-                                  playerName: "testPlayer",
-                                  numberOfQuestions: 10));
-                          Navigator.pushNamed(context, Routes.createGame);
+                      BlocListener<GameBloc, GameState>(
+                        listener: (context, state) {
+                          if (state.status == GameStatus.created) {
+                            Navigator.pushNamed(context, Routes.createGame);
+                          }
                         },
+                        child: _buildButton(
+                          'Create Game',
+                          LinearGradient(
+                            colors: [Colors.pink, Colors.pinkAccent.shade700],
+                          ),
+                              () {
+                            BlocProvider.of<GameBloc>(context).add(
+                                CreateGameEvent(
+                                    playerName: _playerNameController.text,
+                                    numberOfQuestions: 10));
+                            // Navigator.pushNamed(context, Routes.createGame);
+                          },
+                        ),
                       ),
                       const SizedBox(height: 16),
                       _buildButton(
