@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     projectId: 'trivia-party-522a9',
     databaseURL: 'https://trivia-party-522a9-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'trivia-party-522a9.firebasestorage.app',
-    iosBundleId: 'com.example.triviaParty',
+    iosBundleId: 'de.mad.triviaParty',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -76,7 +76,7 @@ class DefaultFirebaseOptions {
     projectId: 'trivia-party-522a9',
     databaseURL: 'https://trivia-party-522a9-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'trivia-party-522a9.firebasestorage.app',
-    iosBundleId: 'com.example.triviaParty',
+    iosBundleId: 'de.mad.triviaParty',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
