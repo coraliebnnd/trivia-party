@@ -220,6 +220,7 @@ class _QuestionState extends State<Question>
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeInOut,
                   child: const RainbowWheel(
+                    progress: const [0.2, 0.4, 0.6, 0.8, 1.0, 0.0],
                     size: 50,
                     borderWidth: 3,
                     borderColor: Color(0xFFE91E63),
