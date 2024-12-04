@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/player.dart';
 import 'package:trivia_party/categories.dart';
+import 'package:trivia_party/networking/question_loader.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
@@ -76,8 +77,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ];
 
     addPlayersAsync(newPlayers, gamePin);
-    add(CreateQuestionEvent("Does this question appear?",
-        [Answer("yes", true), Answer("no", false)]));
   }
 
   Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
@@ -247,5 +246,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           categories_for_choice[Random().nextInt(categories_for_choice.length)];
     }
     emit(state.copyWith(selectedCategory: currentCategory));
+
+    QuestionLoader.loadQuestion().then((loadedQuestion) {
+      if (loadedQuestion != null) {
+        add(CreateQuestionEvent(
+          loadedQuestion.question,
+          loadedQuestion.answers,
+        ));
+      } else {
+        print("Error loading Question");
+      }
+    });
   }
 }
