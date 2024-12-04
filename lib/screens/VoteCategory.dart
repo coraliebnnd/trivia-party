@@ -192,10 +192,10 @@ class VoteCategory extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             RainbowWheel(
-              size: 50, // Size of the rainbow circle
-              borderWidth: 3, // Border width
-              borderColor: color,
-            ),
+                progress: const [0.2, 0.4, 0.6, 0.8, 1.0, 0.0],
+                size: 70, // Size of the rainbow circle
+                borderWidth: 5, // Border width
+                borderColor: color),
           ],
         ),
         const SizedBox(height: 5),
