@@ -31,6 +31,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<CreateQuestionEvent>(_onCreateQuestion);
     on<RevealAnswerEvent>(_onRevealAnswer);
     on<VoteCategoryFinishedEvent>(_onVoteCategoryFinished);
+    on<QuestionPeparationEvent>(_onQuestionPreparation);
   }
 
   Future<void> _onCreateGame(
@@ -162,7 +163,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     SubmitAnswerEvent event,
     Emitter<GameState> emit,
   ) async {
-    print("submit Answer called");
     emit(state.copyWith(selectedAnswer: event.answer));
   }
 
@@ -246,7 +246,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           categories_for_choice[Random().nextInt(categories_for_choice.length)];
     }
     emit(state.copyWith(selectedCategory: currentCategory));
+  }
 
+  void _onQuestionPreparation(
+      QuestionPeparationEvent event, Emitter<GameState> emit) {
     QuestionLoader.loadQuestion().then((loadedQuestion) {
       if (loadedQuestion != null) {
         add(CreateQuestionEvent(
@@ -257,5 +260,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         print("Error loading Question");
       }
     });
+    emit(state.copyWith(
+      isAnswerCorrect: false,
+      isAnswerRevealed: false,
+      selectedAnswer: null,
+    ));
   }
 }

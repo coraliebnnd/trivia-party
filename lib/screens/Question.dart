@@ -43,7 +43,6 @@ class _QuestionState extends State<Question>
   }
 
   void _revealAnswer(BuildContext context) {
-    print("reveal answer");
     context.read<GameBloc>().add(RevealAnswerEvent());
 
     // Trigger color animation when answer is revealed

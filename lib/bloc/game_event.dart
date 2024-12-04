@@ -44,6 +44,13 @@ class VoteCategoryEvent extends GameEvent {
   List<Object?> get props => [category, player];
 }
 
+class QuestionPeparationEvent extends GameEvent {
+  QuestionPeparationEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class VoteCategoryFinishedEvent extends GameEvent {
   VoteCategoryFinishedEvent();
 

@@ -7,7 +7,6 @@ import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/categories.dart';
 import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
-import 'dart:math';
 
 class VoteCategory extends StatelessWidget {
   const VoteCategory({Key? key}) : super(key: key);
@@ -213,6 +212,7 @@ class VoteCategory extends StatelessWidget {
 
   void _votingForCategoryFinished(BuildContext context) {
     BlocProvider.of<GameBloc>(context).add(VoteCategoryFinishedEvent());
+    BlocProvider.of<GameBloc>(context).add(QuestionPeparationEvent());
   }
 
   void _voteForCategory(
