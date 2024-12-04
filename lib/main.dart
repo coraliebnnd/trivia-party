@@ -38,8 +38,7 @@ class TriviaPartyApp extends StatelessWidget {
         Routes.howToPlay: (context) => const HowToPlay(),
         Routes.voteCategory: (context) => const VoteCategory(),
         Routes.question: (context) => const Question(),
-        Routes.categoryPreparation: (context) => const CategoryPreparation(
-            category: "Art", categoryColor: Colors.yellow)
+        Routes.categoryPreparation: (context) => const CategoryPreparation()
       },
     );
   }

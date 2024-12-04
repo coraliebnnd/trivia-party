@@ -1,8 +1,11 @@
 // lib/blocs/game/game_bloc.dart
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/player.dart';
+import 'package:trivia_party/categories.dart';
+import 'package:trivia_party/networking/question_loader.dart';
 import 'game_event.dart';
 import 'game_state.dart';
 
@@ -27,6 +30,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<TimerTickEvent>(_onTimerTick);
     on<CreateQuestionEvent>(_onCreateQuestion);
     on<RevealAnswerEvent>(_onRevealAnswer);
+    on<VoteCategoryFinishedEvent>(_onVoteCategoryFinished);
+    on<QuestionPeparationEvent>(_onQuestionPreparation);
   }
 
   Future<void> _onCreateGame(
@@ -73,8 +78,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ];
 
     addPlayersAsync(newPlayers, gamePin);
-    add(CreateQuestionEvent("Does this question appear?",
-        [Answer("yes", true), Answer("no", false)]));
   }
 
   Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
@@ -121,12 +124,38 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     VoteCategoryEvent event,
     Emitter<GameState> emit,
   ) async {
-    // Update category votes
-    final updatedVotes = Map<String, int>.from(state.categoryVotes);
-    updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
+    final currentPlayer = state.currentPlayer;
 
+    // Ensure the current player exists
+    if (currentPlayer == null) return;
+
+    // Create a copy of the current votes
+    final updatedVotes = Map<String, int>.from(state.categoryVotes);
+    final updatedPlayerVotes = Map<String, String>.from(state.playerVotes);
+
+    // Check if the player has already voted
+    if (updatedPlayerVotes.containsKey(currentPlayer.id)) {
+      // Remove the player's previous vote from the categoryVotes
+      final previousCategory = updatedPlayerVotes[currentPlayer.id];
+      if (previousCategory != null &&
+          updatedVotes.containsKey(previousCategory)) {
+        updatedVotes[previousCategory] = (updatedVotes[previousCategory]! - 1)
+            .clamp(0, double.infinity)
+            .toInt();
+        if (updatedVotes[previousCategory] == 0) {
+          updatedVotes.remove(previousCategory);
+        }
+      }
+    }
+
+    // Register the player's new vote
+    updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
+    updatedPlayerVotes[currentPlayer.id] = event.category;
+
+    // Emit the updated state
     emit(state.copyWith(
       categoryVotes: updatedVotes,
+      playerVotes: updatedPlayerVotes,
     ));
   }
 
@@ -134,7 +163,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     SubmitAnswerEvent event,
     Emitter<GameState> emit,
   ) async {
-    print("submit Answer called");
     emit(state.copyWith(selectedAnswer: event.answer));
   }
 
@@ -191,7 +219,51 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _onRevealAnswer(RevealAnswerEvent event, Emitter<GameState> emit) {
-    print("Reveal Answer called");
     emit(state.copyWith(isAnswerRevealed: true));
+  }
+
+  void _onVoteCategoryFinished(
+      VoteCategoryFinishedEvent event, Emitter<GameState> emit) {
+    String currentCategory = "";
+    int currentMaxVotes = -1;
+    state.categoryVotes.forEach((category, votes) {
+      if (votes > currentMaxVotes) {
+        currentCategory = category;
+        currentMaxVotes = votes;
+      }
+    });
+
+    if (currentMaxVotes == 0 || currentCategory == "Random") {
+      var categories_for_choice = [
+        Categories.books,
+        Categories.sport,
+        Categories.music,
+        Categories.movies_tv,
+        Categories.video_game,
+        Categories.art
+      ];
+      currentCategory =
+          categories_for_choice[Random().nextInt(categories_for_choice.length)];
+    }
+    emit(state.copyWith(selectedCategory: currentCategory));
+  }
+
+  void _onQuestionPreparation(
+      QuestionPeparationEvent event, Emitter<GameState> emit) {
+    QuestionLoader.loadQuestion().then((loadedQuestion) {
+      if (loadedQuestion != null) {
+        add(CreateQuestionEvent(
+          loadedQuestion.question,
+          loadedQuestion.answers,
+        ));
+      } else {
+        print("Error loading Question");
+      }
+    });
+    emit(state.copyWith(
+      isAnswerCorrect: false,
+      isAnswerRevealed: false,
+      selectedAnswer: null,
+    ));
   }
 }
