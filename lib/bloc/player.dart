@@ -7,6 +7,7 @@ enum GameStatus {
   creating,
   created,
   joining,
+  joined,
   inProgress,
   voting,
   questioning,

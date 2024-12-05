@@ -129,6 +129,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       BlocListener<GameBloc, GameState>(
                         listener: (context, state) {
                           if (state.status == GameStatus.created) {
+                            // Navigator.pushNamed(context, Routes.createGame);
+                            BlocProvider.of<GameBloc>(context).add(
+                              JoinGameEvent(
+                                  gamePin: state.gamePin ?? "",
+                                  playerName: _playerNameController.text,
+                                  player: state.currentPlayer
+                              )
+                            );
+                          } else if (state.status == GameStatus.joined) {
                             Navigator.pushNamed(context, Routes.createGame);
                           }
                         },
@@ -142,7 +151,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 CreateGameEvent(
                                     playerName: _playerNameController.text,
                                     numberOfQuestions: 10));
-                            // Navigator.pushNamed(context, Routes.createGame);
                           },
                         ),
                       ),

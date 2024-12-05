@@ -105,8 +105,10 @@ class CreateGame extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, Routes.voteCategory);
-                      // Handle Start Game
+                      if (state.currentPlayer?.isHost ?? false) {
+                        Navigator.pushNamed(context, Routes.voteCategory);
+                        // Handle Start Game
+                      }
                     },
                     child: Text(
                       'Start game',

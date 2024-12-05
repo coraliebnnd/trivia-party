@@ -22,14 +22,16 @@ class CreateGameEvent extends GameEvent {
 class JoinGameEvent extends GameEvent {
   final String gamePin;
   final String playerName;
+  Player? player;
 
   JoinGameEvent({
     required this.gamePin,
     required this.playerName,
+    this.player
   });
 
   @override
-  List<Object?> get props => [gamePin, playerName];
+  List<Object?> get props => [gamePin, playerName, player];
 }
 
 class StartGameEvent extends GameEvent {}

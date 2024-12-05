@@ -1,6 +1,7 @@
 // lib/blocs/game/game_bloc.dart
 import 'dart:async';
 import 'dart:math';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/player.dart';
@@ -21,6 +22,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     Colors.lightGreen,
   ];
   int color_index = 0;
+
+  StreamSubscription? _lobbyStream;
 
   GameBloc() : super(const GameState()) {
     on<CreateGameEvent>(_onCreateGame);
@@ -72,22 +75,59 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   ) async {
     emit(state.copyWith(status: GameStatus.joining));
 
-    // Create new player
-    final newPlayer = Player(
+    Player player = event.player ?? Player(
         name: event.playerName,
         id: DateTime.now().toString(),
-        isHost: true,
-        color: colors[color_index]);
+        isHost: false,
+        color: colors[color_index]
+    );
     color_index += 1;
 
+    String lobbyCode = event.gamePin;
+    _lobbyStream = database.child('lobbies/$lobbyCode').onValue.listen((event) {
+      final lobbyData = event.snapshot.value as Map?;
+      if (lobbyData != null) {
+
+      } else {
+        print("Lobby wurde entfernt oder existiert nicht mehr.");
+      }
+    });
+
     // Add player to the game
-    final updatedPlayers = List<Player>.from(state.players)..add(newPlayer);
+    final updatedPlayers = List<Player>.from(state.players)..add(player);
 
     emit(state.copyWith(
-      status: GameStatus.joining,
-      currentPlayer: newPlayer,
+      status: GameStatus.joined,
+      currentPlayer: player,
       players: updatedPlayers,
     ));
+  }
+
+  void startListeningToLobby(String lobbyCode) {
+    _lobbyStream = listenToLobby(lobbyCode, (lobbyData) {
+
+    });
+  }
+
+  void stopListeningToLobby() {
+    if (_lobbyStream != null) {
+      _lobbyStream?.cancel();
+    }
+  }
+
+  StreamSubscription listenToLobby(String lobbyCode, void Function(Map lobbyData) onLobbyUpdate) {
+    final StreamSubscription subscription = database.child('lobbies/$lobbyCode').onValue.listen((event) {
+      final lobbyData = event.snapshot.value as Map?;
+      if (lobbyData != null) {
+        emit(state.copyWith(
+          players: lobbyData['players']
+        ));
+      } else {
+        print("Lobby wurde entfernt oder existiert nicht mehr.");
+      }
+    });
+
+    return subscription;
   }
 
   Future<void> _onStartGame(
