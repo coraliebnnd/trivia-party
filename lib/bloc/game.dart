@@ -1,7 +1,6 @@
-// lib/blocs/game/game_bloc.dart
 import 'dart:async';
 import 'dart:math';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/player.dart';
@@ -21,9 +20,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     Colors.deepPurpleAccent,
     Colors.lightGreen,
   ];
-  int color_index = 0;
-
-  StreamSubscription? _lobbyStream;
+  int colorIndex = 0;
 
   GameBloc() : super(const GameState()) {
     on<CreateGameEvent>(_onCreateGame);
@@ -58,13 +55,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       status: GameStatus.created,
       currentPlayer: currentPLayer,
-      gamePin: gamePin
+      gamePin: gamePin,
+      players: []
     ));
   }
 
   Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
     for (var name in newPlayers) {
-      await Future.delayed(Duration(seconds: 1)); // Add a 1-second delay
+      await Future.delayed(const Duration(seconds: 1)); // Add a 1-second delay
       add(JoinGameEvent(playerName: name, gamePin: gamePin));
     }
   }
@@ -79,19 +77,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         name: event.playerName,
         id: DateTime.now().toString(),
         isHost: false,
-        color: colors[color_index]
+        color: colors[colorIndex]
     );
-    color_index += 1;
-
-    String lobbyCode = event.gamePin;
-    _lobbyStream = database.child('lobbies/$lobbyCode').onValue.listen((event) {
-      final lobbyData = event.snapshot.value as Map?;
-      if (lobbyData != null) {
-
-      } else {
-        print("Lobby wurde entfernt oder existiert nicht mehr.");
-      }
-    });
+    colorIndex += 1;
 
     // Add player to the game
     final updatedPlayers = List<Player>.from(state.players)..add(player);
@@ -101,33 +89,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       currentPlayer: player,
       players: updatedPlayers,
     ));
-  }
-
-  void startListeningToLobby(String lobbyCode) {
-    _lobbyStream = listenToLobby(lobbyCode, (lobbyData) {
-
-    });
-  }
-
-  void stopListeningToLobby() {
-    if (_lobbyStream != null) {
-      _lobbyStream?.cancel();
-    }
-  }
-
-  StreamSubscription listenToLobby(String lobbyCode, void Function(Map lobbyData) onLobbyUpdate) {
-    final StreamSubscription subscription = database.child('lobbies/$lobbyCode').onValue.listen((event) {
-      final lobbyData = event.snapshot.value as Map?;
-      if (lobbyData != null) {
-        emit(state.copyWith(
-          players: lobbyData['players']
-        ));
-      } else {
-        print("Lobby wurde entfernt oder existiert nicht mehr.");
-      }
-    });
-
-    return subscription;
   }
 
   Future<void> _onStartGame(
@@ -244,16 +205,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     });
 
     if (currentMaxVotes == 0 || currentCategory == "Random") {
-      var categories_for_choice = [
+      var categoriesForChoice = [
         Categories.books,
         Categories.sport,
         Categories.music,
-        Categories.movies_tv,
-        Categories.video_game,
+        Categories.moviesTV,
+        Categories.videoGame,
         Categories.art
       ];
       currentCategory =
-          categories_for_choice[Random().nextInt(categories_for_choice.length)];
+          categoriesForChoice[Random().nextInt(categoriesForChoice.length)];
     }
     emit(state.copyWith(selectedCategory: currentCategory));
   }
@@ -267,7 +228,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           loadedQuestion.answers,
         ));
       } else {
-        print("Error loading Question");
+        if (kDebugMode) {
+          print("Error loading Question");
+        }
       }
     });
     emit(state.copyWith(

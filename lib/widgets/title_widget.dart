@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 // Custom widget for the title
 class TriviaPartyTitle extends StatelessWidget {
-  const TriviaPartyTitle({Key? key}) : super(key: key);
+  const TriviaPartyTitle({super.key});
 
   @override
     Widget build(BuildContext context) {

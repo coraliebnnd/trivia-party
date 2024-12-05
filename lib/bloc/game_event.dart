@@ -22,7 +22,7 @@ class CreateGameEvent extends GameEvent {
 class JoinGameEvent extends GameEvent {
   final String gamePin;
   final String playerName;
-  Player? player;
+  final Player? player;
 
   JoinGameEvent({
     required this.gamePin,

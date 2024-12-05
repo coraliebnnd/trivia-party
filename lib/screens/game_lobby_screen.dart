@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_state.dart';
-import '../widgets/TriviaPartyTitle.dart';
-import '../Routes.dart';
+import '../widgets/title_widget.dart';
+import '../routes.dart';
 
 class CreateGame extends StatelessWidget {
-  const CreateGame({Key? key}) : super(key: key);
+  const CreateGame({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +20,10 @@ class CreateGame extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TriviaPartyTitle(),
+                  const TriviaPartyTitle(),
                   const SizedBox(height: 20),
                   // Game Pin
-                  Text(
+                  const Text(
                     'Game Pin',
                     style: TextStyle(
                       fontSize: 24,
@@ -33,7 +33,7 @@ class CreateGame extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     state.gamePin ?? 'Loading...',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -54,7 +54,7 @@ class CreateGame extends StatelessWidget {
                           .toList(),
                     )
                   else
-                    Text(
+                    const Text(
                       'Waiting for players...',
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
@@ -63,7 +63,7 @@ class CreateGame extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Number of questions',
                         style: TextStyle(
                           fontSize: 20,
@@ -83,7 +83,7 @@ class CreateGame extends StatelessWidget {
                             value: index + 1,
                             child: Text(
                               '${index + 1}',
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -110,7 +110,7 @@ class CreateGame extends StatelessWidget {
                         // Handle Start Game
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       'Start game',
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
@@ -132,13 +132,13 @@ class CreateGame extends StatelessWidget {
           backgroundColor: color,
           child: Text(
             name[0], // First letter of the name
-            style: TextStyle(fontSize: 24, color: Colors.white),
+            style: const TextStyle(fontSize: 24, color: Colors.white),
           ),
         ),
         const SizedBox(height: 5),
         Text(
           name,
-          style: TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
         ),
       ],
     );

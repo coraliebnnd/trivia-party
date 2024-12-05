@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/Routes.dart';
+import 'package:trivia_party/routes.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
-import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
-import 'package:trivia_party/widgets/RainbowWheel.dart';
+import 'package:trivia_party/widgets/countdown_widget.dart';
+import 'package:trivia_party/widgets/rainbow_wheel_widget.dart';
 
 class Question extends StatefulWidget {
-  const Question({Key? key}) : super(key: key);
+  const Question({super.key});
 
   @override
-  _QuestionState createState() => _QuestionState();
+  QuestionState createState() => QuestionState();
 }
 
-class _QuestionState extends State<Question>
+class QuestionState extends State<Question>
     with SingleTickerProviderStateMixin {
   late AnimationController _colorController;
   late Animation<double> _colorAnimation;
@@ -174,7 +174,7 @@ class _QuestionState extends State<Question>
                             },
                           ),
                         );
-                      }).toList(),
+                      }),
                     const Spacer(),
                     // Animated Rainbow Circle
                     AnimatedContainer(

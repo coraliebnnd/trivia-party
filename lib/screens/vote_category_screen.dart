@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/Routes.dart';
+import 'package:trivia_party/routes.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/categories.dart';
-import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
-import 'package:trivia_party/widgets/RainbowWheel.dart';
+import 'package:trivia_party/widgets/countdown_widget.dart';
+import 'package:trivia_party/widgets/rainbow_wheel_widget.dart';
 
 class VoteCategory extends StatelessWidget {
-  const VoteCategory({Key? key}) : super(key: key);
+  const VoteCategory({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +24,11 @@ class VoteCategory extends StatelessWidget {
               children: [
                 const SizedBox(height: 40),
                 // Title
-                Center(
+                const Center(
                   child: Text(
                     "Vote for the next\nquestion's category!",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -61,18 +61,18 @@ class VoteCategory extends StatelessWidget {
                             _voteForCategory(context, Categories.art, state),
                       ),
                       _buildCategoryButton(
-                        Categories.video_game,
-                        Categories.getColorOfCategory(Categories.video_game),
-                        votes: state.categoryVotes[Categories.video_game] ?? 0,
+                        Categories.videoGame,
+                        Categories.getColorOfCategory(Categories.videoGame),
+                        votes: state.categoryVotes[Categories.videoGame] ?? 0,
                         onTap: () => _voteForCategory(
-                            context, Categories.video_game, state),
+                            context, Categories.videoGame, state),
                       ),
                       _buildCategoryButton(
-                        Categories.movies_tv,
-                        Categories.getColorOfCategory(Categories.movies_tv),
-                        votes: state.categoryVotes[Categories.movies_tv] ?? 0,
+                        Categories.moviesTV,
+                        Categories.getColorOfCategory(Categories.moviesTV),
+                        votes: state.categoryVotes[Categories.moviesTV] ?? 0,
                         onTap: () => _voteForCategory(
-                            context, Categories.movies_tv, state),
+                            context, Categories.moviesTV, state),
                       ),
                       _buildCategoryButton(
                         Categories.sport,

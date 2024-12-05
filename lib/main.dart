@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/screens/CategoryPreparation.dart';
-import 'package:trivia_party/screens/GameLobbyScreen.dart';
-import 'package:trivia_party/screens/Home.dart';
-import 'package:trivia_party/screens/HowToPlay.dart';
-import 'package:trivia_party/screens/Question.dart';
-import 'package:trivia_party/screens/VoteCategory.dart';
+import 'package:trivia_party/screens/category_preparation_screen.dart';
+import 'package:trivia_party/screens/game_lobby_screen.dart';
+import 'package:trivia_party/screens/home_screen.dart';
+import 'package:trivia_party/screens/how_to_play_screen.dart';
+import 'package:trivia_party/screens/question_screen.dart';
+import 'package:trivia_party/screens/vote_category_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-import 'Routes.dart';
+import 'routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

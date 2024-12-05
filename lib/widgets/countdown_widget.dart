@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -7,11 +8,11 @@ class CountdownWithLoadingBar extends StatefulWidget {
   final double height; // Added height property for customization
 
   const CountdownWithLoadingBar({
-    Key? key,
+    super.key,
     required this.countdownSeconds,
     required this.onCountdownComplete,
     this.height = 20.0, // Default height value
-  }) : super(key: key);
+  });
 
   @override
   State<CountdownWithLoadingBar> createState() =>
@@ -84,7 +85,9 @@ void main() {
           countdownSeconds: 10,
           height: 50.0, // Example of using a custom height
           onCountdownComplete: () {
-            print('Countdown complete!'); // Replace with your desired method
+            if (kDebugMode) {
+              print('Countdown complete!');
+            } // Replace with your desired method
           },
         ),
       ),

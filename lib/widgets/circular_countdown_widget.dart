@@ -6,16 +6,16 @@ class CircularCountdown extends StatefulWidget {
   final VoidCallback? onCountdownComplete; // Add callback property
 
   const CircularCountdown({
-    Key? key,
+    super.key,
     required this.duration,
     this.onCountdownComplete, // Optional callback
-  }) : super(key: key);
+  });
 
   @override
-  _CircularCountdownState createState() => _CircularCountdownState();
+  CircularCountdownState createState() => CircularCountdownState();
 }
 
-class _CircularCountdownState extends State<CircularCountdown>
+class CircularCountdownState extends State<CircularCountdown>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final GlobalKey _containerKey = GlobalKey();
@@ -73,7 +73,7 @@ class _CircularCountdownState extends State<CircularCountdown>
             child: Center(
               child: Text(
                 '${(widget.duration * (1 - _controller.value)).ceil()}s',
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),

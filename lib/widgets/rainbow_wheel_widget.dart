@@ -10,12 +10,12 @@ class RainbowWheel extends StatelessWidget {
   final List<double> progress;
 
   const RainbowWheel({
-    Key? key,
+    super.key,
     required this.size,
     required this.borderWidth,
     required this.borderColor,
     required this.progress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

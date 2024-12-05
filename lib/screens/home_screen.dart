@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/bloc/player.dart';
-import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
+import 'package:trivia_party/widgets/title_widget.dart';
 
-import '../Routes.dart';
+import '../routes.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -20,7 +19,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   final _formKey = GlobalKey<FormState>();
-  String? _name;
   final TextEditingController _playerNameController = TextEditingController();
 
   @override
@@ -47,7 +45,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return BlocBuilder<GameBloc, GameState>(builder: (context, state) {
       return Scaffold(
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -66,7 +64,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TriviaPartyTitle(),
+                      const TriviaPartyTitle(),
                       const SizedBox(height: 60),
                       // Name Input Section
                       Container(
@@ -78,10 +76,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             width: 1,
                           ),
                         ),
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         child: Column(
                           children: [
-                            Text(
+                            const Text(
                               'Your Name',
                               style: TextStyle(
                                 fontSize: 22,
@@ -95,7 +93,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               child: TextFormField(
                                 controller: _playerNameController,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.white,
                                 ),
@@ -118,7 +116,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                onChanged: (value) => _name = value,
                               ),
                             ),
                           ],
@@ -157,7 +154,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       const SizedBox(height: 16),
                       _buildButton(
                         'Join Game',
-                        LinearGradient(
+                        const LinearGradient(
                           colors: [Colors.purple, Colors.deepPurple],
                         ),
                         () {},
@@ -196,7 +193,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           BoxShadow(
             color: gradient.colors.first.withOpacity(0.3),
             blurRadius: 8,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -211,7 +208,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ),
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.white,
