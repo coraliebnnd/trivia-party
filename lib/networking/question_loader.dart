@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html_unescape/html_unescape.dart';
-import 'package:trivia_party/bloc/game_event.dart';
+import 'package:trivia_party/bloc/models/answer.dart';
 
 class QuestionAnswerPair {
   String question;

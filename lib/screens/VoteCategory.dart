@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/Routes.dart';
+import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/game_event.dart';
-import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/bloc/states/category_voting_state.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/categories.dart';
 import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
@@ -14,7 +14,11 @@ class VoteCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previousState, currentState) {
+        return currentState is CategoryVotingState;
+      },
       builder: (context, state) {
+        state as CategoryVotingState;
         return Scaffold(
           backgroundColor: Colors.black,
           body: Padding(
@@ -40,8 +44,7 @@ class VoteCategory extends StatelessWidget {
                   countdownSeconds: 10,
                   height: 20,
                   onCountdownComplete: () {
-                    Navigator.pushNamed(context, Routes.categoryPreparation);
-                    _votingForCategoryFinished(context);
+                    _votingForCategoryFinished(context, state);
                   },
                 ),
                 const SizedBox(height: 20),
@@ -114,7 +117,7 @@ class VoteCategory extends StatelessWidget {
                     return _buildPlayerPie(
                       player.name,
                       player.color,
-                      isMainPlayer: player.id == state.currentPlayer?.id,
+                      isMainPlayer: player.id == state.currentPlayer.id,
                     );
                   }).toList(),
                 ),
@@ -210,21 +213,18 @@ class VoteCategory extends StatelessWidget {
     );
   }
 
-  void _votingForCategoryFinished(BuildContext context) {
-    BlocProvider.of<GameBloc>(context).add(VoteCategoryFinishedEvent());
-    BlocProvider.of<GameBloc>(context).add(QuestionPeparationEvent());
+  void _votingForCategoryFinished(
+      BuildContext context, CategoryVotingState state) {
+    BlocProvider.of<GameBloc>(context).add(FinishedCategoryVoteEvent(
+        state.categoryVotes,
+        currentPlayer: state.currentPlayer,
+        players: state.players));
   }
 
   void _voteForCategory(
-      BuildContext context, String category, GameState state) {
+      BuildContext context, String category, CategoryVotingState state) {
     final currentPlayer = state.currentPlayer;
-    if (currentPlayer != null) {
-      BlocProvider.of<GameBloc>(context)
-          .add(VoteCategoryEvent(category, currentPlayer));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to vote: No current player!')),
-      );
-    }
+    BlocProvider.of<GameBloc>(context)
+        .add(VoteCategoryEvent(category, currentPlayer));
   }
 }

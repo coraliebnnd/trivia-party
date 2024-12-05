@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/bloc/states/game_lobby_state.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
 import '../widgets/TriviaPartyTitle.dart';
-import '../Routes.dart';
 
 class CreateGame extends StatelessWidget {
   const CreateGame({Key? key}) : super(key: key);
@@ -11,7 +12,11 @@ class CreateGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previousState, currentState) {
+        return currentState is GameLobbyState;
+      },
       builder: (context, state) {
+        state as GameLobbyState;
         return Scaffold(
           backgroundColor: Colors.black,
           body: Center(
@@ -94,10 +99,9 @@ class CreateGame extends StatelessWidget {
                   // Start Game Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      (state.currentPlayer?.isHost ?? false)
-                            ? Colors.pink
-                            : Colors.grey,
+                      backgroundColor: (state.currentPlayer.isHost)
+                          ? Colors.pink
+                          : Colors.grey,
                       padding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 40),
                       shape: RoundedRectangleBorder(
@@ -105,8 +109,7 @@ class CreateGame extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, Routes.voteCategory);
-                      // Handle Start Game
+                      context.read<GameBloc>().add(StartCategoryVoteEvent());
                     },
                     child: Text(
                       'Start game',
