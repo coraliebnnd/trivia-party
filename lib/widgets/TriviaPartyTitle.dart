@@ -8,7 +8,7 @@ class TriviaPartyTitle extends StatelessWidget {
     Widget build(BuildContext context) {
     return Center(
       child: Image.asset(
-        'img/trivia_party_logo.png',
+        'assets/img/trivia_party_logo.png',
         width: 300,
         height: 200, 
         fit: BoxFit.contain,
