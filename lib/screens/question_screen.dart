@@ -4,11 +4,11 @@ import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
-import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
-import 'package:trivia_party/widgets/RainbowWheel.dart';
+import 'package:trivia_party/widgets/countdown_with_loading_bar_widget.dart';
+import 'package:trivia_party/widgets/rainbow_wheel_widget.dart';
 
 class Question extends StatefulWidget {
-  const Question({Key? key}) : super(key: key);
+  const Question({super.key});
 
   @override
   _QuestionState createState() => _QuestionState();
@@ -172,7 +172,7 @@ class _QuestionState extends State<Question>
                           },
                         ),
                       );
-                    }).toList(),
+                    }),
                     const Spacer(),
                     // Animated Rainbow Circle
                     AnimatedContainer(

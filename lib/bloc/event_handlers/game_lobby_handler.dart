@@ -13,12 +13,12 @@ class GameLobbyScreenHandler {
   Future<void> onStartGame(
       StartGameEvent event, Emitter<GameState> emit) async {
     if (gameBloc.state is GameLobbyState) {
-      var current_state = gameBloc.state as GameLobbyState;
+      var currentState = gameBloc.state as GameLobbyState;
       emit(
         CategoryVotingState(
             categoryVotes: const {},
-            currentPlayer: current_state.currentPlayer,
-            players: current_state.players),
+            currentPlayer: currentState.currentPlayer,
+            players: currentState.players),
       );
     }
   }

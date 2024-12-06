@@ -6,15 +6,15 @@ import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/categories.dart';
 
-import '../widgets/CircularCountdown.dart';
+import '../widgets/circular_countdown_widget.dart';
 
 class CategoryPreparation extends StatelessWidget {
   final int countdown;
 
   const CategoryPreparation({
-    Key? key,
+    super.key,
     this.countdown = 5,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
