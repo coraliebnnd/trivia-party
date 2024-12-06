@@ -4,6 +4,7 @@ import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/game_event.dart';
 import 'package:trivia_party/bloc/game_state.dart';
 import 'package:trivia_party/bloc/player.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
 import 'package:trivia_party/widgets/title_widget.dart';
 
 import '../routes.dart';
@@ -126,7 +127,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       BlocListener<GameBloc, GameState>(
                         listener: (context, state) {
                           if (state.status == GameStatus.created) {
-                            // Navigator.pushNamed(context, Routes.createGame);
                             BlocProvider.of<GameBloc>(context).add(
                               JoinGameEvent(
                                   gamePin: state.gamePin ?? "",
@@ -135,6 +135,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               )
                             );
                           } else if (state.status == GameStatus.joined) {
+                            startListeningToLobby(context, state.gamePin ?? "");
                             Navigator.pushNamed(context, Routes.createGame);
                           }
                         },

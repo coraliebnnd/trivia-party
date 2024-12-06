@@ -25,6 +25,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc() : super(const GameState()) {
     on<CreateGameEvent>(_onCreateGame);
     on<JoinGameEvent>(_onJoinGame);
+    on<PlayerJoinedGameEvent>(_onPlayerJoined);
     on<StartGameEvent>(_onStartGame);
     on<VoteCategoryEvent>(_onVoteCategory);
     on<SubmitAnswerEvent>(_onSubmitAnswer);
@@ -80,15 +81,29 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         color: colors[colorIndex]
     );
     colorIndex += 1;
+    
+    bool joinedSuccessfully = await joinLobby(state.gamePin ?? "", player);
+    if (!joinedSuccessfully) return;
 
     // Add player to the game
-    final updatedPlayers = List<Player>.from(state.players)..add(player);
+    final updatedPlayers = await getPlayersOfLobby(state.gamePin ?? "");
 
     emit(state.copyWith(
       status: GameStatus.joined,
       currentPlayer: player,
       players: updatedPlayers,
     ));
+  }
+
+  Future<void> _onPlayerJoined(
+    PlayerJoinedGameEvent event,
+    Emitter<GameState> emit
+  ) async {
+    await getPlayersOfLobby(state.gamePin ?? "").then((value) {
+      emit(state.copyWith(
+        players: value
+      ));
+    });
   }
 
   Future<void> _onStartGame(

@@ -34,6 +34,8 @@ class JoinGameEvent extends GameEvent {
   List<Object?> get props => [gamePin, playerName, player];
 }
 
+class PlayerJoinedGameEvent extends GameEvent {}
+
 class StartGameEvent extends GameEvent {}
 
 class VoteCategoryEvent extends GameEvent {
