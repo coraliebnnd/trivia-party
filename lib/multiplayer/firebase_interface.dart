@@ -5,7 +5,7 @@ final database = FirebaseDatabase.instance.ref();
 
 String _generateLobbyCode() {
   final random = Random();
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
   return String.fromCharCodes(Iterable.generate(6, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
 }
 
