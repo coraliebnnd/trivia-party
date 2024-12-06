@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
-import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
+import 'package:trivia_party/widgets/trivia_party_title_widget.dart';
 
-import '../Routes.dart';
+import '../routes.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -65,7 +64,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TriviaPartyTitle(),
+                        const TriviaPartyTitle(),
                         const SizedBox(height: 60),
                         _buildNameInput(),
                         const SizedBox(height: 40),
@@ -165,7 +164,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         const SizedBox(height: 16),
         _buildButton(
           'Join Game',
-          LinearGradient(
+          const LinearGradient(
             colors: [Colors.purple, Colors.deepPurple],
           ),
           () {

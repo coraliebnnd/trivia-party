@@ -6,17 +6,17 @@ import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
-import 'package:trivia_party/screens/CategoryPreparation.dart';
-import 'package:trivia_party/screens/GameLobbyScreen.dart';
-import 'package:trivia_party/screens/Home.dart';
-import 'package:trivia_party/screens/HowToPlay.dart';
-import 'package:trivia_party/screens/Question.dart';
-import 'package:trivia_party/screens/VoteCategory.dart';
+import 'package:trivia_party/screens/category_preparation_screen.dart';
+import 'package:trivia_party/screens/game_lobby_screen.dart';
+import 'package:trivia_party/screens/home_screen.dart';
+import 'package:trivia_party/screens/how_to_play_screen.dart';
+import 'package:trivia_party/screens/question_screen.dart';
+import 'package:trivia_party/screens/vote_category_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-import 'Routes.dart';
+import 'routes.dart';
 
 Future<void> main() async {
   final navigatorKey = GlobalKey<NavigatorState>();
@@ -41,7 +41,7 @@ class TriviaPartyApp extends StatefulWidget {
 }
 
 class _TriviaPartyAppState extends State<TriviaPartyApp> {
-  GameState? lastState = null;
+  GameState? lastState;
 
   @override
   Widget build(BuildContext context) {

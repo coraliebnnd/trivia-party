@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const category_colors = {
+const categoryColors = {
   "Art": Colors.pink,
   "Video game": Colors.purple,
   "Movies / TV": Colors.blue,
@@ -11,15 +11,15 @@ const category_colors = {
 };
 
 class Categories {
-  static final String art = "Art";
-  static final String video_game = "Video game";
-  static final String movies_tv = "Movies / TV";
-  static final String sport = "Sport";
-  static final String music = "Music";
-  static final String books = "Books";
-  static final String random = "Random";
+  static const String art = "Art";
+  static const String videoGame = "Video game";
+  static const String moviesTV = "Movies / TV";
+  static const String sport = "Sport";
+  static const String music = "Music";
+  static const String books = "Books";
+  static const String random = "Random";
 
   static getColorOfCategory(String? category) {
-    return category_colors[category];
+    return categoryColors[category];
   }
 }

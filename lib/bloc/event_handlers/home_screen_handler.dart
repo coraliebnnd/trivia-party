@@ -7,6 +7,8 @@ import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
 
+import '../../multiplayer/firebase_interface.dart';
+
 class HomeScreenHandler {
   final GameBloc gameBloc;
 
@@ -30,9 +32,9 @@ class HomeScreenHandler {
       isHost: true,
     );
 
-    emit(const HomeScreenState()); // Initializing the game
+    emit(const HomeScreenState());
 
-    String gamePin = "531234"; //await createLobby(currentPlayer.name);
+    String gamePin = await createLobby(currentPlayer.name);
 
     emit(GameLobbyState(
       currentPlayer: currentPlayer,
@@ -46,7 +48,6 @@ class HomeScreenHandler {
     if (gameBloc.state is GameLobbyState) {
       final currentState = gameBloc.state as GameLobbyState;
 
-      // Create new player
       final newPlayer = Player(
         name: event.playerName,
         id: DateTime.now().toString(),
@@ -55,7 +56,6 @@ class HomeScreenHandler {
       );
       colorIndex++;
 
-      // Add player to the game
       final updatedPlayers = List<Player>.from(currentState.players)
         ..add(newPlayer);
 
