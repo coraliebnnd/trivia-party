@@ -1,7 +1,7 @@
 import 'package:trivia_party/bloc/states/game_state.dart';
 
-class InitialGameState extends GameState {
-  const InitialGameState();
+class HomeScreenState extends GameState {
+  const HomeScreenState();
 
   @override
   List<Object?> get props => [];

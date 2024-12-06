@@ -5,7 +5,7 @@ import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
-import 'package:trivia_party/bloc/states/initial_game_state.dart';
+import 'package:trivia_party/bloc/states/home_screen_state.dart';
 
 class HomeScreenHandler {
   final GameBloc gameBloc;
@@ -30,7 +30,7 @@ class HomeScreenHandler {
       isHost: true,
     );
 
-    emit(const InitialGameState()); // Initializing the game
+    emit(const HomeScreenState()); // Initializing the game
 
     String gamePin = "531234"; //await createLobby(currentPlayer.name);
 

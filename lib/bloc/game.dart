@@ -11,12 +11,12 @@ import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
-import 'package:trivia_party/bloc/states/initial_game_state.dart';
+import 'package:trivia_party/bloc/states/home_screen_state.dart';
 import 'events/game_event.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc(GlobalKey<NavigatorState> navigatorKey)
-      : super(const InitialGameState()) {
+      : super(const HomeScreenState()) {
     CategoryVoteScreenHandler categoryVoteHandler =
         CategoryVoteScreenHandler(gameBloc: this);
     QuestionPreparationScreenHandler questionPreparationHandler =
