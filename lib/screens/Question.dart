@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/Routes.dart';
+import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/game_event.dart';
-import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
+import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/widgets/CountdownWithLoadingBar.dart';
 import 'package:trivia_party/widgets/RainbowWheel.dart';
 
@@ -47,10 +47,6 @@ class _QuestionState extends State<Question>
 
     // Trigger color animation when answer is revealed
     _colorController.forward();
-
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context).pushNamed(Routes.voteCategory);
-    });
   }
 
   Color _blendColors(Color baseColor, Color targetColor, double t) {
@@ -58,7 +54,7 @@ class _QuestionState extends State<Question>
     return Color.lerp(baseColor, targetColor, t) ?? baseColor;
   }
 
-  Color _getButtonColor(String answer, GameState state) {
+  Color _getButtonColor(String answer, QuestionState state) {
     // Advanced color selection logic with animated color transitions
     if (state.isAnswerRevealed) {
       if (answer == state.correctAnswer) {
@@ -87,7 +83,11 @@ class _QuestionState extends State<Question>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previousState, currentState) {
+        return currentState is QuestionState;
+      },
       builder: (context, state) {
+        state as QuestionState;
         return Scaffold(
           body: Container(
             color: Colors.black87,
@@ -112,7 +112,7 @@ class _QuestionState extends State<Question>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            state.currentQuestion ?? 'Loading question...',
+                            state.currentQuestion,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
@@ -132,49 +132,47 @@ class _QuestionState extends State<Question>
                     ),
                     const SizedBox(height: 20),
                     // Answer Buttons with Advanced Color Blending
-                    if (state.currentAnswers != null)
-                      ...state.currentAnswers!.map((answer) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: AnimatedBuilder(
-                            animation: _colorAnimation,
-                            builder: (context, child) {
-                              return ElevatedButton(
-                                onPressed: () {
-                                  if (!state.isAnswerRevealed) {
-                                    context
-                                        .read<GameBloc>()
-                                        .add(SubmitAnswerEvent(answer));
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      _getButtonColor(answer, state),
-                                  foregroundColor: Colors.black87,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                    horizontal: 24,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  minimumSize: const Size(double.infinity, 50),
+                    ...state.currentAnswers.map((answer) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: AnimatedBuilder(
+                          animation: _colorAnimation,
+                          builder: (context, child) {
+                            return ElevatedButton(
+                              onPressed: () {
+                                if (!state.isAnswerRevealed) {
+                                  context
+                                      .read<GameBloc>()
+                                      .add(SubmitAnswerEvent(answer));
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _getButtonColor(answer, state),
+                                foregroundColor: Colors.black87,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 24,
                                 ),
-                                child: Text(
-                                  answer,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: state.isAnswerRevealed
-                                        ? Colors.white
-                                        : Colors.black87,
-                                  ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                              );
-                            },
-                          ),
-                        );
-                      }).toList(),
+                                minimumSize: const Size(double.infinity, 50),
+                              ),
+                              child: Text(
+                                answer,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: state.isAnswerRevealed
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }).toList(),
                     const Spacer(),
                     // Animated Rainbow Circle
                     AnimatedContainer(
@@ -184,7 +182,7 @@ class _QuestionState extends State<Question>
                         progress: const [0.2, 0.4, 0.6, 0.8, 1.0, 0.0],
                         size: 50,
                         borderWidth: 3,
-                        borderColor: state.currentPlayer?.color ?? Colors.grey,
+                        borderColor: state.currentPlayer.color,
                       ),
                     ),
                     const SizedBox(height: 20),

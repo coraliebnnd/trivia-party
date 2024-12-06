@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/game_state.dart';
+import 'package:trivia_party/bloc/states/question_preparation_state.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/categories.dart';
 
-import '../Routes.dart';
 import '../widgets/CircularCountdown.dart';
 
 class CategoryPreparation extends StatelessWidget {
@@ -18,12 +19,15 @@ class CategoryPreparation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previousState, currentState) {
+        return currentState is QuestionPreparationState;
+      },
       builder: (context, state) {
-        final category = state.selectedCategory ?? "Loading...";
+        state as QuestionPreparationState;
+        final category = state.category;
 
         return Scaffold(
-          backgroundColor:
-              Categories.getColorOfCategory(state.selectedCategory),
+          backgroundColor: Categories.getColorOfCategory(state.category),
           body: SafeArea(
             child: Center(
               child: Padding(
@@ -61,7 +65,9 @@ class CategoryPreparation extends StatelessWidget {
                       child: CircularCountdown(
                         duration: countdown,
                         onCountdownComplete: () {
-                          Navigator.pushNamed(context, Routes.question);
+                          context
+                              .read<GameBloc>()
+                              .add(QuestionPreparationFinishedEvent());
                         },
                       ),
                     ),
