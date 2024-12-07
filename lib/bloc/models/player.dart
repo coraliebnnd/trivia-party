@@ -30,21 +30,5 @@ class Player extends Equatable {
       this.color = Colors.blue});
 
   @override
-  List<Object?> get props => [name, id, completedCategories, score];
-
-  Player copyWith({
-    String? name,
-    String? id,
-    bool? isHost,
-    List<String>? completedCategories,
-    int? score,
-  }) {
-    return Player(
-      name: name ?? this.name,
-      id: id ?? this.id,
-      isHost: isHost ?? this.isHost,
-      completedCategories: completedCategories ?? this.completedCategories,
-      score: score ?? this.score,
-    );
-  }
+  List<Object?> get props => [name, id, completedCategories, score, color];
 }

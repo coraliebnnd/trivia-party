@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
+import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
@@ -17,6 +18,11 @@ class CreateGame extends StatelessWidget {
       },
       builder: (context, state) {
         state as GameLobbyState;
+
+        context.read<GameBloc>().add(StartFirebaseListenerEvent(
+          pin: state.lobbySettings.pin
+        ));
+
         return Scaffold(
           backgroundColor: Colors.black,
           body: Center(
@@ -37,7 +43,7 @@ class CreateGame extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    state.gamePin ?? 'Loading...',
+                    state.lobbySettings.pin ?? 'Loading...',
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -78,7 +84,7 @@ class CreateGame extends StatelessWidget {
                       const SizedBox(width: 10),
                       DropdownButton<int>(
                         dropdownColor: Colors.grey[900],
-                        value: state.numberOfQuestions,
+                        value: state.lobbySettings.numberOfQuestions,
                         onChanged: (value) {
                           // Handle dropdown change here
                         },

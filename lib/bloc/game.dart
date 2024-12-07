@@ -31,6 +31,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<JoinGameEvent>(homeScreenHandler.onJoinGame);
 
     on<StartGameEvent>(gameLobbyHandler.onStartGame);
+    on<StartFirebaseListenerEvent>(gameLobbyHandler.onStartFirebaseListener);
+    on<CancelFirebaseListenerEvent>(gameLobbyHandler.onCancelFirebaseListener);
 
     on<StartCategoryVoteEvent>(categoryVoteHandler.onStartCategoryVoting);
     on<FinishedCategoryVoteEvent>(categoryVoteHandler.onVoteCategoryFinished);

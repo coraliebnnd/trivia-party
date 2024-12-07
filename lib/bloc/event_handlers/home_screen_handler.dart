@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
@@ -11,6 +12,7 @@ import '../../multiplayer/firebase_interface.dart';
 
 class HomeScreenHandler {
   final GameBloc gameBloc;
+  LobbySettings? settings;
 
   final colors = [
     Colors.blue,
@@ -24,8 +26,7 @@ class HomeScreenHandler {
 
   HomeScreenHandler({required this.gameBloc});
 
-  Future<void> onCreateGame(
-      CreateGameEvent event, Emitter<GameState> emit) async {
+  Future<void> onCreateGame(CreateGameEvent event, Emitter<GameState> emit) async {
     final currentPlayer = Player(
       name: event.playerName,
       id: DateTime.now().toString(),
@@ -34,14 +35,15 @@ class HomeScreenHandler {
 
     emit(const HomeScreenState());
 
-    String gamePin = await createLobby(currentPlayer.name);
+    settings = await createLobby(currentPlayer);
 
     emit(GameLobbyState(
       currentPlayer: currentPlayer,
-      numberOfQuestions: 10,
-      gamePin: gamePin,
-      players: [currentPlayer],
+      players: const [],
+      lobbySettings: settings!
     ));
+
+
   }
 
   Future<void> onJoinGame(JoinGameEvent event, Emitter<GameState> emit) async {
@@ -60,9 +62,9 @@ class HomeScreenHandler {
         ..add(newPlayer);
 
       emit(GameLobbyState(
-        gamePin: currentState.gamePin,
-        players: updatedPlayers,
         currentPlayer: newPlayer,
+        players: updatedPlayers,
+        lobbySettings: settings!
       ));
     }
   }

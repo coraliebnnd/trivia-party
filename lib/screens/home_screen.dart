@@ -156,8 +156,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             }
 
             context.read<GameBloc>().add(CreateGameEvent(
-                  playerName: playerName,
-                  numberOfQuestions: 10,
+                  playerName: playerName
                 ));
           },
         ),
