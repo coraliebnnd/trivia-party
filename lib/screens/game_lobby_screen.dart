@@ -18,11 +18,6 @@ class CreateGame extends StatelessWidget {
       },
       builder: (context, state) {
         state as GameLobbyState;
-
-        context.read<GameBloc>().add(StartFirebaseListenerEvent(
-          pin: state.lobbySettings.pin
-        ));
-
         return Scaffold(
           backgroundColor: Colors.black,
           body: Center(

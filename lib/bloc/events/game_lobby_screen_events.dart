@@ -1,5 +1,7 @@
 import 'package:trivia_party/bloc/events/game_event.dart';
 
+import '../models/player.dart';
+
 class CreateGameEvent extends GameEvent {
   final String playerName;
 
@@ -24,15 +26,13 @@ class JoinGameEvent extends GameEvent {
   List<Object?> get props => [gamePin, playerName];
 }
 
-class StartFirebaseListenerEvent extends GameEvent {
-  final String pin;
+class PlayerJoinedEvent extends GameEvent {
+  final Player player;
 
-  StartFirebaseListenerEvent({
-    required this.pin
+  PlayerJoinedEvent({
+    required this.player
   });
 
   @override
-  List<Object?> get props => [pin];
+  List<Object?> get props => [player];
 }
-
-class CancelFirebaseListenerEvent extends GameEvent {}

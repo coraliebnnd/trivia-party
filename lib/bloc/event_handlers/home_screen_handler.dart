@@ -43,7 +43,7 @@ class HomeScreenHandler {
       lobbySettings: settings!
     ));
 
-
+    gameBloc.startFirebaseListener();
   }
 
   Future<void> onJoinGame(JoinGameEvent event, Emitter<GameState> emit) async {
