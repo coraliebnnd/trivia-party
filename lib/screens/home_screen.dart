@@ -176,12 +176,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             }
             
             context.read<GameBloc>().add(ShowJoinScreenEvent(playerName: playerName));
-
-            // Navigator.pushNamed(
-            //   context,
-            //   Routes.joinGame,
-            //   arguments: playerName
-            // );
           },
         ),
         const SizedBox(height: 16),
