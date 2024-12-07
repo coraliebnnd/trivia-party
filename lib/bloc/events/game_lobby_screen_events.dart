@@ -1,27 +1,49 @@
 import 'package:trivia_party/bloc/events/game_event.dart';
 
+import '../models/player.dart';
+
 class CreateGameEvent extends GameEvent {
   final String playerName;
-  final int numberOfQuestions;
 
   CreateGameEvent({
     required this.playerName,
-    required this.numberOfQuestions,
   });
 
   @override
-  List<Object?> get props => [playerName, numberOfQuestions];
+  List<Object?> get props => [playerName];
 }
 
 class JoinGameEvent extends GameEvent {
   final String gamePin;
-  final String playerName;
+  final Player player;
 
   JoinGameEvent({
     required this.gamePin,
-    required this.playerName,
+    required this.player,
   });
 
   @override
-  List<Object?> get props => [gamePin, playerName];
+  List<Object?> get props => [gamePin, player];
+}
+
+class PlayerJoinedEvent extends GameEvent {
+  final Player player;
+
+  PlayerJoinedEvent({
+    required this.player
+  });
+
+  @override
+  List<Object?> get props => [player];
+}
+
+class ShowJoinScreenEvent extends GameEvent {
+  final String playerName;
+
+  ShowJoinScreenEvent({
+    required this.playerName
+  });
+
+  @override
+  List<Object?> get props => [playerName];
 }

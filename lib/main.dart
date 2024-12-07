@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
+import 'package:trivia_party/bloc/states/game_join_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/screens/category_preparation_screen.dart';
+import 'package:trivia_party/screens/game_join_screen.dart';
 import 'package:trivia_party/screens/game_lobby_screen.dart';
 import 'package:trivia_party/screens/home_screen.dart';
 import 'package:trivia_party/screens/how_to_play_screen.dart';
@@ -54,6 +56,8 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
         // Use navigatorKey for navigation
         if (state is GameLobbyState) {
           widget.navigatorKey.currentState?.pushNamed(Routes.createGame);
+        } else if (state is GameJoinState) {
+          widget.navigatorKey.currentState?.pushNamed(Routes.joinGame);
         } else if (state is CategoryVotingState) {
           widget.navigatorKey.currentState?.pushNamed(Routes.voteCategory);
         } else if (state is QuestionPreparationState) {
@@ -75,6 +79,7 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
         routes: {
           '/': (context) => const Home(),
           Routes.createGame: (context) => const CreateGame(),
+          Routes.joinGame: (context) => const GameJoinScreen(),
           Routes.howToPlay: (context) => const HowToPlay(),
           Routes.voteCategory: (context) => const VoteCategory(),
           Routes.question: (context) => const Question(),

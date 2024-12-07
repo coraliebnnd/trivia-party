@@ -1,4 +1,6 @@
 // lib/blocs/game/game_state.dart
+import 'dart:math';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -21,30 +23,38 @@ class Player extends Equatable {
   final int score;
   final Color color;
 
-  const Player(
-      {required this.name,
-      required this.id,
-      required this.isHost,
-      this.completedCategories = const [],
-      this.score = 0,
-      this.color = Colors.blue});
+  static final List<Color> _availableColors = [
+    Colors.red,
+    Colors.green,
+    Colors.blue,
+    Colors.yellow,
+    Colors.orange,
+    Colors.purple,
+    Colors.cyan,
+    Colors.pink,
+    Colors.teal,
+  ];
+
+  static final Random _random = Random();
+
+  Player({
+    required this.name,
+    required this.id,
+    required this.isHost,
+    this.completedCategories = const [],
+    this.score = 0,
+  }) : color = _availableColors[_random.nextInt(_availableColors.length)];
+
+  const Player.withColor({
+    required this.name,
+    required this.id,
+    required this.isHost,
+    required this.color,
+    this.completedCategories = const [],
+    this.score = 0,
+  });
+
 
   @override
-  List<Object?> get props => [name, id, completedCategories, score];
-
-  Player copyWith({
-    String? name,
-    String? id,
-    bool? isHost,
-    List<String>? completedCategories,
-    int? score,
-  }) {
-    return Player(
-      name: name ?? this.name,
-      id: id ?? this.id,
-      isHost: isHost ?? this.isHost,
-      completedCategories: completedCategories ?? this.completedCategories,
-      score: score ?? this.score,
-    );
-  }
+  List<Object?> get props => [name, id, completedCategories, score, color];
 }

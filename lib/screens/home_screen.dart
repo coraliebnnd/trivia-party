@@ -156,8 +156,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             }
 
             context.read<GameBloc>().add(CreateGameEvent(
-                  playerName: playerName,
-                  numberOfQuestions: 10,
+                  playerName: playerName
                 ));
           },
         ),
@@ -168,7 +167,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             colors: [Colors.purple, Colors.deepPurple],
           ),
           () {
-            Navigator.pushNamed(context, Routes.joinGame);
+            final playerName = _playerNameController.text;
+            if (playerName.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please enter your name')),
+              );
+              return;
+            }
+            
+            context.read<GameBloc>().add(ShowJoinScreenEvent(playerName: playerName));
           },
         ),
         const SizedBox(height: 16),
