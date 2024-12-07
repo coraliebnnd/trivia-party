@@ -15,15 +15,15 @@ class CreateGameEvent extends GameEvent {
 
 class JoinGameEvent extends GameEvent {
   final String gamePin;
-  final String playerName;
+  final Player player;
 
   JoinGameEvent({
     required this.gamePin,
-    required this.playerName,
+    required this.player,
   });
 
   @override
-  List<Object?> get props => [gamePin, playerName];
+  List<Object?> get props => [gamePin, player];
 }
 
 class PlayerJoinedEvent extends GameEvent {
@@ -35,4 +35,15 @@ class PlayerJoinedEvent extends GameEvent {
 
   @override
   List<Object?> get props => [player];
+}
+
+class ShowJoinScreenEvent extends GameEvent {
+  final String playerName;
+
+  ShowJoinScreenEvent({
+    required this.playerName
+  });
+
+  @override
+  List<Object?> get props => [playerName];
 }

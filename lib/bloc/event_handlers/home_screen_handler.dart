@@ -4,6 +4,7 @@ import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/models/player.dart';
+import 'package:trivia_party/bloc/states/game_join_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
@@ -47,20 +48,24 @@ class HomeScreenHandler {
   }
 
   Future<void> onJoinGame(JoinGameEvent event, Emitter<GameState> emit) async {
+    settings = await joinLobby(event.gamePin, event.player);
+
+    emit(GameLobbyState(
+      currentPlayer: event.player,
+      players: const [],
+      lobbySettings: settings!
+    ));
+
+    gameBloc.startFirebaseListener();
+  }
+
+  Future<void> onSwitchToJoinGame(ShowJoinScreenEvent event, Emitter<GameState> emit) async {
     final newPlayer = Player(
       name: event.playerName,
       id: DateTime.now().toString(),
       isHost: false,
     );
 
-    settings = await joinLobby(event.gamePin, newPlayer);
-
-    emit(GameLobbyState(
-      currentPlayer: newPlayer,
-      players: const [],
-      lobbySettings: settings!
-    ));
-
-    gameBloc.startFirebaseListener();
+    emit(GameJoinState(player: newPlayer));
   }
 }

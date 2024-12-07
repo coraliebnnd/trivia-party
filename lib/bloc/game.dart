@@ -37,6 +37,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     on<CreateGameEvent>(homeScreenHandler.onCreateGame);
     on<JoinGameEvent>(homeScreenHandler.onJoinGame);
+    on<ShowJoinScreenEvent>(homeScreenHandler.onSwitchToJoinGame);
 
     on<StartGameEvent>(gameLobbyHandler.onStartGame);
     on<PlayerJoinedEvent>(gameLobbyHandler.onPlayerJoined);
