@@ -47,25 +47,20 @@ class HomeScreenHandler {
   }
 
   Future<void> onJoinGame(JoinGameEvent event, Emitter<GameState> emit) async {
-    if (gameBloc.state is GameLobbyState) {
-      final currentState = gameBloc.state as GameLobbyState;
+    final newPlayer = Player(
+      name: event.playerName,
+      id: DateTime.now().toString(),
+      isHost: false,
+    );
 
-      final newPlayer = Player(
-        name: event.playerName,
-        id: DateTime.now().toString(),
-        color: colors[colorIndex % colors.length],
-        isHost: false,
-      );
-      colorIndex++;
+    settings = await joinLobby(event.gamePin, newPlayer);
 
-      final updatedPlayers = List<Player>.from(currentState.players)
-        ..add(newPlayer);
+    emit(GameLobbyState(
+      currentPlayer: newPlayer,
+      players: const [],
+      lobbySettings: settings!
+    ));
 
-      emit(GameLobbyState(
-        currentPlayer: newPlayer,
-        players: updatedPlayers,
-        lobbySettings: settings!
-      ));
-    }
+    gameBloc.startFirebaseListener();
   }
 }

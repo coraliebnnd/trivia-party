@@ -66,7 +66,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final pin = currentState.lobbySettings.pin;
       _playerJoinedSubscription = database.child('lobbies/$pin/players').onChildAdded.listen((event) {
         final playerData = Map<String, dynamic>.from(event.snapshot.value as Map);
-        final player = Player(
+        final player = Player.withColor(
             name: playerData['name'],
             id: playerData['id'],
             isHost: playerData['isHost'],

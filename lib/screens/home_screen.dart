@@ -167,7 +167,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             colors: [Colors.purple, Colors.deepPurple],
           ),
           () {
-            Navigator.pushNamed(context, Routes.joinGame);
+            final playerName = _playerNameController.text;
+            if (playerName.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please enter your name')),
+              );
+              return;
+            }
+
+            Navigator.pushNamed(
+              context,
+              Routes.joinGame,
+              arguments: playerName
+            );
           },
         ),
         const SizedBox(height: 16),
