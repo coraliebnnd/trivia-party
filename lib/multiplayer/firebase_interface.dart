@@ -52,8 +52,7 @@ Future<LobbySettings> getLobbySettings(String pin) async {
 
   return LobbySettings(
       pin: lobby['settings']['pin'],
-      numberOfQuestions: lobby['settings']['numberOfQuestions']
-  );
+      numberOfQuestions: lobby['settings']['numberOfQuestions']);
 }
 
 Future<void> pushNumberOfQuestions(String pin, int numberOfQuestions) async {
@@ -62,9 +61,6 @@ Future<void> pushNumberOfQuestions(String pin, int numberOfQuestions) async {
   });
 }
 
-
 Future<void> startGame(String pin) async {
-  await database.child('lobbies/$pin/gameState').set({
-    "kind": "voting"
-  });
+  await database.child('lobbies/$pin/gameState').set({"kind": "voting"});
 }

@@ -11,7 +11,6 @@ import 'package:trivia_party/bloc/event_handlers/question_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
-import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
@@ -21,7 +20,6 @@ import 'events/game_event.dart';
 import 'models/player.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
-
   StreamSubscription? _playerJoinedSubscription;
   StreamSubscription? _settingsChangedSubscription;
   StreamSubscription? _gameStateSubscription;
@@ -71,16 +69,17 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
-      _playerJoinedSubscription = database.child('lobbies/$pin/players').onChildAdded.listen((event) {
-        final playerData = Map<String, dynamic>.from(event.snapshot.value as Map);
+      _playerJoinedSubscription =
+          database.child('lobbies/$pin/players').onChildAdded.listen((event) {
+        final playerData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
         final player = Player.withColor(
             name: playerData['name'],
             id: playerData['id'],
             isHost: playerData['isHost'],
             completedCategories: playerData['completedCategories'] ?? [],
             score: playerData['score'],
-            color: Color(playerData['color'])
-        );
+            color: Color(playerData['color']));
 
         add(PlayerJoinedEvent(player: player));
       });
@@ -99,8 +98,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
       });
 
-      _gameStateSubscription = database.child('lobbies/$pin/gameState').onValue.listen((event) {
-        final gameStateData = Map<String, dynamic>.from(event.snapshot.value as Map);
+      _gameStateSubscription =
+          database.child('lobbies/$pin/gameState').onValue.listen((event) {
+        final gameStateData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
         final kind = gameStateData['kind'];
 
         switch (kind) {
