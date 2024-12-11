@@ -57,3 +57,9 @@ Future<LobbySettings> getLobbySettings(String pin) async {
       numberOfQuestions: lobby['settings']['numberOfQuestions']
   );
 }
+
+Future<void> startGame(String pin) async {
+  await database.child('lobbies/$pin/gameState').set({
+    "kind": "voting"
+  });
+}

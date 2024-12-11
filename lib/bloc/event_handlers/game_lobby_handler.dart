@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:ui';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
-import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
 import '../models/player.dart';
 
@@ -17,16 +14,10 @@ class GameLobbyScreenHandler {
 
   GameLobbyScreenHandler({required this.gameBloc});
 
-  Future<void> onStartGame(
-      StartGameEvent event, Emitter<GameState> emit) async {
+  Future<void> onStartGame(StartGameEvent event, Emitter<GameState> emit) async {
     if (gameBloc.state is GameLobbyState) {
-      var currentState = gameBloc.state as GameLobbyState;
-      emit(
-        CategoryVotingState(
-            categoryVotes: const {},
-            currentPlayer: currentState.currentPlayer,
-            players: currentState.players),
-      );
+      final currentState = gameBloc.state as GameLobbyState;
+      await startGame(currentState.lobbySettings.pin);
     }
   }
 
