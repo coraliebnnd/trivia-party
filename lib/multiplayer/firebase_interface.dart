@@ -24,6 +24,11 @@ Future<LobbySettings> createLobby(Player player) async {
     "numberOfQuestions": settings.numberOfQuestions
   });
 
+  await database.child('lobbies/$lobbyCode/gameState').set({
+    "kind": 'waitingRoom',
+    "state": {}
+  });
+
   return joinLobby(lobbyCode, player);
 }
 
