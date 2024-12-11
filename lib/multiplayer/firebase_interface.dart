@@ -19,7 +19,7 @@ Future<LobbySettings> createLobby(Player player) async {
   String lobbyCode = _generateLobbyCode();
   final settings = LobbySettings(pin: lobbyCode, numberOfQuestions: 10);
 
-  await database.child('lobbies/$lobbyCode').set({
+  await database.child('lobbies/$lobbyCode/settings').set({
     "pin": settings.pin,
     "numberOfQuestions": settings.numberOfQuestions
   });
@@ -48,7 +48,7 @@ Future<LobbySettings> getLobbySettings(String pin) async {
   final lobby = Map<String, dynamic>.from(snapshot.value as Map);
 
   return LobbySettings(
-      pin: lobby['pin'],
-      numberOfQuestions: lobby['numberOfQuestions']
+      pin: lobby['settings']['pin'],
+      numberOfQuestions: lobby['settings']['numberOfQuestions']
   );
 }
