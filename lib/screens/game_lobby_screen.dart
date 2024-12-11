@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
+import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
@@ -80,9 +80,13 @@ class CreateGame extends StatelessWidget {
                       DropdownButton<int>(
                         dropdownColor: Colors.grey[900],
                         value: state.lobbySettings.numberOfQuestions,
-                        onChanged: (value) {
-                          // Handle dropdown change here
-                        },
+                        onChanged: state.currentPlayer.isHost
+                            ? (value) {
+                                context.read<GameBloc>().add(
+                                    SettingsChangedGameEvent(
+                                        numberOfQuestions: value ?? 0));
+                              }
+                            : null,
                         items: List.generate(
                           10,
                           (index) => DropdownMenuItem(
@@ -100,6 +104,9 @@ class CreateGame extends StatelessWidget {
                   // Start Game Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      splashFactory: state.currentPlayer.isHost
+                          ? InkRipple.splashFactory // Default Ripple Effect
+                          : NoSplash.splashFactory, // Remove Ripple Effect
                       backgroundColor: (state.currentPlayer.isHost)
                           ? Colors.pink
                           : Colors.grey,
@@ -110,7 +117,7 @@ class CreateGame extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      context.read<GameBloc>().add(StartCategoryVoteEvent());
+                      context.read<GameBloc>().add(StartGameEvent());
                     },
                     child: const Text(
                       'Start game',
