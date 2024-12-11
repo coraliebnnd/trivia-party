@@ -47,3 +47,7 @@ class ShowJoinScreenEvent extends GameEvent {
   @override
   List<Object?> get props => [playerName];
 }
+
+class StartGameEvent extends GameEvent {
+
+}

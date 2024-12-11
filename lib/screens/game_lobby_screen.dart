@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
@@ -38,7 +37,7 @@ class CreateGame extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    state.lobbySettings.pin ?? 'Loading...',
+                    state.lobbySettings.pin,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -110,7 +109,7 @@ class CreateGame extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      context.read<GameBloc>().add(StartCategoryVoteEvent());
+                      context.read<GameBloc>().add(StartGameEvent());
                     },
                     child: const Text(
                       'Start game',

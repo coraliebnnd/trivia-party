@@ -10,7 +10,6 @@ import 'package:trivia_party/bloc/event_handlers/question_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
-import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
@@ -22,6 +21,7 @@ import 'models/player.dart';
 class GameBloc extends Bloc<GameEvent, GameState> {
 
   StreamSubscription? _playerJoinedSubscription;
+  StreamSubscription? _gameStateSubscription;
 
   GameBloc(GlobalKey<NavigatorState> navigatorKey)
       : super(const HomeScreenState()) {
@@ -56,8 +56,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void startFirebaseListener() {
-    cancelFirebaseListener();
-
     if (state is GameLobbyState) {
       cancelFirebaseListener();
 
@@ -78,10 +76,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         add(PlayerJoinedEvent(player: player));
       });
+
+      _gameStateSubscription = database.child('lobbies/$pin/gameState').onValue.listen((event) {
+        final gameStateData = Map<String, dynamic>.from(event.snapshot.value as Map);
+        final kind = gameStateData['kind'];
+
+        switch (kind) {
+          case 'waitingRoom':
+            break;
+          case 'voting':
+            add(StartCategoryVoteEvent());
+            break;
+        }
+      });
     }
   }
 
   void cancelFirebaseListener() {
     _playerJoinedSubscription?.cancel();
+    _gameStateSubscription?.cancel();
   }
 }
