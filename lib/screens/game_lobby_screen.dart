@@ -38,7 +38,7 @@ class CreateGame extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    state.lobbySettings.pin ?? 'Loading...',
+                    state.lobbySettings.pin,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

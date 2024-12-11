@@ -21,8 +21,10 @@ import 'events/game_event.dart';
 import 'models/player.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
+
   StreamSubscription? _playerJoinedSubscription;
   StreamSubscription? _settingsChangedSubscription;
+  StreamSubscription? _gameStateSubscription;
 
   GameBloc(GlobalKey<NavigatorState> navigatorKey)
       : super(const HomeScreenState()) {
@@ -60,24 +62,25 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void startFirebaseListener() {
-    cancelFirebaseListener(); // Ensure any previous listeners are canceled.
+    cancelFirebaseListener();
 
     if (state is GameLobbyState) {
+      cancelFirebaseListener();
+
       final currentState = state as GameLobbyState;
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
-      _playerJoinedSubscription =
-          database.child('lobbies/$pin/players').onChildAdded.listen((event) {
-        final playerData =
-            Map<String, dynamic>.from(event.snapshot.value as Map);
+      _playerJoinedSubscription = database.child('lobbies/$pin/players').onChildAdded.listen((event) {
+        final playerData = Map<String, dynamic>.from(event.snapshot.value as Map);
         final player = Player.withColor(
             name: playerData['name'],
             id: playerData['id'],
             isHost: playerData['isHost'],
             completedCategories: playerData['completedCategories'] ?? [],
             score: playerData['score'],
-            color: Color(playerData['color']));
+            color: Color(playerData['color'])
+        );
 
         add(PlayerJoinedEvent(player: player));
       });
@@ -95,12 +98,26 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           }
         }
       });
+
+      _gameStateSubscription = database.child('lobbies/$pin/gameState').onValue.listen((event) {
+        final gameStateData = Map<String, dynamic>.from(event.snapshot.value as Map);
+        final kind = gameStateData['kind'];
+
+        switch (kind) {
+          case 'waitingRoom':
+            break;
+          case 'voting':
+            add(StartCategoryVoteEvent());
+            break;
+        }
+      });
     }
   }
 
   void cancelFirebaseListener() {
     _playerJoinedSubscription?.cancel();
     _settingsChangedSubscription?.cancel();
+    _gameStateSubscription?.cancel();
   }
 
   @override
