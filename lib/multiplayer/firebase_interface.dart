@@ -12,22 +12,20 @@ final database = FirebaseDatabase.instance.ref();
 String _generateLobbyCode() {
   final random = Random();
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
-  return String.fromCharCodes(Iterable.generate(6, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  return String.fromCharCodes(Iterable.generate(
+      6, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
 }
 
 Future<LobbySettings> createLobby(Player player) async {
   String lobbyCode = _generateLobbyCode();
   final settings = LobbySettings(pin: lobbyCode, numberOfQuestions: 10);
 
-  await database.child('lobbies/$lobbyCode/settings').set({
-    "pin": settings.pin,
-    "numberOfQuestions": settings.numberOfQuestions
-  });
+  await database.child('lobbies/$lobbyCode/settings').set(
+      {"pin": settings.pin, "numberOfQuestions": settings.numberOfQuestions});
 
-  await database.child('lobbies/$lobbyCode/gameState').set({
-    "kind": 'waitingRoom',
-    "state": {}
-  });
+  await database
+      .child('lobbies/$lobbyCode/gameState')
+      .set({"kind": 'waitingRoom', "state": {}});
 
   return joinLobby(lobbyCode, player);
 }
@@ -54,12 +52,15 @@ Future<LobbySettings> getLobbySettings(String pin) async {
 
   return LobbySettings(
       pin: lobby['settings']['pin'],
-      numberOfQuestions: lobby['settings']['numberOfQuestions']
-  );
+      numberOfQuestions: lobby['settings']['numberOfQuestions']);
+}
+
+Future<void> pushNumberOfQuestions(String pin, int numberOfQuestions) async {
+  database.child('lobbies/$pin/settings').update({
+    'numberOfQuestions': numberOfQuestions,
+  });
 }
 
 Future<void> startGame(String pin) async {
-  await database.child('lobbies/$pin/gameState').set({
-    "kind": "voting"
-  });
+  await database.child('lobbies/$pin/gameState').set({"kind": "voting"});
 }

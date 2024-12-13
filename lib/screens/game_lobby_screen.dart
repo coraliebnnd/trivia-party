@@ -79,9 +79,13 @@ class CreateGame extends StatelessWidget {
                       DropdownButton<int>(
                         dropdownColor: Colors.grey[900],
                         value: state.lobbySettings.numberOfQuestions,
-                        onChanged: (value) {
-                          // Handle dropdown change here
-                        },
+                        onChanged: state.currentPlayer.isHost
+                            ? (value) {
+                                context.read<GameBloc>().add(
+                                    SettingsChangedGameEvent(
+                                        numberOfQuestions: value ?? 0));
+                              }
+                            : null,
                         items: List.generate(
                           10,
                           (index) => DropdownMenuItem(
@@ -99,6 +103,9 @@ class CreateGame extends StatelessWidget {
                   // Start Game Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      splashFactory: state.currentPlayer.isHost
+                          ? InkRipple.splashFactory // Default Ripple Effect
+                          : NoSplash.splashFactory, // Remove Ripple Effect
                       backgroundColor: (state.currentPlayer.isHost)
                           ? Colors.pink
                           : Colors.grey,
