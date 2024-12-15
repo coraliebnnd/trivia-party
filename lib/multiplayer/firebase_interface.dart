@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:math';
 
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
+import 'package:trivia_party/networking/question_loader.dart';
 
 import '../bloc/models/player.dart';
 
@@ -58,6 +59,22 @@ Future<LobbySettings> getLobbySettings(String pin) async {
 Future<void> pushNumberOfQuestions(String pin, int numberOfQuestions) async {
   database.child('lobbies/$pin/settings').update({
     'numberOfQuestions': numberOfQuestions,
+  });
+}
+
+Future<void> pushQuestion(String pin, QuestionAnswerPair question) async {
+  List<String> answers = [];
+  String correctAnswer = "";
+  for (var answer in question.answers) {
+    answers.add(answer.text);
+    if (answer.isTrue) {
+      correctAnswer = answer.text;
+    }
+  }
+  database.child('lobbies/$pin/gameState/state/question').set({
+    'question': question.question,
+    'answers': answers,
+    'correctAnswer': correctAnswer
   });
 }
 

@@ -4,8 +4,8 @@ import 'package:trivia_party/bloc/models/player.dart';
 class QuestionPreparationFinishedEvent extends GameEvent {}
 
 class QuestionPeparationEvent extends GameEvent {
-  final Player currentPlayer; // Optional field
-  final List<Player> players; // Optional field
+  final Player currentPlayer;
+  final List<Player> players;
   final String category;
   // Constructor to initialize the fields
   QuestionPeparationEvent(this.category,
@@ -13,4 +13,20 @@ class QuestionPeparationEvent extends GameEvent {
 
   @override
   List<Object?> get props => [category, currentPlayer, players];
+}
+
+class QuestionLoadedByFirebaseEvent extends GameEvent {
+  final Player currentPlayer; // Optional field
+  final List<Player> players; // Optional field
+  final String category;
+  final String question;
+  final List<String> answers;
+  final String correctAnswer;
+
+  QuestionLoadedByFirebaseEvent(this.category, this.question, this.answers,
+      this.correctAnswer, this.currentPlayer, this.players);
+
+  @override
+  List<Object?> get props =>
+      [category, currentPlayer, players, question, answers, correctAnswer];
 }
