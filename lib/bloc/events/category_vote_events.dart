@@ -1,6 +1,8 @@
 import 'package:trivia_party/bloc/events/game_event.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 
+import '../models/categories.dart';
+
 class StartCategoryVoteEvent extends GameEvent {}
 
 class FinishedCategoryVoteEvent extends GameEvent {
@@ -17,11 +19,15 @@ class FinishedCategoryVoteEvent extends GameEvent {
 }
 
 class VoteCategoryEvent extends GameEvent {
-  final String category;
+  final Category category;
   final Player player;
 
   VoteCategoryEvent(this.category, this.player);
 
   @override
   List<Object?> get props => [category, player];
+}
+
+class VotesUpdatedFirebase extends GameEvent {
+  
 }

@@ -7,6 +7,7 @@ import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
 class CategoryVoteScreenHandler {
   final GameBloc gameBloc;
@@ -36,32 +37,41 @@ class CategoryVoteScreenHandler {
     }
   }
 
-  Future<void> onVoteCategory(
-      VoteCategoryEvent event, Emitter<GameState> emit) async {
-    final currentState = gameBloc.state;
-    if (currentState is CategoryVotingState) {
-      // Update category votes
-      final updatedVotes = Map<String, int>.from(currentState.categoryVotes);
-      updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
-
-      emit(CategoryVotingState(
-          categoryVotes: updatedVotes,
-          currentPlayer: currentState.currentPlayer,
-          players: currentState.players));
-    }
+  Future<void> onVoteCategory(VoteCategoryEvent event, Emitter<GameState> emit) async {
+    await voteForCategory(gameBloc.lobbySettings!.pin, event.category, event.player);
+    // final currentState = gameBloc.state;
+    // if (currentState is CategoryVotingState) {
+    //   // Update category votes
+    //   final updatedVotes = Map<String, int>.from(currentState.categoryVotes);
+    //   updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
+    //
+    //   emit(CategoryVotingState(
+    //       categoryVotes: updatedVotes,
+    //       currentPlayer: currentState.currentPlayer,
+    //       players: currentState.players));
+    // }
   }
 
   Future<void> onVoteCategoryFinished(
       FinishedCategoryVoteEvent event, Emitter<GameState> emit) async {
     final currentState = gameBloc.state;
     if (currentState is CategoryVotingState) {
-      String mostVotedCategory = event.categoryVotes.entries
-          .reduce((a, b) => a.value > b.value ? a : b)
-          .key;
-      emit(QuestionPreparationState(
-          mostVotedCategory, event.currentPlayer, event.players));
-      gameBloc.add(QuestionPeparationEvent(mostVotedCategory,
-          currentPlayer: event.currentPlayer));
+      // String mostVotedCategory = event.categoryVotes.entries
+      //     .reduce((a, b) => a.value > b.value ? a : b)
+      //     .key;
+      // emit(QuestionPreparationState(
+      //     mostVotedCategory, event.currentPlayer, event.players));
+      // gameBloc.add(QuestionPeparationEvent(mostVotedCategory,
+      //     currentPlayer: event.currentPlayer));
     }
+  }
+
+  Future<void> onVotesUpdated(VotesUpdatedFirebase event, Emitter<GameState> emit) async {
+    final currentState = gameBloc.state as CategoryVotingState;
+
+    Map<String, int> tempVotes = Map.from(currentState.categoryVotes);
+    tempVotes["test"] = tempVotes["test"] != null ? tempVotes["test"]! + 1 : 1;
+
+    emit(CategoryVotingState(currentPlayer: currentState.currentPlayer, players: currentState.players, categoryVotes: tempVotes));
   }
 }

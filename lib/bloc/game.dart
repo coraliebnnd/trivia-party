@@ -13,6 +13,8 @@ import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
+import 'package:trivia_party/bloc/models/categories.dart' as category_model;
+import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
@@ -23,6 +25,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _playerJoinedSubscription;
   StreamSubscription? _settingsChangedSubscription;
   StreamSubscription? _gameStateSubscription;
+  StreamSubscription? _voteAddedSubscription;
+  StreamSubscription? _voteChangeSubscription;
+
+  LobbySettings? lobbySettings;
 
   GameBloc(GlobalKey<NavigatorState> navigatorKey)
       : super(const HomeScreenState()) {
@@ -49,6 +55,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<StartCategoryVoteEvent>(categoryVoteHandler.onStartCategoryVoting);
     on<FinishedCategoryVoteEvent>(categoryVoteHandler.onVoteCategoryFinished);
     on<VoteCategoryEvent>(categoryVoteHandler.onVoteCategory);
+    on<VotesUpdatedFirebase>(categoryVoteHandler.onVotesUpdated);
 
     on<QuestionPeparationEvent>(
         questionPreparationHandler.onQuestionPreparationStarted);
@@ -112,6 +119,26 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             break;
         }
       });
+      
+      _voteAddedSubscription = database.child('lobbies/$pin/gameState/state/votes').onChildAdded.listen((event) {
+        final List<String> playerVotes = List.from(event.snapshot.value as List);
+
+        category_model.Category? category = category_model.categories[int.parse(event.snapshot.key!)];
+
+        category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase());
+      });
+
+      _voteChangeSubscription = database.child('lobbies/$pin/gameState/state/votes').onChildChanged.listen((event) {
+        final List<String> playerVotes = List.from(event.snapshot.value as List);
+
+        category_model.Category? category = category_model.categories[int.parse(event.snapshot.key!)];
+
+        category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase());
+      });
     }
   }
 
@@ -119,6 +146,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _playerJoinedSubscription?.cancel();
     _settingsChangedSubscription?.cancel();
     _gameStateSubscription?.cancel();
+    _voteAddedSubscription?.cancel();
+    _voteChangeSubscription?.cancel();
   }
 
   @override

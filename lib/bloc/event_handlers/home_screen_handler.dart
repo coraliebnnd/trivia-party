@@ -37,6 +37,7 @@ class HomeScreenHandler {
     emit(const HomeScreenState());
 
     settings = await createLobby(currentPlayer);
+    gameBloc.lobbySettings = settings;
 
     emit(GameLobbyState(
       currentPlayer: currentPlayer,
@@ -49,6 +50,7 @@ class HomeScreenHandler {
 
   Future<void> onJoinGame(JoinGameEvent event, Emitter<GameState> emit) async {
     settings = await joinLobby(event.gamePin, event.player);
+    gameBloc.lobbySettings = settings;
 
     emit(GameLobbyState(
       currentPlayer: event.player,
