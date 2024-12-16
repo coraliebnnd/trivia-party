@@ -22,16 +22,16 @@ class CategoryVoteScreenHandler {
     if (currentState is GameLobbyState) {
       emit(
         CategoryVotingState(
-          currentPlayer: currentState.currentPlayer,
-          players: currentState.players,
-        ),
+            currentPlayer: currentState.currentPlayer,
+            players: currentState.players,
+            lobbySettings: currentState.lobbySettings),
       );
     } else if (currentState is QuestionState) {
       emit(
         CategoryVotingState(
-          currentPlayer: currentState.currentPlayer,
-          players: currentState.players,
-        ),
+            currentPlayer: currentState.currentPlayer,
+            players: currentState.players,
+            lobbySettings: currentState.lobbySettings),
       );
     }
   }
@@ -47,7 +47,8 @@ class CategoryVoteScreenHandler {
       emit(CategoryVotingState(
           categoryVotes: updatedVotes,
           currentPlayer: currentState.currentPlayer,
-          players: currentState.players));
+          players: currentState.players,
+          lobbySettings: currentState.lobbySettings));
     }
   }
 
@@ -58,8 +59,8 @@ class CategoryVoteScreenHandler {
       String mostVotedCategory = event.categoryVotes.entries
           .reduce((a, b) => a.value > b.value ? a : b)
           .key;
-      emit(QuestionPreparationState(
-          mostVotedCategory, event.currentPlayer, event.players));
+      emit(QuestionPreparationState(mostVotedCategory, event.currentPlayer,
+          event.players, currentState.lobbySettings));
       gameBloc.add(QuestionPeparationEvent(mostVotedCategory,
           currentPlayer: event.currentPlayer));
     }

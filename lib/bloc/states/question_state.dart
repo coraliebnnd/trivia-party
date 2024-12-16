@@ -1,3 +1,4 @@
+import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 
@@ -10,6 +11,7 @@ class QuestionState extends GameState {
   final int timeRemaining;
   final bool isAnswerRevealed;
   final Player currentPlayer;
+  final LobbySettings lobbySettings;
 
   final List<Player> players;
 
@@ -22,7 +24,8 @@ class QuestionState extends GameState {
       this.timeRemaining = 30,
       this.isAnswerRevealed = false,
       required this.currentPlayer,
-      this.players = const []});
+      required this.players,
+      required this.lobbySettings});
 
   @override
   List<Object?> get props => [
@@ -34,30 +37,31 @@ class QuestionState extends GameState {
         timeRemaining,
         isAnswerRevealed,
         currentPlayer,
-        players
+        players,
+        lobbySettings
       ];
 
-  QuestionState copyWith({
-    String? category,
-    String? currentQuestion,
-    List<String>? currentAnswers,
-    String? selectedAnswer,
-    String? correctAnswer,
-    int? timeRemaining,
-    bool? isAnswerRevealed,
-    Player? currentPlayer,
-    List<Player>? players,
-  }) {
+  QuestionState copyWith(
+      {String? category,
+      String? currentQuestion,
+      List<String>? currentAnswers,
+      String? selectedAnswer,
+      String? correctAnswer,
+      int? timeRemaining,
+      bool? isAnswerRevealed,
+      Player? currentPlayer,
+      List<Player>? players,
+      LobbySettings? settings}) {
     return QuestionState(
-      category: category ?? this.category,
-      currentQuestion: currentQuestion ?? this.currentQuestion,
-      currentAnswers: currentAnswers ?? this.currentAnswers,
-      selectedAnswer: selectedAnswer ?? this.selectedAnswer,
-      correctAnswer: correctAnswer ?? this.correctAnswer,
-      timeRemaining: timeRemaining ?? this.timeRemaining,
-      isAnswerRevealed: isAnswerRevealed ?? this.isAnswerRevealed,
-      currentPlayer: currentPlayer ?? this.currentPlayer,
-      players: players ?? this.players,
-    );
+        category: category ?? this.category,
+        currentQuestion: currentQuestion ?? this.currentQuestion,
+        currentAnswers: currentAnswers ?? this.currentAnswers,
+        selectedAnswer: selectedAnswer ?? this.selectedAnswer,
+        correctAnswer: correctAnswer ?? this.correctAnswer,
+        timeRemaining: timeRemaining ?? this.timeRemaining,
+        isAnswerRevealed: isAnswerRevealed ?? this.isAnswerRevealed,
+        currentPlayer: currentPlayer ?? this.currentPlayer,
+        players: players ?? this.players,
+        lobbySettings: settings ?? lobbySettings);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/categories.dart';
@@ -114,11 +115,10 @@ class VoteCategory extends StatelessWidget {
                   spacing: 20,
                   alignment: WrapAlignment.center,
                   children: state.players.map((player) {
-                    return _buildPlayerPie(
-                      player.name,
-                      player.color,
-                      isMainPlayer: player.id == state.currentPlayer.id,
-                    );
+                    return _buildPlayerPie(player, player.color,
+                        isMainPlayer: player.id == state.currentPlayer.id,
+                        numberOfQuestions:
+                            state.lobbySettings.numberOfQuestions);
                   }).toList(),
                 ),
                 const SizedBox(height: 30),
@@ -186,15 +186,15 @@ class VoteCategory extends StatelessWidget {
   }
 
   // Widget for player pies
-  Widget _buildPlayerPie(String name, Color color,
-      {bool isMainPlayer = false}) {
+  Widget _buildPlayerPie(Player player, Color color,
+      {bool isMainPlayer = false, int numberOfQuestions = 10}) {
     return Column(
       children: [
         Stack(
           alignment: Alignment.center,
           children: [
             RainbowWheel(
-                progress: const [0.2, 0.4, 0.6, 0.8, 1.0, 0.0],
+                progress: calculateProgressForPlayer(player, numberOfQuestions),
                 size: 70, // Size of the rainbow circle
                 borderWidth: 5, // Border width
                 borderColor: color),
@@ -202,7 +202,7 @@ class VoteCategory extends StatelessWidget {
         ),
         const SizedBox(height: 5),
         Text(
-          name,
+          player.name,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,

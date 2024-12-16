@@ -2,6 +2,29 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:trivia_party/bloc/models/player.dart';
+import 'package:trivia_party/categories.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
+
+List<double> calculateProgressForPlayer(Player player, numberOfQuestions) {
+  var artScore = player.score[Categories.art]! / numberOfQuestions;
+  var videoGameScore = player.score[Categories.videoGame]! / numberOfQuestions;
+  var moviesTVScore =
+      player.score[convertToFirebasePath(Categories.moviesTV)]! /
+          numberOfQuestions;
+  var sportScore = player.score[Categories.sport]! / numberOfQuestions;
+  var musicScore = player.score[Categories.music]! / numberOfQuestions;
+  var bookScore = player.score[Categories.books]! / numberOfQuestions;
+  var progressArray = [
+    artScore,
+    videoGameScore,
+    moviesTVScore,
+    sportScore,
+    musicScore,
+    bookScore,
+  ];
+  return progressArray;
+}
 
 class RainbowWheel extends StatelessWidget {
   final double size;
@@ -30,7 +53,8 @@ class RainbowWheel extends StatelessWidget {
         ),
       ),
       child: CustomPaint(
-        painter: RainbowWheelPainter(progress: progress, borderWidth: borderWidth),
+        painter:
+            RainbowWheelPainter(progress: progress, borderWidth: borderWidth),
       ),
     );
   }
@@ -49,7 +73,7 @@ class RainbowWheelPainter extends CustomPainter {
     final Paint backgroundPaint = Paint()..style = PaintingStyle.fill;
     final Paint linePaint = Paint()
       ..color = Colors.white
-      ..strokeWidth = borderWidth*0.3
+      ..strokeWidth = borderWidth * 0.3
       ..style = PaintingStyle.stroke;
 
     final center = Offset(size.width / 2, size.height / 2);
@@ -57,12 +81,12 @@ class RainbowWheelPainter extends CustomPainter {
 
     // Colors for the wheel segments
     final colors = [
-      Colors.red,
+      Colors.pink,
+      Colors.purple,
+      Colors.blue,
       Colors.orange,
       Colors.yellow,
       Colors.green,
-      Colors.blue,
-      Colors.purple,
     ];
 
     // Draw segments
@@ -108,7 +132,6 @@ class RainbowWheelPainter extends CustomPainter {
 
         canvas.drawLine(center, Offset(endX, endY), linePaint);
       }
-
     }
   }
 
