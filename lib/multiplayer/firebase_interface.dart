@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:math';
 
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
+import 'package:trivia_party/categories.dart';
 import 'package:trivia_party/networking/question_loader.dart';
 
 import '../bloc/models/player.dart';
@@ -28,6 +29,8 @@ Future<LobbySettings> createLobby(Player player) async {
       .child('lobbies/$lobbyCode/gameState')
       .set({"kind": 'waitingRoom', "state": {}});
 
+  await setupScore(player.id, lobbyCode);
+
   return joinLobby(lobbyCode, player);
 }
 
@@ -41,8 +44,29 @@ Future<LobbySettings> joinLobby(String pin, Player player) async {
     "color": player.color.value,
     "completedCategories": player.completedCategories
   });
+  //await setupScore(player.id, pin);
 
   return getLobbySettings(pin);
+}
+
+String convertToFirebasePath(String path) {
+  String pathToReturn = path.replaceAll(".", "_").replaceAll("/", "|");
+  return pathToReturn;
+}
+
+Future<void> setupScore(String id, String pin) async {
+  var firebaseIdPath = convertToFirebasePath(id);
+
+  await database
+      .child('lobbies/$pin/gameState/state/score/$firebaseIdPath')
+      .set({
+    convertToFirebasePath(Categories.moviesTV): 0,
+    Categories.sport: 0,
+    Categories.art: 0,
+    Categories.music: 0,
+    Categories.videoGame: 0,
+    Categories.books: 0
+  });
 }
 
 Future<LobbySettings> getLobbySettings(String pin) async {
@@ -76,6 +100,15 @@ Future<void> pushQuestion(String pin, QuestionAnswerPair question) async {
     'answers': answers,
     'correctAnswer': correctAnswer
   });
+}
+
+Future<void> increaseScoreForCategory(
+    String pin, String category, Player player) async {
+  var firebaseIdPath = convertToFirebasePath(player.id);
+  var categoryPath = convertToFirebasePath(category);
+  await database
+      .child('lobbies/$pin/gameState/state/score/$firebaseIdPath/$categoryPath')
+      .set(player.score + 1);
 }
 
 Future<void> startGame(String pin) async {

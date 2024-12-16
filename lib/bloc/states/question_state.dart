@@ -3,6 +3,7 @@ import 'package:trivia_party/bloc/states/game_state.dart';
 
 class QuestionState extends GameState {
   final String currentQuestion;
+  final String category;
   final List<String> currentAnswers;
   final String? selectedAnswer;
   final String? correctAnswer;
@@ -15,6 +16,7 @@ class QuestionState extends GameState {
   const QuestionState(
       {required this.currentQuestion,
       required this.currentAnswers,
+      required this.category,
       this.selectedAnswer,
       this.correctAnswer,
       this.timeRemaining = 30,
@@ -24,6 +26,7 @@ class QuestionState extends GameState {
 
   @override
   List<Object?> get props => [
+        category,
         currentQuestion,
         currentAnswers,
         selectedAnswer,
@@ -35,6 +38,7 @@ class QuestionState extends GameState {
       ];
 
   QuestionState copyWith({
+    String? category,
     String? currentQuestion,
     List<String>? currentAnswers,
     String? selectedAnswer,
@@ -45,6 +49,7 @@ class QuestionState extends GameState {
     List<Player>? players,
   }) {
     return QuestionState(
+      category: category ?? this.category,
       currentQuestion: currentQuestion ?? this.currentQuestion,
       currentAnswers: currentAnswers ?? this.currentAnswers,
       selectedAnswer: selectedAnswer ?? this.selectedAnswer,

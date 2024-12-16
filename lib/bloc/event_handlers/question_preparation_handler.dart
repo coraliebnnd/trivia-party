@@ -67,6 +67,7 @@ class QuestionPreparationScreenHandler {
       }
 
       emit(QuestionState(
+          category: currentState.category,
           currentQuestion: currentState.question,
           currentAnswers: answers,
           currentPlayer: currentState.player,

@@ -25,6 +25,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _settingsChangedSubscription;
   StreamSubscription? _gameStateSubscription;
   StreamSubscription? _questionSubscription;
+  StreamSubscription? _scoreSubscription;
   String gamePin = ""; //TODO nzimmer: Move this into states probably
 
   GameBloc(GlobalKey<NavigatorState> navigatorKey)
@@ -138,6 +139,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             currentState.player,
             currentState.players));
       });
+
+      _scoreSubscription = database
+          .child('lobbies/$pin/gameState/state/score')
+          .onValue
+          .listen((event) {
+        var currentState = this.state;
+        if (!(currentState is QuestionPreparationState)) {
+          print(
+              "The Score listener was wrongly activated in state $currentState");
+          return;
+        }
+      });
     }
   }
 
@@ -145,6 +158,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _playerJoinedSubscription?.cancel();
     _settingsChangedSubscription?.cancel();
     _gameStateSubscription?.cancel();
+    _questionSubscription?.cancel();
+    _scoreSubscription?.cancel();
   }
 
   @override
