@@ -15,8 +15,8 @@ class QuestionScreenHandler {
     if (gameBloc.state is QuestionState) {
       final currentState = gameBloc.state as QuestionState;
       if (currentState.correctAnswer == currentState.selectedAnswer) {
-        increaseScoreForCategory(gameBloc.gamePin, currentState.category,
-            currentState.currentPlayer);
+        increaseScoreForCategory(currentState.lobbySettings.pin,
+            currentState.category, currentState.currentPlayer);
       }
       emit(currentState.copyWith(isAnswerRevealed: true));
       Future.delayed(const Duration(seconds: 3), () {
