@@ -25,6 +25,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _playerJoinedSubscription;
   StreamSubscription? _settingsChangedSubscription;
   StreamSubscription? _gameStateSubscription;
+
+  StreamSubscription? _voteRemovedSubscription;
   StreamSubscription? _voteAddedSubscription;
   StreamSubscription? _voteChangeSubscription;
 
@@ -119,23 +121,48 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             break;
         }
       });
-      
-      _voteAddedSubscription = database.child('lobbies/$pin/gameState/state/votes').onChildAdded.listen((event) {
-        final List<String> playerVotes = List.from(event.snapshot.value as List);
 
-        category_model.Category? category = category_model.categories[int.parse(event.snapshot.key!)];
+      _voteAddedSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildAdded
+          .listen((event) {
+        final List<String> playerVotes =
+            List.from(event.snapshot.value as List);
+
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
 
         category?.playerVotes = playerVotes;
 
         add(VotesUpdatedFirebase());
       });
 
-      _voteChangeSubscription = database.child('lobbies/$pin/gameState/state/votes').onChildChanged.listen((event) {
-        final List<String> playerVotes = List.from(event.snapshot.value as List);
+      _voteChangeSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildChanged
+          .listen((event) {
+        final List<String> playerVotes =
+            List.from(event.snapshot.value as List);
 
-        category_model.Category? category = category_model.categories[int.parse(event.snapshot.key!)];
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
 
         category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase());
+      });
+
+      _voteRemovedSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildRemoved
+          .listen((event) {
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        // The category was deleted completely from firebase
+        // (No player is currently voting for it anymore)
+        // So we just clear it to reflect it on our screen
+        category?.playerVotes.clear();
 
         add(VotesUpdatedFirebase());
       });
@@ -148,6 +175,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _gameStateSubscription?.cancel();
     _voteAddedSubscription?.cancel();
     _voteChangeSubscription?.cancel();
+    _voteRemovedSubscription?.cancel();
   }
 
   @override
