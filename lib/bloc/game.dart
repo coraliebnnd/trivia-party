@@ -18,6 +18,7 @@ import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
+import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'events/game_event.dart';
 import 'models/player.dart';
 
@@ -25,6 +26,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _playerJoinedSubscription;
   StreamSubscription? _settingsChangedSubscription;
   StreamSubscription? _gameStateSubscription;
+  StreamSubscription? _questionSubscription;
+  String gamePin = ""; //TODO nzimmer: Move this into states probably
 
   StreamSubscription? _voteRemovedSubscription;
   StreamSubscription? _voteAddedSubscription;
@@ -63,6 +66,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         questionPreparationHandler.onQuestionPreparationStarted);
     on<QuestionPreparationFinishedEvent>(
         questionPreparationHandler.onQuestionPreparationFinished);
+    on<QuestionLoadedByFirebaseEvent>(
+        questionPreparationHandler.onQuestionLoadedByFirebase);
 
     on<SubmitAnswerEvent>(questionHandler.onSubmitAnswer);
     on<RevealAnswerEvent>(questionHandler.onRevealAnswer);
@@ -78,6 +83,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
+      this.gamePin = pin; // TODO nzimmer. Fix this
       _playerJoinedSubscription =
           database.child('lobbies/$pin/players').onChildAdded.listen((event) {
         final playerData =
@@ -120,6 +126,26 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             add(StartCategoryVoteEvent());
             break;
         }
+      });
+      _questionSubscription = database
+          .child('lobbies/$pin/gameState/state/question')
+          .onValue
+          .listen((event) {
+        var currentState = this.state;
+        if (!(currentState is QuestionPreparationState)) {
+          print(
+              "The Question listener was wrongly activated in state $currentState");
+          return;
+        }
+        final questionData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
+        add(QuestionLoadedByFirebaseEvent(
+            currentState.category,
+            questionData["question"],
+            List<String>.from(questionData["answers"]),
+            questionData["correctAnswer"],
+            currentState.player,
+            currentState.players));
       });
 
       _voteAddedSubscription = database
