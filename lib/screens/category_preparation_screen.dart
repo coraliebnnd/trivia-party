@@ -4,7 +4,6 @@ import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
-import 'package:trivia_party/categories.dart';
 
 import '../widgets/circular_countdown_widget.dart';
 
@@ -27,7 +26,7 @@ class CategoryPreparation extends StatelessWidget {
         final category = state.category;
 
         return Scaffold(
-          backgroundColor: Categories.getColorOfCategory(state.category),
+          backgroundColor: category.color,
           body: SafeArea(
             child: Center(
               child: Padding(
@@ -49,7 +48,7 @@ class CategoryPreparation extends StatelessWidget {
 
                     // Category Name
                     Text(
-                      category,
+                      category.displayName,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 50,

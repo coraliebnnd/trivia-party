@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/models/categories.dart';
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
-import 'package:trivia_party/categories.dart';
 import 'package:trivia_party/widgets/countdown_with_loading_bar_widget.dart';
 import 'package:trivia_party/widgets/rainbow_wheel_widget.dart';
+
+import '../bloc/models/player.dart';
 
 class VoteCategory extends StatelessWidget {
   const VoteCategory({super.key});
@@ -55,57 +57,15 @@ class VoteCategory extends StatelessWidget {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
                     childAspectRatio: 2.5,
-                    children: [
-                      _buildCategoryButton(
-                        Categories.art,
-                        Categories.getColorOfCategory(Categories.art),
-                        votes: state.categoryVotes[Categories.art] ?? 0,
-                        onTap: () =>
-                            _voteForCategory(context, Categories.art, state),
-                      ),
-                      _buildCategoryButton(
-                        Categories.videoGame,
-                        Categories.getColorOfCategory(Categories.videoGame),
-                        votes: state.categoryVotes[Categories.videoGame] ?? 0,
+                    children: categories.entries.map((entry) {
+                      return _buildCategoryButton(
+                        entry.value.displayName,
+                        entry.value.color,
+                        votes: entry.value.playerVotes.length,
                         onTap: () => _voteForCategory(
-                            context, Categories.videoGame, state),
-                      ),
-                      _buildCategoryButton(
-                        Categories.moviesTV,
-                        Categories.getColorOfCategory(Categories.moviesTV),
-                        votes: state.categoryVotes[Categories.moviesTV] ?? 0,
-                        onTap: () => _voteForCategory(
-                            context, Categories.moviesTV, state),
-                      ),
-                      _buildCategoryButton(
-                        Categories.sport,
-                        Categories.getColorOfCategory(Categories.sport),
-                        votes: state.categoryVotes[Categories.sport] ?? 0,
-                        onTap: () =>
-                            _voteForCategory(context, Categories.sport, state),
-                      ),
-                      _buildCategoryButton(
-                        Categories.music,
-                        Categories.getColorOfCategory(Categories.music),
-                        votes: state.categoryVotes[Categories.music] ?? 0,
-                        onTap: () =>
-                            _voteForCategory(context, Categories.music, state),
-                      ),
-                      _buildCategoryButton(
-                        Categories.books,
-                        Categories.getColorOfCategory(Categories.books),
-                        votes: state.categoryVotes[Categories.books] ?? 0,
-                        onTap: () =>
-                            _voteForCategory(context, Categories.books, state),
-                      ),
-                      _buildCategoryButton(
-                        Categories.random,
-                        Colors.grey,
-                        votes: state.categoryVotes[Categories.random] ?? 0,
-                        onTap: () =>
-                            _voteForCategory(context, Categories.random, state),
-                      ),
-                    ],
+                            context, entry.value, state.currentPlayer),
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -216,15 +176,13 @@ class VoteCategory extends StatelessWidget {
   void _votingForCategoryFinished(
       BuildContext context, CategoryVotingState state) {
     BlocProvider.of<GameBloc>(context).add(FinishedCategoryVoteEvent(
-        state.categoryVotes,
+        state.categoryIdToNumberOfVotesMap,
         currentPlayer: state.currentPlayer,
         players: state.players));
   }
 
   void _voteForCategory(
-      BuildContext context, String category, CategoryVotingState state) {
-    final currentPlayer = state.currentPlayer;
-    BlocProvider.of<GameBloc>(context)
-        .add(VoteCategoryEvent(category, currentPlayer));
+      BuildContext context, Category category, Player player) {
+    BlocProvider.of<GameBloc>(context).add(VoteCategoryEvent(category, player));
   }
 }

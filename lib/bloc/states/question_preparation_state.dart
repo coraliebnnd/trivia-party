@@ -1,9 +1,10 @@
 import 'package:trivia_party/bloc/models/answer.dart';
+import 'package:trivia_party/bloc/models/categories.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 
 class QuestionPreparationState extends GameState {
-  final String category;
+  final Category category;
   final Player player;
   final List<Player> players;
   final String question;
@@ -22,7 +23,7 @@ class QuestionPreparationState extends GameState {
 
   // The copyWith method
   QuestionPreparationState copyWith({
-    String? category,
+    Category? category,
     Player? player,
     List<Player>? players,
     String? question,

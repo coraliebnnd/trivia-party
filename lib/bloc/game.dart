@@ -13,6 +13,8 @@ import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
+import 'package:trivia_party/bloc/models/categories.dart' as category_model;
+import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
@@ -26,6 +28,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _gameStateSubscription;
   StreamSubscription? _questionSubscription;
   String gamePin = ""; //TODO nzimmer: Move this into states probably
+
+  StreamSubscription? _voteRemovedSubscription;
+  StreamSubscription? _voteAddedSubscription;
+  StreamSubscription? _voteChangeSubscription;
+
+  LobbySettings? lobbySettings;
 
   GameBloc(GlobalKey<NavigatorState> navigatorKey)
       : super(const HomeScreenState()) {
@@ -52,6 +60,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<StartCategoryVoteEvent>(categoryVoteHandler.onStartCategoryVoting);
     on<FinishedCategoryVoteEvent>(categoryVoteHandler.onVoteCategoryFinished);
     on<VoteCategoryEvent>(categoryVoteHandler.onVoteCategory);
+    on<VotesUpdatedFirebase>(categoryVoteHandler.onVotesUpdated);
 
     on<QuestionPeparationEvent>(
         questionPreparationHandler.onQuestionPreparationStarted);
@@ -74,7 +83,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
-      this.gamePin = pin; // TODO nzimmer. Fix this
+      gamePin = pin; // TODO nzimmer. Fix this
       _playerJoinedSubscription =
           database.child('lobbies/$pin/players').onChildAdded.listen((event) {
         final playerData =
@@ -122,10 +131,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           .child('lobbies/$pin/gameState/state/question')
           .onValue
           .listen((event) {
-        var currentState = this.state;
-        if (!(currentState is QuestionPreparationState)) {
-          print(
-              "The Question listener was wrongly activated in state $currentState");
+        var currentState = state;
+        if (currentState is! QuestionPreparationState) {
+          if (kDebugMode) {
+            print(
+                "The Question listener was wrongly activated in state $currentState");
+          }
           return;
         }
         final questionData =
@@ -138,6 +149,51 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             currentState.player,
             currentState.players));
       });
+
+      _voteAddedSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildAdded
+          .listen((event) {
+        final List<String> playerVotes =
+            List.from(event.snapshot.value as List);
+
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase(category_model.categories));
+      });
+
+      _voteChangeSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildChanged
+          .listen((event) {
+        final List<String> playerVotes =
+            List.from(event.snapshot.value as List);
+
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase(category_model.categories));
+      });
+
+      _voteRemovedSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildRemoved
+          .listen((event) {
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        // The category was deleted completely from firebase
+        // (No player is currently voting for it anymore)
+        // So we just clear it to reflect it on our screen
+        category?.playerVotes.clear();
+
+        add(VotesUpdatedFirebase(category_model.categories));
+      });
     }
   }
 
@@ -145,6 +201,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _playerJoinedSubscription?.cancel();
     _settingsChangedSubscription?.cancel();
     _gameStateSubscription?.cancel();
+    _voteAddedSubscription?.cancel();
+    _voteChangeSubscription?.cancel();
+    _voteRemovedSubscription?.cancel();
+    _questionSubscription?.cancel();
   }
 
   @override
