@@ -83,7 +83,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
-      this.gamePin = pin; // TODO nzimmer. Fix this
+      gamePin = pin; // TODO nzimmer. Fix this
       _playerJoinedSubscription =
           database.child('lobbies/$pin/players').onChildAdded.listen((event) {
         final playerData =
@@ -131,10 +131,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           .child('lobbies/$pin/gameState/state/question')
           .onValue
           .listen((event) {
-        var currentState = this.state;
-        if (!(currentState is QuestionPreparationState)) {
-          print(
-              "The Question listener was wrongly activated in state $currentState");
+        var currentState = state;
+        if (currentState is! QuestionPreparationState) {
+          if (kDebugMode) {
+            print(
+                "The Question listener was wrongly activated in state $currentState");
+          }
           return;
         }
         final questionData =
@@ -160,7 +162,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         category?.playerVotes = playerVotes;
 
-        add(VotesUpdatedFirebase());
+        add(VotesUpdatedFirebase(category_model.categories));
       });
 
       _voteChangeSubscription = database
@@ -175,7 +177,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         category?.playerVotes = playerVotes;
 
-        add(VotesUpdatedFirebase());
+        add(VotesUpdatedFirebase(category_model.categories));
       });
 
       _voteRemovedSubscription = database
@@ -190,7 +192,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         // So we just clear it to reflect it on our screen
         category?.playerVotes.clear();
 
-        add(VotesUpdatedFirebase());
+        add(VotesUpdatedFirebase(category_model.categories));
       });
     }
   }
@@ -202,6 +204,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _voteAddedSubscription?.cancel();
     _voteChangeSubscription?.cancel();
     _voteRemovedSubscription?.cancel();
+    _questionSubscription?.cancel();
   }
 
   @override

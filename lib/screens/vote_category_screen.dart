@@ -62,8 +62,8 @@ class VoteCategory extends StatelessWidget {
                         entry.value.displayName,
                         entry.value.color,
                         votes: entry.value.playerVotes.length,
-                        onTap: () =>
-                            _voteForCategory(context, entry.value, state.currentPlayer),
+                        onTap: () => _voteForCategory(
+                            context, entry.value, state.currentPlayer),
                       );
                     }).toList(),
                   ),
@@ -176,14 +176,13 @@ class VoteCategory extends StatelessWidget {
   void _votingForCategoryFinished(
       BuildContext context, CategoryVotingState state) {
     BlocProvider.of<GameBloc>(context).add(FinishedCategoryVoteEvent(
-        state.categoryVotes,
+        state.categoryIdToNumberOfVotesMap,
         currentPlayer: state.currentPlayer,
         players: state.players));
   }
 
   void _voteForCategory(
       BuildContext context, Category category, Player player) {
-    BlocProvider.of<GameBloc>(context)
-        .add(VoteCategoryEvent(category, player));
+    BlocProvider.of<GameBloc>(context).add(VoteCategoryEvent(category, player));
   }
 }

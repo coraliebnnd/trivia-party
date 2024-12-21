@@ -6,7 +6,7 @@ import '../models/categories.dart';
 class StartCategoryVoteEvent extends GameEvent {}
 
 class FinishedCategoryVoteEvent extends GameEvent {
-  final Map<String, int> categoryVotes;
+  final Map<int, int> categoryVotes;
   final Player currentPlayer; // Optional field
   final List<Player> players; // Optional field
 
@@ -29,5 +29,10 @@ class VoteCategoryEvent extends GameEvent {
 }
 
 class VotesUpdatedFirebase extends GameEvent {
-  
+  final Map<int, Category> updatedVoting;
+
+  VotesUpdatedFirebase(this.updatedVoting);
+
+  @override
+  List<Object?> get props => [updatedVoting];
 }
