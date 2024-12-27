@@ -2,19 +2,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:trivia_party/bloc/models/categories.dart';
 import 'package:trivia_party/bloc/models/player.dart';
-import 'package:trivia_party/categories.dart';
-import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
 List<double> calculateProgressForPlayer(Player player, numberOfQuestions) {
-  var artScore = player.score[Categories.art]! / numberOfQuestions;
-  var videoGameScore = player.score[Categories.videoGame]! / numberOfQuestions;
+  var artScore = player.score[categories[1]!.displayName]! / numberOfQuestions;
+  var videoGameScore =
+      player.score[categories[2]!.displayName]! / numberOfQuestions;
   var moviesTVScore =
-      player.score[convertToFirebasePath(Categories.moviesTV)]! /
-          numberOfQuestions;
-  var sportScore = player.score[Categories.sport]! / numberOfQuestions;
-  var musicScore = player.score[Categories.music]! / numberOfQuestions;
-  var bookScore = player.score[Categories.books]! / numberOfQuestions;
+      player.score[categories[3]!.displayName]! / numberOfQuestions;
+  var sportScore =
+      player.score[categories[4]!.displayName]! / numberOfQuestions;
+  var musicScore =
+      player.score[categories[5]!.displayName]! / numberOfQuestions;
+  var bookScore = player.score[categories[6]!.displayName]! / numberOfQuestions;
   var progressArray = [
     artScore,
     videoGameScore,

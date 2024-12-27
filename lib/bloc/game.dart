@@ -94,7 +94,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
-      gamePin = pin; // TODO nzimmer. Fix this
       _playerJoinedSubscription =
           database.child('lobbies/$pin/players').onChildAdded.listen((event) {
         final playerData =

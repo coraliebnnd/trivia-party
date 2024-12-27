@@ -1,10 +1,11 @@
+import 'package:trivia_party/bloc/models/categories.dart';
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 
 class QuestionState extends GameState {
   final String currentQuestion;
-  final String category;
+  final Category category;
   final List<String> currentAnswers;
   final String? selectedAnswer;
   final String? correctAnswer;
@@ -53,7 +54,7 @@ class QuestionState extends GameState {
       List<Player>? players,
       LobbySettings? settings}) {
     return QuestionState(
-        category: category ?? this.category,
+        category: (category ?? this.category) as Category,
         currentQuestion: currentQuestion ?? this.currentQuestion,
         currentAnswers: currentAnswers ?? this.currentAnswers,
         selectedAnswer: selectedAnswer ?? this.selectedAnswer,

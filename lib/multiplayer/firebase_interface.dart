@@ -5,7 +5,6 @@ import 'package:trivia_party/bloc/models/categories.dart';
 import 'dart:math';
 
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
-import 'package:trivia_party/categories.dart';
 import 'package:trivia_party/networking/question_loader.dart';
 
 import '../bloc/models/player.dart';
@@ -55,12 +54,12 @@ String convertToFirebasePath(String path) {
 
 Map<String, int> generateScoreMap() {
   return {
-    convertToFirebasePath(Categories.moviesTV): 0,
-    Categories.sport: 0,
-    Categories.art: 0,
-    Categories.music: 0,
-    Categories.videoGame: 0,
-    Categories.books: 0
+    convertToFirebasePath(categories[1]!.displayName): 0,
+    categories[2]!.displayName: 0,
+    categories[3]!.displayName: 0,
+    categories[4]!.displayName: 0,
+    categories[5]!.displayName: 0,
+    categories[6]!.displayName: 0
   };
 }
 
@@ -109,13 +108,12 @@ Future<void> switchToVoting(String pin) async {
 
   await database.child('lobbies/$pin/gameState').set({
     "kind": "voting",
-    "state": {
-      "votes": categoryVotingMap
-    }
+    "state": {"votes": categoryVotingMap}
   });
 }
 
-Future<void> voteForCategory(String pin, Category newCategory, Player player) async {
+Future<void> voteForCategory(
+    String pin, Category newCategory, Player player) async {
   categories.forEach((id, category) {
     if (category.playerVotes.contains(player.id)) {
       removePlayerVoteFromCategory(pin, category, player);
@@ -125,17 +123,20 @@ Future<void> voteForCategory(String pin, Category newCategory, Player player) as
   var currentVotes = List.from(newCategory.playerVotes);
   currentVotes.add(player.id);
 
-  await database.child('lobbies/$pin/gameState/state/votes').update({
-    newCategory.id.toString(): currentVotes
-  });
+  await database
+      .child('lobbies/$pin/gameState/state/votes')
+      .update({newCategory.id.toString(): currentVotes});
 }
 
-Future<void> removePlayerVoteFromCategory(String pin, Category category, Player player) async {
+Future<void> removePlayerVoteFromCategory(
+    String pin, Category category, Player player) async {
   final catId = category.id;
 
   category.playerVotes.remove(player.id);
 
-  await database.child('lobbies/$pin/gameState/state/votes/$catId').set(category.playerVotes);
+  await database
+      .child('lobbies/$pin/gameState/state/votes/$catId')
+      .set(category.playerVotes);
 }
 
 Future<void> increaseScoreForCategory(

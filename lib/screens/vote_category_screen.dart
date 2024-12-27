@@ -9,8 +9,6 @@ import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/widgets/countdown_with_loading_bar_widget.dart';
 import 'package:trivia_party/widgets/rainbow_wheel_widget.dart';
 
-import '../bloc/models/player.dart';
-
 class VoteCategory extends StatelessWidget {
   const VoteCategory({super.key});
 

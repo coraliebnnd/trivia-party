@@ -28,18 +28,17 @@ class CategoryVoteScreenHandler {
         CategoryVotingState(
           currentPlayer: currentState.currentPlayer,
           players: currentState.players,
-            lobbySettings: currentState.lobbySettings,
-            categoryIdToNumberOfVotesMap: const {},
+          lobbySettings: currentState.lobbySettings,
+          categoryIdToNumberOfVotesMap: const {},
         ),
       );
     } else if (currentState is QuestionState) {
       emit(
         CategoryVotingState(
-          currentPlayer: currentState.currentPlayer,
-          players: currentState.players,
+            currentPlayer: currentState.currentPlayer,
+            players: currentState.players,
             categoryIdToNumberOfVotesMap: const {},
-            lobbySettings: currentState.lobbySettings
-        ),
+            lobbySettings: currentState.lobbySettings),
       );
     }
   }
@@ -73,8 +72,8 @@ class CategoryVoteScreenHandler {
       final random = Random();
       final mostVotedCategory =
           tiedCategories[random.nextInt(tiedCategories.length)];
-      emit(QuestionPreparationState(
-          categories[mostVotedCategory]!, event.currentPlayer, event.players));
+      emit(QuestionPreparationState(categories[mostVotedCategory]!,
+          event.currentPlayer, event.players, currentState.lobbySettings));
       gameBloc.add(QuestionPeparationEvent(categories[mostVotedCategory]!,
           currentPlayer: event.currentPlayer));
     }
@@ -90,6 +89,7 @@ class CategoryVoteScreenHandler {
     emit(CategoryVotingState(
         currentPlayer: currentState.currentPlayer,
         players: currentState.players,
-        categoryIdToNumberOfVotesMap: categoryIdToVotes));
+        categoryIdToNumberOfVotesMap: categoryIdToVotes,
+        lobbySettings: currentState.lobbySettings));
   }
 }
