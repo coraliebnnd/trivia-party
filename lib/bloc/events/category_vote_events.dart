@@ -36,3 +36,12 @@ class VotesUpdatedFirebase extends GameEvent {
   @override
   List<Object?> get props => [updatedVoting];
 }
+
+class CategorySetFirebase extends GameEvent {
+  final Category category;
+
+  CategorySetFirebase({required this.category});
+
+  @override
+  List<Object?> get props => [category];
+}
