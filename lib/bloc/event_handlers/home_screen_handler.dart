@@ -27,23 +27,24 @@ class HomeScreenHandler {
 
   HomeScreenHandler({required this.gameBloc});
 
-  Future<void> onCreateGame(CreateGameEvent event, Emitter<GameState> emit) async {
+  Future<void> onCreateGame(
+      CreateGameEvent event, Emitter<GameState> emit) async {
     final currentPlayer = Player(
-      name: event.playerName,
-      id: DateTime.now().toString(),
-      isHost: true,
-    );
+        name: event.playerName,
+        id: DateTime.now().toString(),
+        isHost: true,
+        score: generateScoreMap());
 
     emit(const HomeScreenState());
 
     settings = await createLobby(currentPlayer);
+    List<Player> players = [currentPlayer];
     gameBloc.lobbySettings = settings;
 
     emit(GameLobbyState(
-      currentPlayer: currentPlayer,
-      players: const [],
-      lobbySettings: settings!
-    ));
+        currentPlayer: currentPlayer,
+        players: players,
+        lobbySettings: settings!));
 
     gameBloc.startFirebaseListener();
   }
@@ -52,21 +53,22 @@ class HomeScreenHandler {
     settings = await joinLobby(event.gamePin, event.player);
     gameBloc.lobbySettings = settings;
 
+    List<Player> players = [event.player];
     emit(GameLobbyState(
-      currentPlayer: event.player,
-      players: const [],
-      lobbySettings: settings!
-    ));
+        currentPlayer: event.player,
+        players: players,
+        lobbySettings: settings!));
 
     gameBloc.startFirebaseListener();
   }
 
-  Future<void> onSwitchToJoinGame(ShowJoinScreenEvent event, Emitter<GameState> emit) async {
+  Future<void> onSwitchToJoinGame(
+      ShowJoinScreenEvent event, Emitter<GameState> emit) async {
     final newPlayer = Player(
-      name: event.playerName,
-      id: DateTime.now().toString(),
-      isHost: false,
-    );
+        name: event.playerName,
+        id: DateTime.now().toString(),
+        isHost: false,
+        score: generateScoreMap());
 
     emit(GameJoinState(player: newPlayer));
   }

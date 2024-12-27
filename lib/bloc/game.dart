@@ -19,6 +19,8 @@ import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
+import 'package:trivia_party/bloc/states/question_state.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
 import 'events/game_event.dart';
 import 'models/player.dart';
 
@@ -27,7 +29,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _settingsChangedSubscription;
   StreamSubscription? _gameStateSubscription;
   StreamSubscription? _questionSubscription;
-  String gamePin = ""; //TODO nzimmer: Move this into states probably
+  StreamSubscription? _scoreSubscription;
 
   StreamSubscription? _voteRemovedSubscription;
   StreamSubscription? _voteAddedSubscription;
@@ -73,6 +75,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<RevealAnswerEvent>(questionHandler.onRevealAnswer);
   }
 
+  Player getPlayerForKey(String name, List<Player> players) {
+    for (var player in players) {
+      if (player.name == name) {
+        return player;
+      }
+    }
+    throw (Exception("Player not found"));
+  }
+
   void startFirebaseListener() {
     cancelFirebaseListener();
 
@@ -83,17 +94,25 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final database = FirebaseDatabase.instance.ref();
 
       final pin = currentState.lobbySettings.pin;
-      gamePin = pin; // TODO nzimmer. Fix this
       _playerJoinedSubscription =
           database.child('lobbies/$pin/players').onChildAdded.listen((event) {
         final playerData =
             Map<String, dynamic>.from(event.snapshot.value as Map);
+        if (state is! GameLobbyState) {
+          return;
+        }
+
+        var currentState = state as GameLobbyState;
+        if (playerData["id"] == currentState.currentPlayer.id) {
+          return; // preventing the player controlled by the user from being added twice
+        }
+
         final player = Player.withColor(
             name: playerData['name'],
             id: playerData['id'],
             isHost: playerData['isHost'],
             completedCategories: playerData['completedCategories'] ?? [],
-            score: playerData['score'],
+            score: generateScoreMap(),
             color: Color(playerData['color']));
 
         add(PlayerJoinedEvent(player: player));
@@ -194,6 +213,49 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         add(VotesUpdatedFirebase(category_model.categories));
       });
+
+      _scoreSubscription = database
+          .child('lobbies/$pin/players/')
+          .onChildChanged
+          .listen((event) {
+        var currentState = state;
+        if (currentState is! QuestionState) {
+          if (kDebugMode) {
+            print(
+                "The Score listener was wrongly activated in state $currentState");
+          }
+          return;
+        }
+
+        // Access the changed key and value
+        var updatedPlayer = event.snapshot.key;
+        var updatedScore = (event.snapshot.value as Map)["score"];
+        var playerToUpdate =
+            getPlayerForKey(updatedPlayer.toString(), currentState.players);
+        // Log or process the changes
+        if (kDebugMode) {
+          print("Child changed: $updatedPlayer, New value: $updatedScore");
+        }
+
+        // Ensure updatedScore is a Map and not null
+        if (updatedScore == null) {
+          if (kDebugMode) {
+            print("Invalid updatedScore format: $updatedScore");
+          }
+          return;
+        }
+
+        // Update the player's score
+        (updatedScore).forEach((key, value) {
+          if (value is int) {
+            playerToUpdate.score[key] = value;
+          } else {
+            if (kDebugMode) {
+              print("Invalid score value for $key: $value");
+            }
+          }
+        });
+      });
     }
   }
 
@@ -205,6 +267,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _voteChangeSubscription?.cancel();
     _voteRemovedSubscription?.cancel();
     _questionSubscription?.cancel();
+    _scoreSubscription?.cancel();
   }
 
   @override

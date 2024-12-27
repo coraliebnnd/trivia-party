@@ -46,6 +46,23 @@ Future<LobbySettings> joinLobby(String pin, Player player) async {
   return getLobbySettings(pin);
 }
 
+String convertToFirebasePath(String path) {
+  // '/' is an invalid character in firebase
+  String pathToReturn = path.replaceAll(".", "_").replaceAll("/", "|");
+  return pathToReturn;
+}
+
+Map<String, int> generateScoreMap() {
+  return {
+    convertToFirebasePath(categories[1]!.displayName): 0,
+    categories[2]!.displayName: 0,
+    categories[3]!.displayName: 0,
+    categories[4]!.displayName: 0,
+    categories[5]!.displayName: 0,
+    categories[6]!.displayName: 0
+  };
+}
+
 Future<LobbySettings> getLobbySettings(String pin) async {
   final lobbyRef = database.child('lobbies/$pin');
   final snapshot = await lobbyRef.get();
@@ -91,13 +108,12 @@ Future<void> switchToVoting(String pin) async {
 
   await database.child('lobbies/$pin/gameState').set({
     "kind": "voting",
-    "state": {
-      "votes": categoryVotingMap
-    }
+    "state": {"votes": categoryVotingMap}
   });
 }
 
-Future<void> voteForCategory(String pin, Category newCategory, Player player) async {
+Future<void> voteForCategory(
+    String pin, Category newCategory, Player player) async {
   categories.forEach((id, category) {
     if (category.playerVotes.contains(player.id)) {
       removePlayerVoteFromCategory(pin, category, player);
@@ -107,15 +123,28 @@ Future<void> voteForCategory(String pin, Category newCategory, Player player) as
   var currentVotes = List.from(newCategory.playerVotes);
   currentVotes.add(player.id);
 
-  await database.child('lobbies/$pin/gameState/state/votes').update({
-    newCategory.id.toString(): currentVotes
-  });
+  await database
+      .child('lobbies/$pin/gameState/state/votes')
+      .update({newCategory.id.toString(): currentVotes});
 }
 
-Future<void> removePlayerVoteFromCategory(String pin, Category category, Player player) async {
+Future<void> removePlayerVoteFromCategory(
+    String pin, Category category, Player player) async {
   final catId = category.id;
 
   category.playerVotes.remove(player.id);
 
-  await database.child('lobbies/$pin/gameState/state/votes/$catId').set(category.playerVotes);
+  await database
+      .child('lobbies/$pin/gameState/state/votes/$catId')
+      .set(category.playerVotes);
+}
+
+Future<void> increaseScoreForCategory(
+    String pin, String category, Player player) async {
+  var firebaseIdPath = convertToFirebasePath(player.name);
+  var firebaseCategory = convertToFirebasePath(category);
+  int increasedScore = player.score[firebaseCategory]! + 1;
+  await database
+      .child('lobbies/$pin/players/$firebaseIdPath/score/$firebaseCategory')
+      .set(increasedScore);
 }

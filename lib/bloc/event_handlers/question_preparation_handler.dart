@@ -35,19 +35,23 @@ class QuestionPreparationScreenHandler {
     Emitter<GameState> emit,
   ) async {
     final currentState = gameBloc.state;
-    if (currentState is QuestionPreparationState) {
-      try {
-        final loadedQuestion = await QuestionLoader.loadQuestion();
 
-        if (loadedQuestion != null && currentState.player.isHost) {
-          pushQuestion(gameBloc.gamePin, loadedQuestion);
+    if (currentState is QuestionPreparationState) {
+      /* Delay execution by 1 second. We do this to ensure, that the players are in the same state,
+      which allows loading questions. Else sometimes the question wasn't loaded for the joined players*/
+      //TODO:nzimmer look for a better way to buffer the question
+      Future.delayed(const Duration(seconds: 1), () async {
+        try {
+          final loadedQuestion = await MockQuestionLoader.loadQuestion();
+          if (loadedQuestion != null && currentState.player.isHost) {
+            pushQuestion(currentState.lobbySettings.pin, loadedQuestion);
+          }
+        } catch (error) {
+          if (kDebugMode) {
+            print('Error loading question: $error');
+          }
         }
-      } catch (error) {
-        // Handle any errors that may occur during question loading
-        if (kDebugMode) {
-          print('Error loading question: $error');
-        }
-      }
+      });
     }
   }
 
@@ -67,10 +71,13 @@ class QuestionPreparationScreenHandler {
       }
 
       emit(QuestionState(
+          category: currentState.category,
           currentQuestion: currentState.question,
           currentAnswers: answers,
           currentPlayer: currentState.player,
-          correctAnswer: correctAnswer));
+          correctAnswer: correctAnswer,
+          players: currentState.players,
+          lobbySettings: currentState.lobbySettings));
     }
   }
 }

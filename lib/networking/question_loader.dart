@@ -10,6 +10,27 @@ class QuestionAnswerPair {
   QuestionAnswerPair(this.question, this.answers);
 }
 
+class MockQuestionLoader {
+  static List<QuestionAnswerPair> questions = [
+    QuestionAnswerPair("The first answer is correct", [
+      Answer("first", true),
+      Answer("second", false),
+      Answer("third", false)
+    ]),
+    QuestionAnswerPair("The second answer is correct", [
+      Answer("first", false),
+      Answer("second", true),
+      Answer("third", false)
+    ]),
+  ];
+  static int index = 0;
+
+  static Future<QuestionAnswerPair?> loadQuestion() async {
+    return questions[(index++) %
+        2]; // We have to alternate between questions, so that firebase updates
+  }
+}
+
 class QuestionLoader {
   static String decodeHtml(String html) {
     final unescape = HtmlUnescape();
