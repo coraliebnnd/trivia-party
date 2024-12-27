@@ -3,18 +3,18 @@ import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 
 class CategoryVotingState extends GameState {
-  final Map<String, int> categoryVotes;
+  final Map<int, int> categoryIdToNumberOfVotesMap;
   final Player currentPlayer;
   final List<Player> players;
   final LobbySettings lobbySettings;
 
   const CategoryVotingState(
-      {this.categoryVotes = const {},
+      {required this.categoryIdToNumberOfVotesMap,
       required this.currentPlayer,
       required this.players,
-      required this.lobbySettings});
+        required this.lobbySettings});
 
   @override
   List<Object?> get props =>
-      [categoryVotes, currentPlayer, players, lobbySettings];
+      [categoryIdToNumberOfVotesMap, currentPlayer, players, lobbySettings];
 }
