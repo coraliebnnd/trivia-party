@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,7 +64,8 @@ class CategoryVoteScreenHandler {
   Future<void> onVoteCategoryFinished(
       FinishedCategoryVoteEvent event, Emitter<GameState> emit) async {
     final currentState = gameBloc.state;
-    if (currentState is CategoryVotingState) {
+    if (currentState is CategoryVotingState &&
+        currentState.currentPlayer.isHost) {
       final maxVotes = event.categoryVotes.values.reduce(max);
       final tiedCategories = event.categoryVotes.entries
           .where((entry) => entry.value == maxVotes)
@@ -72,10 +74,11 @@ class CategoryVoteScreenHandler {
       final random = Random();
       final mostVotedCategory =
           tiedCategories[random.nextInt(tiedCategories.length)];
-      emit(QuestionPreparationState(categories[mostVotedCategory]!,
-          event.currentPlayer, event.players, currentState.lobbySettings));
-      gameBloc.add(QuestionPeparationEvent(categories[mostVotedCategory]!,
-          currentPlayer: event.currentPlayer));
+      setCategory(currentState.lobbySettings.pin, mostVotedCategory);
+      //emit(QuestionPreparationState(categories[mostVotedCategory]!,
+      //    event.currentPlayer, event.players, currentState.lobbySettings));
+      //gameBloc.add(QuestionPeparationEvent(categories[mostVotedCategory]!,
+      //    currentPlayer: event.currentPlayer));
     }
   }
 
@@ -91,5 +94,14 @@ class CategoryVoteScreenHandler {
         players: currentState.players,
         categoryIdToNumberOfVotesMap: categoryIdToVotes,
         lobbySettings: currentState.lobbySettings));
+  }
+
+  FutureOr<void> onCategorySet(
+      CategorySetFirebase event, Emitter<GameState> emit) async {
+    final currentState = gameBloc.state as CategoryVotingState;
+    emit(QuestionPreparationState(event.category, currentState.currentPlayer,
+        currentState.players, currentState.lobbySettings));
+    gameBloc.add(QuestionPeparationEvent(event.category,
+        currentPlayer: currentState.currentPlayer));
   }
 }

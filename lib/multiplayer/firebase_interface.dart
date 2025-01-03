@@ -98,6 +98,11 @@ Future<void> pushQuestion(String pin, QuestionAnswerPair question) async {
 
 Future<void> startGame(String pin) async {
   await switchToVoting(pin);
+  await initCategory(pin);
+}
+
+Future<void> initCategory(String pin) async {
+  database.child('lobbies/$pin/gameState/state/category/category_id').set(-1);
 }
 
 Future<void> switchToVoting(String pin) async {
@@ -147,4 +152,10 @@ Future<void> increaseScoreForCategory(
   await database
       .child('lobbies/$pin/players/$firebaseIdPath/score/$firebaseCategory')
       .set(increasedScore);
+}
+
+Future<void> setCategory(String pin, int id) async {
+  await database
+      .child('lobbies/$pin/gameState/state/category/category_id')
+      .set(id);
 }

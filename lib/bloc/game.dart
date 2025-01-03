@@ -15,6 +15,7 @@ import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/models/categories.dart' as category_model;
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
+import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
@@ -22,6 +23,7 @@ import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
 import 'events/game_event.dart';
+import 'models/categories.dart';
 import 'models/player.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
@@ -34,6 +36,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   StreamSubscription? _voteRemovedSubscription;
   StreamSubscription? _voteAddedSubscription;
   StreamSubscription? _voteChangeSubscription;
+  StreamSubscription? _categorySetSubscription;
 
   LobbySettings? lobbySettings;
 
@@ -63,6 +66,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<FinishedCategoryVoteEvent>(categoryVoteHandler.onVoteCategoryFinished);
     on<VoteCategoryEvent>(categoryVoteHandler.onVoteCategory);
     on<VotesUpdatedFirebase>(categoryVoteHandler.onVotesUpdated);
+    on<CategorySetFirebase>(categoryVoteHandler.onCategorySet);
 
     on<QuestionPeparationEvent>(
         questionPreparationHandler.onQuestionPreparationStarted);
@@ -214,6 +218,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         add(VotesUpdatedFirebase(category_model.categories));
       });
 
+      _categorySetSubscription = database
+          .child('lobbies/$pin/gameState/state/category')
+          .onChildChanged
+          .listen((event) {
+        var currentState = state;
+        if (currentState is CategoryVotingState) {
+          currentState as CategoryVotingState;
+          if (event.snapshot.exists) {
+            final categoryIDData = event.snapshot.value;
+            category_model.Category category = categories[categoryIDData]!;
+            add(CategorySetFirebase(category: category));
+          }
+        }
+      });
+
       _scoreSubscription = database
           .child('lobbies/$pin/players/')
           .onChildChanged
@@ -268,6 +287,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _voteRemovedSubscription?.cancel();
     _questionSubscription?.cancel();
     _scoreSubscription?.cancel();
+    _categorySetSubscription?.cancel();
   }
 
   @override
