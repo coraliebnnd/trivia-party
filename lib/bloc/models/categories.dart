@@ -9,6 +9,12 @@ final Map<int, Category> categories = {
   6: Category(6, [10], "Books", Colors.green),
 };
 
+void resetCategoryVotes() {
+  for (var entry in categories.entries) {
+    entry.value.playerVotes = [];
+  }
+}
+
 class Category {
   final int id;
   final List<int> apiIds;
