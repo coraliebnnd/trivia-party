@@ -181,8 +181,8 @@ class _QuestionState extends State<Question>
                       child: RainbowWheel(
                         progress:
                             calculateProgressForPlayer(state.currentPlayer, 10),
-                        size: 50,
-                        borderWidth: 3,
+                        size: 90,
+                        borderWidth: 7,
                         borderColor: state.currentPlayer.color,
                       ),
                     ),

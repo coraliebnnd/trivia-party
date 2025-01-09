@@ -94,7 +94,13 @@ class RainbowWheelPainter extends CustomPainter {
     for (var i = 0; i < colors.length; i++) {
       final startAngle = (i * 2 * 3.14159) / colors.length;
       final sweepAngle = (2 * 3.14159) / colors.length;
-      final currentRadius = radius * progress[i];
+      var adjustedProgress = progress[i] + 0.15; // Minimum de 10%
+      
+      if (progress[i] == 0) {
+        adjustedProgress = 0;
+      }
+
+      final currentRadius = radius * adjustedProgress.clamp(0.0, 1.0);
 
       paint.color = colors[i];
       backgroundPaint.color = colors[i].withOpacity(0.3);
