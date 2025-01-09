@@ -72,9 +72,9 @@ class _CircularCountdownState extends State<CircularCountdown>
             ),
             child: Center(
               child: Text(
-                '${(widget.duration * (1 - _controller.value)).ceil()}s',
+                '${(widget.duration * (1 - _controller.value)).ceil()}',
                 style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
