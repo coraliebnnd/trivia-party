@@ -22,7 +22,6 @@ class Player extends Equatable {
   final List<String> completedCategories;
   final Map<String, int> score;
   final Color color;
-  final int rank;
 
   static final List<Color> _availableColors = [
     Colors.red,
@@ -44,18 +43,25 @@ class Player extends Equatable {
     required this.isHost,
     this.completedCategories = const [],
     required this.score,
-    this.rank = 0,
   }) : color = _availableColors[_random.nextInt(_availableColors.length)];
 
-  const Player.withColor(
-      {required this.name,
-      required this.id,
-      required this.isHost,
-      required this.color,
-      this.completedCategories = const [],
-      required this.score,
-      this.rank = 0});
+  const Player.withColor({
+    required this.name,
+    required this.id,
+    required this.isHost,
+    required this.color,
+    this.completedCategories = const [],
+    required this.score,
+  });
 
   @override
   List<Object?> get props => [name, id, completedCategories, score, color];
+
+  getTotalScore() {
+    int total = 0;
+    for (var value in score.values) {
+      total += value;
+    }
+    return total;
+  }
 }

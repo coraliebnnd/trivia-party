@@ -1,8 +1,10 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-
-import '../bloc/models/player.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/models/player.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
+import 'package:trivia_party/bloc/states/leaderboard_state.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,64 +23,80 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class PodiumScreen extends StatefulWidget {
+class PodiumScreen extends StatelessWidget {
   const PodiumScreen({super.key});
 
-  @override
-  PodiumScreenState createState() => PodiumScreenState();
-}
+  Map<String, int> calculatePlayerRanks(List<Player> players) {
+    // Create a map to store player ranks
+    final Map<String, int> ranks = {};
 
-class PodiumScreenState extends State<PodiumScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    // Sort players by total score in descending order
+    final sortedPlayers = List<Player>.from(players)
+      ..sort((a, b) => b.getTotalScore().compareTo(a.getTotalScore()));
 
-  final List<Player> players = [
-    Player(
-        name: "Coralie", id: "2", isHost: false, rank: 2, score: {"total": 27}),
-    Player(
-        name: "Niklas", id: "1", isHost: true, rank: 1, score: {"total": 30}),
-    // Uncomment to test with more players
-    Player(
-        name: "Marianne",
-        id: "3",
-        rank: 3,
-        isHost: false,
-        score: {"total": 22}),
-    Player(name: "Jane", id: "4", isHost: false, score: {"total": 18}),
-    // Player(name: "Michel", id: "5", isHost: false, score: {"total": 15}),
-    // Player(name: "John", id: "6", isHost: false, score: {"total": 13}),
-  ];
+    // Initialize variables for rank calculation
+    int currentRank = 1;
+    int sameRankCount = 1;
+    int lastScore = sortedPlayers.first.getTotalScore();
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 100), // Duration of one full rotation
-    )..repeat(); // Repeat the animation infinitely
-  }
+    // Iterate through sorted players to assign ranks
+    for (var i = 0; i < sortedPlayers.length; i++) {
+      final player = sortedPlayers[i];
+      final currentScore = player.getTotalScore();
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+      // If current score is different from last score,
+      // update rank and reset same rank counter
+      if (currentScore < lastScore) {
+        currentRank += sameRankCount;
+        sameRankCount = 1;
+        lastScore = currentScore;
+      } else {
+        // If scores are equal, increment same rank counter
+        sameRankCount++;
+      }
+
+      // Assign rank to player
+      ranks[player.id] = currentRank;
+    }
+
+    return ranks;
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
+    return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previous, current) => current is LeaderboardState,
+      builder: (context, state) {
+        if (state is! LeaderboardState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final players = state.players;
+        final topPlayers = players.take(3).toList();
+        final remainingPlayers =
+            players.length > 3 ? players.skip(3).toList() : [];
+
+        Map<String, int> playerRanks = calculatePlayerRanks(state.players);
+
         return Container(
           decoration: BoxDecoration(
-            color: Colors.grey[900], // Base background color
+            color: Colors.grey[900],
           ),
           child: Stack(
             children: [
-              // Sun Rays Background
-              CustomPaint(
-                size: Size.infinite,
-                painter: RaysPainter(rotationAngle: _controller.value * 2 * pi),
+              // Rotating rays using TweenAnimationBuilder
+              TweenAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: 2 * pi),
+                duration: const Duration(seconds: 100),
+                builder: (context, double rotation, child) {
+                  return CustomPaint(
+                    size: Size.infinite,
+                    painter: RaysPainter(rotationAngle: rotation),
+                  );
+                },
+                onEnd: () {
+                  (context as Element).markNeedsBuild();
+                },
               ),
 
               // Podium Bars (Center)
@@ -88,16 +106,17 @@ class PodiumScreenState extends State<PodiumScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: List.generate(
-                    players.length.clamp(2, 3),
+                    topPlayers.length,
                     (index) {
-                      final player = players[index];
-                      final heightFactor = 1.2 + (2 - player.rank) * 0.2;
+                      final player = topPlayers[index];
+                      final heightFactor =
+                          1.2 + (2 - playerRanks[player.id]!) * 0.2;
                       final width = 80.0 + (index == 1 ? 20 : 0);
 
                       return PodiumColumn(
-                        rank: (player.rank).toString(),
+                        rank: (playerRanks[player.id]).toString(),
                         name: player.name,
-                        score: player.score["total"].toString(),
+                        score: player.getTotalScore().toString(),
                         color: player.color,
                         heightFactor: heightFactor,
                         width: width,
@@ -111,17 +130,14 @@ class PodiumScreenState extends State<PodiumScreen>
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Expanded(child: SizedBox()), // Push list to bottom
-                  ...List.generate(
-                    (players.length > 3
-                        ? players.length - 3
-                        : 0), // Ensure non-negative length
-                    (index) {
-                      final player = players[index + 3];
+                  const Expanded(child: SizedBox()),
+                  ...remainingPlayers.asMap().entries.map(
+                    (entry) {
+                      final player = entry.value;
                       return RankingTile(
-                        rank: index + 4,
+                        rank: entry.key + 4,
                         name: player.name,
-                        score: player.score["total"]!,
+                        score: player.getTotalScore(),
                         color: player.color,
                       );
                     },
@@ -155,20 +171,16 @@ class RaysPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white10 // Visible grey color for the rays
+      ..color = Colors.white10
       ..style = PaintingStyle.fill;
 
-    final center =
-        Offset(size.width / 2, size.height / 4); // Rays originate here
-    final radius = size.width * 1.5; // Length of the rays
+    final center = Offset(size.width / 2, size.height / 4);
+    final radius = size.width * 1.5;
 
-    // Draw rays around the center
     for (double i = 0; i < 360; i += 15) {
-      // Rotate the rays by the rotationAngle
       final angle1 = (i + rotationAngle * 180 / pi) * pi / 180;
       final angle2 = (i + 7.5 + rotationAngle * 180 / pi) * pi / 180;
 
-      // Outer points of the rays
       final outerPoint1 = Offset(
         center.dx + radius * cos(angle1),
         center.dy + radius * sin(angle1),
@@ -179,12 +191,11 @@ class RaysPainter extends CustomPainter {
         center.dy + radius * sin(angle2),
       );
 
-      // Draw the triangular ray
       final rayPath = Path()
-        ..moveTo(center.dx, center.dy) // Starting at the center
-        ..lineTo(outerPoint1.dx, outerPoint1.dy) // First outer point
-        ..lineTo(outerPoint2.dx, outerPoint2.dy) // Second outer point
-        ..close(); // Close the triangle
+        ..moveTo(center.dx, center.dy)
+        ..lineTo(outerPoint1.dx, outerPoint1.dy)
+        ..lineTo(outerPoint2.dx, outerPoint2.dy)
+        ..close();
 
       canvas.drawPath(rayPath, paint);
     }
@@ -216,9 +227,8 @@ class PodiumColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
-      clipBehavior: Clip.none, // Allow the avatar to overflow
+      clipBehavior: Clip.none,
       children: [
-        // Podium Bar
         Container(
           width: width,
           height: 450 * heightFactor,
@@ -243,10 +253,8 @@ class PodiumColumn extends StatelessWidget {
             ),
           ),
         ),
-        // Circular Avatar Above the Bar
         Positioned(
-          top:
-              -10 - 25 * 2 * heightFactor, // Increase this value to add spacing
+          top: -10 - 25 * 2 * heightFactor,
           child: Column(
             children: [
               CircleAvatar(
