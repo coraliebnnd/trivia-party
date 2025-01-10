@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:trivia_party/widgets/TriviaPartyTitle.dart';
+import 'package:trivia_party/widgets/trivia_party_title_widget.dart';
 
 class HowToPlay extends StatelessWidget {
-  const HowToPlay({Key? key}) : super(key: key);
+  const HowToPlay({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class HowToPlay extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TriviaPartyTitle(),
+            const TriviaPartyTitle(),
             const SizedBox(height: 30),
             // Objective Section
             _buildSection(

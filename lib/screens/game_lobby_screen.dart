@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/game_state.dart';
-import '../widgets/TriviaPartyTitle.dart';
-import '../Routes.dart';
+import 'package:trivia_party/bloc/states/game_lobby_state.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
+import '../widgets/trivia_party_title_widget.dart';
 
 class CreateGame extends StatelessWidget {
-  const CreateGame({Key? key}) : super(key: key);
+  const CreateGame({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (previousState, currentState) {
+        return currentState is GameLobbyState;
+      },
       builder: (context, state) {
+        state as GameLobbyState;
         return Scaffold(
           backgroundColor: Colors.black,
           body: Center(
@@ -20,10 +25,10 @@ class CreateGame extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TriviaPartyTitle(),
+                  const TriviaPartyTitle(),
                   const SizedBox(height: 20),
                   // Game Pin
-                  Text(
+                  const Text(
                     'Game Pin',
                     style: TextStyle(
                       fontSize: 24,
@@ -32,8 +37,8 @@ class CreateGame extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    state.gamePin ?? 'Loading...',
-                    style: TextStyle(
+                    state.lobbySettings.pin,
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -54,7 +59,7 @@ class CreateGame extends StatelessWidget {
                           .toList(),
                     )
                   else
-                    Text(
+                    const Text(
                       'Waiting for players...',
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
@@ -63,7 +68,7 @@ class CreateGame extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Number of questions',
                         style: TextStyle(
                           fontSize: 20,
@@ -73,17 +78,21 @@ class CreateGame extends StatelessWidget {
                       const SizedBox(width: 10),
                       DropdownButton<int>(
                         dropdownColor: Colors.grey[900],
-                        value: state.numberOfQuestions,
-                        onChanged: (value) {
-                          // Handle dropdown change here
-                        },
+                        value: state.lobbySettings.numberOfQuestions,
+                        onChanged: state.currentPlayer.isHost
+                            ? (value) {
+                                context.read<GameBloc>().add(
+                                    SettingsChangedGameEvent(
+                                        numberOfQuestions: value ?? 0));
+                              }
+                            : null,
                         items: List.generate(
                           10,
                           (index) => DropdownMenuItem(
                             value: index + 1,
                             child: Text(
                               '${index + 1}',
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -94,10 +103,12 @@ class CreateGame extends StatelessWidget {
                   // Start Game Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      (state.currentPlayer?.isHost ?? false)
-                            ? Colors.pink
-                            : Colors.grey,
+                      splashFactory: state.currentPlayer.isHost
+                          ? InkRipple.splashFactory // Default Ripple Effect
+                          : NoSplash.splashFactory, // Remove Ripple Effect
+                      backgroundColor: (state.currentPlayer.isHost)
+                          ? Colors.pink
+                          : Colors.grey,
                       padding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 40),
                       shape: RoundedRectangleBorder(
@@ -105,10 +116,9 @@ class CreateGame extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, Routes.voteCategory);
-                      // Handle Start Game
+                      context.read<GameBloc>().add(StartGameEvent());
                     },
-                    child: Text(
+                    child: const Text(
                       'Start game',
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
@@ -130,13 +140,13 @@ class CreateGame extends StatelessWidget {
           backgroundColor: color,
           child: Text(
             name[0], // First letter of the name
-            style: TextStyle(fontSize: 24, color: Colors.white),
+            style: const TextStyle(fontSize: 24, color: Colors.white),
           ),
         ),
         const SizedBox(height: 5),
         Text(
           name,
-          style: TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
         ),
       ],
     );

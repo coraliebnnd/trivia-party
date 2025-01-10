@@ -1,239 +1,298 @@
-// lib/blocs/game/game_bloc.dart
 import 'dart:async';
-import 'dart:math';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
-import 'package:trivia_party/bloc/player.dart';
-import 'package:trivia_party/categories.dart';
+import 'package:trivia_party/bloc/event_handlers/category_vote_handler.dart';
+import 'package:trivia_party/bloc/event_handlers/game_lobby_handler.dart';
+import 'package:trivia_party/bloc/event_handlers/home_screen_handler.dart';
+import 'package:trivia_party/bloc/event_handlers/question_handler.dart';
+import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.dart';
+import 'package:trivia_party/bloc/events/category_vote_events.dart';
+import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
+import 'package:trivia_party/bloc/events/question_preparation_events.dart';
+import 'package:trivia_party/bloc/events/question_screen_events.dart';
+import 'package:trivia_party/bloc/models/categories.dart' as category_model;
+import 'package:trivia_party/bloc/models/lobby_settings.dart';
+import 'package:trivia_party/bloc/states/category_voting_state.dart';
+import 'package:trivia_party/bloc/states/game_lobby_state.dart';
+import 'package:trivia_party/bloc/states/game_state.dart';
+import 'package:trivia_party/bloc/states/home_screen_state.dart';
+import 'package:trivia_party/bloc/states/question_preparation_state.dart';
+import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
-import 'package:trivia_party/networking/question_loader.dart';
-import 'game_event.dart';
-import 'game_state.dart';
+import 'events/game_event.dart';
+import 'models/categories.dart';
+import 'models/player.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
-  Timer? _timer;
-  final colors = [
-    Colors.blue,
-    Colors.red,
-    Colors.yellow,
-    Colors.amber,
-    Colors.deepPurpleAccent,
-    Colors.lightGreen,
-  ];
-  int color_index = 0;
+  StreamSubscription? _playerJoinedSubscription;
+  StreamSubscription? _settingsChangedSubscription;
+  StreamSubscription? _gameStateSubscription;
+  StreamSubscription? _questionSubscription;
+  StreamSubscription? _scoreSubscription;
 
-  GameBloc() : super(const GameState()) {
-    on<CreateGameEvent>(_onCreateGame);
-    on<JoinGameEvent>(_onJoinGame);
-    on<StartGameEvent>(_onStartGame);
-    on<VoteCategoryEvent>(_onVoteCategory);
-    on<SubmitAnswerEvent>(_onSubmitAnswer);
-    on<TimerTickEvent>(_onTimerTick);
-    on<CreateQuestionEvent>(_onCreateQuestion);
-    on<RevealAnswerEvent>(_onRevealAnswer);
-    on<VoteCategoryFinishedEvent>(_onVoteCategoryFinished);
-    on<QuestionPeparationEvent>(_onQuestionPreparation);
+  StreamSubscription? _voteRemovedSubscription;
+  StreamSubscription? _voteAddedSubscription;
+  StreamSubscription? _voteChangeSubscription;
+  StreamSubscription? _categorySetSubscription;
+
+  LobbySettings? lobbySettings;
+
+  GameBloc(GlobalKey<NavigatorState> navigatorKey)
+      : super(const HomeScreenState()) {
+    CategoryVoteScreenHandler categoryVoteHandler =
+        CategoryVoteScreenHandler(gameBloc: this);
+    QuestionPreparationScreenHandler questionPreparationHandler =
+        QuestionPreparationScreenHandler(gameBloc: this);
+    QuestionScreenHandler questionHandler =
+        QuestionScreenHandler(gameBloc: this);
+    GameLobbyScreenHandler gameLobbyHandler =
+        GameLobbyScreenHandler(gameBloc: this);
+    HomeScreenHandler homeScreenHandler = HomeScreenHandler(gameBloc: this);
+
+    on<CreateGameEvent>(homeScreenHandler.onCreateGame);
+    on<JoinGameEvent>(homeScreenHandler.onJoinGame);
+    on<ShowJoinScreenEvent>(homeScreenHandler.onSwitchToJoinGame);
+    on<SettingsChangedFirebaseEvent>(
+        gameLobbyHandler.onSettingsChangedFirebase);
+    on<SettingsChangedGameEvent>(gameLobbyHandler.onSettingsChangedGame);
+
+    on<StartGameEvent>(gameLobbyHandler.onStartGame);
+    on<PlayerJoinedEvent>(gameLobbyHandler.onPlayerJoined);
+
+    on<StartCategoryVoteEvent>(categoryVoteHandler.onStartCategoryVoting);
+    on<FinishedCategoryVoteEvent>(categoryVoteHandler.onVoteCategoryFinished);
+    on<VoteCategoryEvent>(categoryVoteHandler.onVoteCategory);
+    on<VotesUpdatedFirebase>(categoryVoteHandler.onVotesUpdated);
+    on<CategorySetFirebase>(categoryVoteHandler.onCategorySet);
+
+    on<QuestionPeparationEvent>(
+        questionPreparationHandler.onQuestionPreparationStarted);
+    on<QuestionPreparationFinishedEvent>(
+        questionPreparationHandler.onQuestionPreparationFinished);
+    on<QuestionLoadedByFirebaseEvent>(
+        questionPreparationHandler.onQuestionLoadedByFirebase);
+
+    on<SubmitAnswerEvent>(questionHandler.onSubmitAnswer);
+    on<RevealAnswerEvent>(questionHandler.onRevealAnswer);
   }
 
-  Future<void> _onCreateGame(
-    CreateGameEvent event,
-    Emitter<GameState> emit,
-  ) async {
-    final currentPLayer = Player(
-        name: event.playerName,
-        id: DateTime.now().toString(),
-        isHost: true
-    );
-
-    emit(state.copyWith(
-      status: GameStatus.creating,
-      currentPlayer: currentPLayer
-    ));
-
-    String gamePin = await createLobby(currentPLayer.name);
-
-    emit(state.copyWith(
-      status: GameStatus.created,
-      currentPlayer: currentPLayer,
-      gamePin: gamePin
-    ));
-  }
-
-  Future<void> addPlayersAsync(List<String> newPlayers, String gamePin) async {
-    for (var name in newPlayers) {
-      await Future.delayed(Duration(seconds: 1)); // Add a 1-second delay
-      add(JoinGameEvent(playerName: name, gamePin: gamePin));
+  Player getPlayerForKey(String name, List<Player> players) {
+    for (var player in players) {
+      if (player.name == name) {
+        return player;
+      }
     }
+    throw (Exception("Player not found"));
   }
 
-  Future<void> _onJoinGame(
-    JoinGameEvent event,
-    Emitter<GameState> emit,
-  ) async {
-    emit(state.copyWith(status: GameStatus.joining));
+  void startFirebaseListener() {
+    cancelFirebaseListener();
 
-    // Create new player
-    final newPlayer = Player(
-        name: event.playerName,
-        id: DateTime.now().toString(),
-        isHost: true,
-        color: colors[color_index]);
-    color_index += 1;
+    if (state is GameLobbyState) {
+      cancelFirebaseListener();
 
-    // Add player to the game
-    final updatedPlayers = List<Player>.from(state.players)..add(newPlayer);
+      final currentState = state as GameLobbyState;
+      final database = FirebaseDatabase.instance.ref();
 
-    emit(state.copyWith(
-      status: GameStatus.joining,
-      currentPlayer: newPlayer,
-      players: updatedPlayers,
-    ));
-  }
-
-  Future<void> _onStartGame(
-    StartGameEvent event,
-    Emitter<GameState> emit,
-  ) async {
-    emit(state.copyWith(
-      status: GameStatus.voting,
-    ));
-    _startTimer();
-  }
-
-  Future<void> _onVoteCategory(
-    VoteCategoryEvent event,
-    Emitter<GameState> emit,
-  ) async {
-    final currentPlayer = state.currentPlayer;
-
-    // Ensure the current player exists
-    if (currentPlayer == null) return;
-
-    // Create a copy of the current votes
-    final updatedVotes = Map<String, int>.from(state.categoryVotes);
-    final updatedPlayerVotes = Map<String, String>.from(state.playerVotes);
-
-    // Check if the player has already voted
-    if (updatedPlayerVotes.containsKey(currentPlayer.id)) {
-      // Remove the player's previous vote from the categoryVotes
-      final previousCategory = updatedPlayerVotes[currentPlayer.id];
-      if (previousCategory != null &&
-          updatedVotes.containsKey(previousCategory)) {
-        updatedVotes[previousCategory] = (updatedVotes[previousCategory]! - 1)
-            .clamp(0, double.infinity)
-            .toInt();
-        if (updatedVotes[previousCategory] == 0) {
-          updatedVotes.remove(previousCategory);
+      final pin = currentState.lobbySettings.pin;
+      _playerJoinedSubscription =
+          database.child('lobbies/$pin/players').onChildAdded.listen((event) {
+        final playerData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
+        if (state is! GameLobbyState) {
+          return;
         }
-      }
+
+        var currentState = state as GameLobbyState;
+        if (playerData["id"] == currentState.currentPlayer.id) {
+          return; // preventing the player controlled by the user from being added twice
+        }
+
+        final player = Player.withColor(
+            name: playerData['name'],
+            id: playerData['id'],
+            isHost: playerData['isHost'],
+            completedCategories: playerData['completedCategories'] ?? [],
+            score: generateScoreMap(),
+            color: Color(playerData['color']));
+
+        add(PlayerJoinedEvent(player: player));
+      });
+
+      _settingsChangedSubscription =
+          database.child('lobbies/$pin/settings').onValue.listen((event) {
+        if (event.snapshot.exists) {
+          final settingsData =
+              Map<String, dynamic>.from(event.snapshot.value as Map);
+          add(SettingsChangedFirebaseEvent(
+              numberOfQuestions: settingsData["numberOfQuestions"]));
+        } else {
+          if (kDebugMode) {
+            print('Child was removed or no longer exists');
+          }
+        }
+      });
+
+      _gameStateSubscription =
+          database.child('lobbies/$pin/gameState').onValue.listen((event) {
+        final gameStateData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
+        final kind = gameStateData['kind'];
+
+        switch (kind) {
+          case 'waitingRoom':
+            break;
+          case 'voting':
+            add(StartCategoryVoteEvent());
+            break;
+        }
+      });
+      _questionSubscription = database
+          .child('lobbies/$pin/gameState/state/question')
+          .onValue
+          .listen((event) {
+        var currentState = state;
+        if (currentState is! QuestionPreparationState) {
+          if (kDebugMode) {
+            print(
+                "The Question listener was wrongly activated in state $currentState");
+          }
+          return;
+        }
+        final questionData =
+            Map<String, dynamic>.from(event.snapshot.value as Map);
+        add(QuestionLoadedByFirebaseEvent(
+            currentState.category,
+            questionData["question"],
+            List<String>.from(questionData["answers"]),
+            questionData["correctAnswer"],
+            currentState.player,
+            currentState.players));
+      });
+
+      _voteAddedSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildAdded
+          .listen((event) {
+        final List<String> playerVotes =
+            List.from(event.snapshot.value as List);
+
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase(category_model.categories));
+      });
+
+      _voteChangeSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildChanged
+          .listen((event) {
+        final List<String> playerVotes =
+            List.from(event.snapshot.value as List);
+
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        category?.playerVotes = playerVotes;
+
+        add(VotesUpdatedFirebase(category_model.categories));
+      });
+
+      _voteRemovedSubscription = database
+          .child('lobbies/$pin/gameState/state/votes')
+          .onChildRemoved
+          .listen((event) {
+        category_model.Category? category =
+            category_model.categories[int.parse(event.snapshot.key!)];
+
+        // The category was deleted completely from firebase
+        // (No player is currently voting for it anymore)
+        // So we just clear it to reflect it on our screen
+        category?.playerVotes.clear();
+
+        add(VotesUpdatedFirebase(category_model.categories));
+      });
+
+      _categorySetSubscription = database
+          .child('lobbies/$pin/gameState/state/category')
+          .onChildChanged
+          .listen((event) {
+        var currentState = state;
+        if (currentState is CategoryVotingState) {
+          currentState as CategoryVotingState;
+          if (event.snapshot.exists) {
+            final categoryIDData = event.snapshot.value;
+            category_model.Category category = categories[categoryIDData]!;
+            add(CategorySetFirebase(category: category));
+          }
+        }
+      });
+
+      _scoreSubscription = database
+          .child('lobbies/$pin/players/')
+          .onChildChanged
+          .listen((event) {
+        var currentState = state;
+        if (currentState is! QuestionState) {
+          if (kDebugMode) {
+            print(
+                "The Score listener was wrongly activated in state $currentState");
+          }
+          return;
+        }
+
+        // Access the changed key and value
+        var updatedPlayer = event.snapshot.key;
+        var updatedScore = (event.snapshot.value as Map)["score"];
+        var playerToUpdate =
+            getPlayerForKey(updatedPlayer.toString(), currentState.players);
+        // Log or process the changes
+        if (kDebugMode) {
+          print("Child changed: $updatedPlayer, New value: $updatedScore");
+        }
+
+        // Ensure updatedScore is a Map and not null
+        if (updatedScore == null) {
+          if (kDebugMode) {
+            print("Invalid updatedScore format: $updatedScore");
+          }
+          return;
+        }
+
+        // Update the player's score
+        (updatedScore).forEach((key, value) {
+          if (value is int) {
+            playerToUpdate.score[key] = value;
+          } else {
+            if (kDebugMode) {
+              print("Invalid score value for $key: $value");
+            }
+          }
+        });
+      });
     }
-
-    // Register the player's new vote
-    updatedVotes[event.category] = (updatedVotes[event.category] ?? 0) + 1;
-    updatedPlayerVotes[currentPlayer.id] = event.category;
-
-    // Emit the updated state
-    emit(state.copyWith(
-      categoryVotes: updatedVotes,
-      playerVotes: updatedPlayerVotes,
-    ));
   }
 
-  Future<void> _onSubmitAnswer(
-    SubmitAnswerEvent event,
-    Emitter<GameState> emit,
-  ) async {
-    emit(state.copyWith(selectedAnswer: event.answer));
-  }
-
-  void _onTimerTick(
-    TimerTickEvent event,
-    Emitter<GameState> emit,
-  ) {
-    emit(state.copyWith(timeRemaining: event.remaining));
-
-    if (event.remaining <= 0) {
-      _timer?.cancel();
-      if (state.status == GameStatus.voting) {
-        emit(state.copyWith(status: GameStatus.questioning));
-      }
-    }
-  }
-
-  void _startTimer() {
-    _timer?.cancel();
-    const duration = Duration(seconds: 1);
-    int remaining = 30;
-
-    _timer = Timer.periodic(duration, (timer) {
-      remaining--;
-      add(TimerTickEvent(remaining));
-    });
+  void cancelFirebaseListener() {
+    _playerJoinedSubscription?.cancel();
+    _settingsChangedSubscription?.cancel();
+    _gameStateSubscription?.cancel();
+    _voteAddedSubscription?.cancel();
+    _voteChangeSubscription?.cancel();
+    _voteRemovedSubscription?.cancel();
+    _questionSubscription?.cancel();
+    _scoreSubscription?.cancel();
+    _categorySetSubscription?.cancel();
   }
 
   @override
   Future<void> close() {
-    _timer?.cancel();
+    cancelFirebaseListener(); // Ensure listeners are cleaned up when the bloc is closed.
     return super.close();
-  }
-
-  Future<void> _onCreateQuestion(
-      CreateQuestionEvent event, Emitter<GameState> emit) async {
-    // Update the state with the new question and answers
-    emit(state.copyWith(
-      currentQuestion: event.question,
-      currentAnswers: event.answers.map((answer) => answer.text).toList(),
-      correctAnswer: event.answers.firstWhere((answer) => answer.isTrue).text,
-      status: GameStatus.questioning, // Optional: Update status if needed
-    ));
-  }
-
-  void _onRevealAnswer(RevealAnswerEvent event, Emitter<GameState> emit) {
-    emit(state.copyWith(isAnswerRevealed: true));
-  }
-
-  void _onVoteCategoryFinished(
-      VoteCategoryFinishedEvent event, Emitter<GameState> emit) {
-    String currentCategory = "";
-    int currentMaxVotes = -1;
-    state.categoryVotes.forEach((category, votes) {
-      if (votes > currentMaxVotes) {
-        currentCategory = category;
-        currentMaxVotes = votes;
-      }
-    });
-
-    if (currentMaxVotes == 0 || currentCategory == "Random") {
-      var categories_for_choice = [
-        Categories.books,
-        Categories.sport,
-        Categories.music,
-        Categories.movies_tv,
-        Categories.video_game,
-        Categories.art
-      ];
-      currentCategory =
-          categories_for_choice[Random().nextInt(categories_for_choice.length)];
-    }
-    emit(state.copyWith(selectedCategory: currentCategory));
-  }
-
-  void _onQuestionPreparation(
-      QuestionPeparationEvent event, Emitter<GameState> emit) {
-    QuestionLoader.loadQuestion().then((loadedQuestion) {
-      if (loadedQuestion != null) {
-        add(CreateQuestionEvent(
-          loadedQuestion.question,
-          loadedQuestion.answers,
-        ));
-      } else {
-        print("Error loading Question");
-      }
-    });
-    emit(state.copyWith(
-      isAnswerCorrect: false,
-      isAnswerRevealed: false,
-      selectedAnswer: null,
-    ));
   }
 }
