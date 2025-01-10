@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../bloc/models/player.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -29,6 +31,23 @@ class PodiumScreen extends StatefulWidget {
 class PodiumScreenState extends State<PodiumScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+
+  final List<Player> players = [
+    Player(
+        name: "Coralie", id: "2", isHost: false, rank: 2, score: {"total": 27}),
+    Player(
+        name: "Niklas", id: "1", isHost: true, rank: 1, score: {"total": 30}),
+    // Uncomment to test with more players
+    Player(
+        name: "Marianne",
+        id: "3",
+        rank: 3,
+        isHost: false,
+        score: {"total": 22}),
+    Player(name: "Jane", id: "4", isHost: false, score: {"total": 18}),
+    // Player(name: "Michel", id: "5", isHost: false, score: {"total": 15}),
+    // Player(name: "John", id: "6", isHost: false, score: {"total": 13}),
+  ];
 
   @override
   void initState() {
@@ -63,43 +82,29 @@ class PodiumScreenState extends State<PodiumScreen>
               ),
 
               // Podium Bars (Center)
-              const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      // Left bar
-                      PodiumColumn(
-                        rank: "2",
-                        name: "Coralie",
-                        score: "26",
-                        color: Colors.purple,
-                        heightFactor: 1.4,
-                        width: 80,
-                      ),
-                      // Middle bar
-                      PodiumColumn(
-                        rank: "1",
-                        name: "Niklas",
-                        score: "30",
-                        color: Colors.blue,
-                        heightFactor: 1.8,
-                        width: 100,
-                      ),
-                      // Right bar
-                      PodiumColumn(
-                        rank: "3",
-                        name: "Marianne",
-                        score: "22",
-                        color: Colors.pink,
-                        heightFactor: 1.2,
-                        width: 80,
-                      ),
-                    ],
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: List.generate(
+                    players.length.clamp(2, 3),
+                    (index) {
+                      final player = players[index];
+                      final heightFactor = 1.2 + (2 - player.rank) * 0.2;
+                      final width = 80.0 + (index == 1 ? 20 : 0);
+
+                      return PodiumColumn(
+                        rank: (player.rank).toString(),
+                        name: player.name,
+                        score: player.score["total"].toString(),
+                        color: player.color,
+                        heightFactor: heightFactor,
+                        width: width,
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
 
               // Rankings List (Foreground)
@@ -107,12 +112,20 @@ class PodiumScreenState extends State<PodiumScreen>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Expanded(child: SizedBox()), // Push list to bottom
-                  const RankingTile(
-                      rank: 4, name: "Jane", score: 18, color: Colors.orange),
-                  const RankingTile(
-                      rank: 5, name: "Michel", score: 15, color: Colors.yellow),
-                  const RankingTile(
-                      rank: 6, name: "John", score: 13, color: Colors.green),
+                  ...List.generate(
+                    (players.length > 3
+                        ? players.length - 3
+                        : 0), // Ensure non-negative length
+                    (index) {
+                      final player = players[index + 3];
+                      return RankingTile(
+                        rank: index + 4,
+                        name: player.name,
+                        score: player.score["total"]!,
+                        color: player.color,
+                      );
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
@@ -146,7 +159,7 @@ class RaysPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final center =
-        Offset(size.width / 2, size.height / 6.5); // Rays originate here
+        Offset(size.width / 2, size.height / 4); // Rays originate here
     final radius = size.width * 1.5; // Length of the rays
 
     // Draw rays around the center
@@ -208,7 +221,7 @@ class PodiumColumn extends StatelessWidget {
         // Podium Bar
         Container(
           width: width,
-          height: 200 * heightFactor,
+          height: 450 * heightFactor,
           decoration: BoxDecoration(
             color: color,
             borderRadius: const BorderRadius.only(
