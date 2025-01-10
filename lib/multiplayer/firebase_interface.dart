@@ -117,6 +117,13 @@ Future<void> switchToVoting(String pin) async {
   });
 }
 
+Future<void> resetVotingInFirebase(String pin) async {
+  await database.child('lobbies/$pin/gameState/state/votes').set({});
+  await database
+      .child('lobbies/$pin/gameState/state/category/category_id')
+      .set(-1); // We need a value in category_id to get an update
+}
+
 Future<void> voteForCategory(
     String pin, Category newCategory, Player player) async {
   categories.forEach((id, category) {
