@@ -128,7 +128,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           final settingsData =
               Map<String, dynamic>.from(event.snapshot.value as Map);
           add(SettingsChangedFirebaseEvent(
-              numberOfQuestions: settingsData["numberOfQuestions"]));
+              numberOfQuestions: settingsData["numberOfQuestions"],
+              difficulty: settingsData["difficulty"]
+              ));
         } else {
           if (kDebugMode) {
             print('Child was removed or no longer exists');
