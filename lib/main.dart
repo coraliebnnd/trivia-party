@@ -5,6 +5,7 @@ import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_join_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
+import 'package:trivia_party/bloc/states/leaderboard_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/screens/category_preparation_screen.dart';
@@ -13,6 +14,7 @@ import 'package:trivia_party/screens/game_lobby_screen.dart';
 import 'package:trivia_party/screens/home_screen.dart';
 import 'package:trivia_party/screens/how_to_play_screen.dart';
 import 'package:trivia_party/screens/question_screen.dart';
+import 'package:trivia_party/screens/podium_screen.dart';
 import 'package:trivia_party/screens/vote_category_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -65,6 +67,8 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
               ?.pushNamed(Routes.categoryPreparation);
         } else if (state is QuestionState) {
           widget.navigatorKey.currentState?.pushNamed(Routes.question);
+        } else if (state is LeaderboardState) {
+          widget.navigatorKey.currentState?.pushNamed(Routes.leaderboard);
         }
       },
       child: MaterialApp(
@@ -84,6 +88,7 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
           Routes.voteCategory: (context) => const VoteCategory(),
           Routes.question: (context) => const Question(),
           Routes.categoryPreparation: (context) => const CategoryPreparation(),
+          Routes.leaderboard: (context) => const PodiumScreen(),
         },
       ),
     );

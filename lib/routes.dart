@@ -6,4 +6,5 @@ class Routes {
   static const String voteCategory = "/vote";
   static const String categoryPreparation = "/category-preparation";
   static const String question = "/question";
+  static const String leaderboard = "/leaderboard";
 }

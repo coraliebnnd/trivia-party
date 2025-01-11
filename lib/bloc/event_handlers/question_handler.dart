@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
+import 'package:trivia_party/bloc/events/leaderboard_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
@@ -20,9 +22,32 @@ class QuestionScreenHandler {
       }
       emit(currentState.copyWith(isAnswerRevealed: true));
       Future.delayed(const Duration(seconds: 3), () {
-        gameBloc.add(StartCategoryVoteEvent());
+        if (isAnyPlayerFinished(currentState.players,
+            currentState.lobbySettings.numberOfQuestions)) {
+          gameBloc.add(ShowLeaderBoardEvent());
+        } else {
+          gameBloc.add(StartCategoryVoteEvent());
+        }
       });
     }
+  }
+
+  bool isAnyPlayerFinished(List<Player> players, int numberOfQuestions) {
+    for (var player in players) {
+      if (isPlayerFinished(player, numberOfQuestions)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool isPlayerFinished(Player player, int numberOfQuestions) {
+    for (var scoreEntry in player.score.values) {
+      if (scoreEntry < numberOfQuestions) {
+        return false;
+      }
+    }
+    return true;
   }
 
   Future<void> onSubmitAnswer(

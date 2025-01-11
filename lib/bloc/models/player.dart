@@ -56,4 +56,12 @@ class Player extends Equatable {
 
   @override
   List<Object?> get props => [name, id, completedCategories, score, color];
+
+  getTotalScore() {
+    int total = 0;
+    for (var value in score.values) {
+      total += value;
+    }
+    return total;
+  }
 }
