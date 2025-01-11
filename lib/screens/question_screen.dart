@@ -179,8 +179,9 @@ class _QuestionState extends State<Question>
                       duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
                       child: RainbowWheel(
-                        progress:
-                            calculateProgressForPlayer(state.currentPlayer, 10),
+                        progress: calculateProgressForPlayer(
+                            state.currentPlayer,
+                            state.lobbySettings.numberOfQuestions),
                         size: 50,
                         borderWidth: 3,
                         borderColor: state.currentPlayer.color,
