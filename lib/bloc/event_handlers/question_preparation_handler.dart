@@ -42,8 +42,9 @@ class QuestionPreparationScreenHandler {
       //TODO:nzimmer look for a better way to buffer the question
       Future.delayed(const Duration(seconds: 1), () async {
         try {
+          final categoryId = currentState.category.apiIds[0];
           final difficulty = currentState.lobbySettings.difficulty;
-          final loadedQuestion = await QuestionLoader.loadQuestion(difficulty);
+          final loadedQuestion = await QuestionLoader.loadQuestion(difficulty, categoryId);
           // final loadedQuestion = await MockQuestionLoader.loadQuestion();
           if (loadedQuestion != null && currentState.player.isHost) {
             pushQuestion(currentState.lobbySettings.pin, loadedQuestion);

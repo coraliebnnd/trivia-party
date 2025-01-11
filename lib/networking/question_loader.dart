@@ -37,9 +37,9 @@ class QuestionLoader {
     return unescape.convert(html);
   }
 
-  static Future<QuestionAnswerPair?> loadQuestion(String difficulty) async {
+  static Future<QuestionAnswerPair?> loadQuestion(String difficulty, int categoryId) async {
     final url =
-        'https://opentdb.com/api.php?amount=1&category=10&type=multiple&difficulty=$difficulty';
+        'https://opentdb.com/api.php?amount=1&category=$categoryId&type=multiple&difficulty=$difficulty';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
