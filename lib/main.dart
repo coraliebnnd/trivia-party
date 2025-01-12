@@ -18,6 +18,7 @@ import 'package:trivia_party/screens/podium_screen.dart';
 import 'package:trivia_party/screens/vote_category_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'bloc/states/home_screen_state.dart';
 import 'firebase_options.dart';
 
 import 'routes.dart';
@@ -69,6 +70,8 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
           widget.navigatorKey.currentState?.pushNamed(Routes.question);
         } else if (state is LeaderboardState) {
           widget.navigatorKey.currentState?.pushNamed(Routes.leaderboard);
+        } else if (state is HomeScreenState) {
+          widget.navigatorKey.currentState?.pushNamed('/');
         }
       },
       child: MaterialApp(
