@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
+const UNDEFINED_CATEGORY = -1;
 final Map<int, Category> categories = {
   1: Category(1, [25], "Art", Colors.pink),
   2: Category(2, [15], "Video Games", Colors.purple),
@@ -9,10 +11,11 @@ final Map<int, Category> categories = {
   6: Category(6, [10], "Books", Colors.green),
 };
 
-void resetCategoryVotes() {
+void resetCategoryVotes(String pin) {
   for (var entry in categories.entries) {
     entry.value.playerVotes = [];
   }
+  resetVotingInFirebase(pin);
 }
 
 class Category {

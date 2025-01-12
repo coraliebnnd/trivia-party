@@ -231,6 +231,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         if (currentState is CategoryVotingState) {
           if (event.snapshot.exists) {
             final categoryIDData = event.snapshot.value;
+            bool categoryWasReset = categoryIDData == UNDEFINED_CATEGORY;
+            if (categoryWasReset) {
+              return; // CATEGORY was reset. Ignore
+            }
             category_model.Category category = categories[categoryIDData]!;
             add(CategorySetFirebase(category: category));
           }
