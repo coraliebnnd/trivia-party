@@ -49,9 +49,14 @@ class QuestionLoader {
         if (data['results'] != null && data['results'].isNotEmpty) {
           final questionData = data['results'][0];
           final currentQuestion = decodeHtml(questionData['question']);
-          final correctAnswer = questionData['correct_answer'];
+          final correctAnswer = decodeHtml(questionData['correct_answer']);
+          final incorrectAnswers = (questionData['incorrect_answers'] as List<dynamic>)
+              .map((answer) => decodeHtml(answer))
+              .toList();
+
+          // Combine and shuffle answers
           final answers = [
-            ...(questionData['incorrect_answers'] as List<dynamic>),
+            ...incorrectAnswers,
             correctAnswer
           ]..shuffle();
 
