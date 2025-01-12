@@ -12,6 +12,7 @@ import 'package:trivia_party/bloc/event_handlers/question_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
+import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/events/leaderboard_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
@@ -58,6 +59,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<CreateGameEvent>(homeScreenHandler.onCreateGame);
     on<JoinGameEvent>(homeScreenHandler.onJoinGame);
     on<ShowJoinScreenEvent>(homeScreenHandler.onSwitchToJoinGame);
+    on<SwitchToHomeScreenEvent>(homeScreenHandler.onSwitchToHomeScreen);
     on<SettingsChangedFirebaseEvent>(
         gameLobbyHandler.onSettingsChangedFirebase);
     on<SettingsChangedGameEvent>(gameLobbyHandler.onSettingsChangedGame);
@@ -133,7 +135,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           final settingsData =
               Map<String, dynamic>.from(event.snapshot.value as Map);
           add(SettingsChangedFirebaseEvent(
-              numberOfQuestions: settingsData["numberOfQuestions"]));
+              numberOfQuestions: settingsData["numberOfQuestions"],
+              difficulty: settingsData["difficulty"]
+              ));
         } else {
           if (kDebugMode) {
             print('Child was removed or no longer exists');

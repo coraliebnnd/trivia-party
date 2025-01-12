@@ -18,7 +18,7 @@ class CreateGame extends StatelessWidget {
       builder: (context, state) {
         state as GameLobbyState;
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF191919),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -64,43 +64,99 @@ class CreateGame extends StatelessWidget {
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   const SizedBox(height: 30),
-                  // Number of Questions
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Number of questions',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      DropdownButton<int>(
-                        dropdownColor: Colors.grey[900],
-                        value: state.lobbySettings.numberOfQuestions,
-                        onChanged: state.currentPlayer.isHost
-                            ? (value) {
-                                context.read<GameBloc>().add(
-                                    SettingsChangedGameEvent(
-                                        numberOfQuestions: value ?? 0));
-                              }
-                            : null,
-                        items: List.generate(
-                          10,
-                          (index) => DropdownMenuItem(
-                            value: index + 1,
-                            child: Text(
-                              '${index + 1}',
-                              style: const TextStyle(color: Colors.white),
+                  // Number of Questions and Difficulty
+                  Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Number of Questions',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 10),
+                            DropdownButton<int>(
+                              dropdownColor: Colors.grey[900],
+                              value: state.lobbySettings.numberOfQuestions,
+                              onChanged: state.currentPlayer.isHost
+                                  ? (int? value) {
+                                      if (value != null) {
+                                        context.read<GameBloc>().add(
+                                            SettingsChangedGameEvent(numberOfQuestions: value));
+                                      }
+                                    }
+                                  : null,
+                              items: List.generate(
+                                10,
+                                (index) => DropdownMenuItem(
+                                  value: index + 1,
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Difficulty',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            DropdownButton<String>(
+                              dropdownColor: Colors.grey[900],
+                              value: state.lobbySettings.difficulty,
+                              onChanged: state.currentPlayer.isHost
+                                  ? (String? value) {
+                                      if (value != null) {
+                                        context.read<GameBloc>().add(
+                                            SettingsChangedGameEvent(difficulty: value));
+                                      }
+                                    }
+                                  : null,
+                              items: const [
+                                DropdownMenuItem(
+                                  value: "easy",
+                                  child: Text(
+                                    "Easy",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "medium",
+                                  child: Text(
+                                    "Medium",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "hard",
+                                  child: Text(
+                                    "Hard",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 30),
                   // Start Game Button
+                  const SizedBox(height: 20), 
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       splashFactory: state.currentPlayer.isHost

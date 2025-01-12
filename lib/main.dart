@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_join_state.dart';
@@ -18,8 +19,8 @@ import 'package:trivia_party/screens/podium_screen.dart';
 import 'package:trivia_party/screens/vote_category_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'bloc/states/home_screen_state.dart';
 import 'firebase_options.dart';
-
 import 'routes.dart';
 
 Future<void> main() async {
@@ -55,20 +56,24 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
           return;
         }
         lastState = state;
+
         // Use navigatorKey for navigation
+        final navigator = widget.navigatorKey.currentState;
+
         if (state is GameLobbyState) {
-          widget.navigatorKey.currentState?.pushNamed(Routes.createGame);
+          navigator?.pushNamed(Routes.createGame);
         } else if (state is GameJoinState) {
-          widget.navigatorKey.currentState?.pushNamed(Routes.joinGame);
+          navigator?.pushNamed(Routes.joinGame);
         } else if (state is CategoryVotingState) {
-          widget.navigatorKey.currentState?.pushNamed(Routes.voteCategory);
+          navigator?.pushNamed(Routes.voteCategory);
         } else if (state is QuestionPreparationState) {
-          widget.navigatorKey.currentState
-              ?.pushNamed(Routes.categoryPreparation);
+          navigator?.pushNamed(Routes.categoryPreparation);
         } else if (state is QuestionState) {
-          widget.navigatorKey.currentState?.pushNamed(Routes.question);
+          navigator?.pushNamed(Routes.question);
         } else if (state is LeaderboardState) {
-          widget.navigatorKey.currentState?.pushNamed(Routes.leaderboard);
+          navigator?.pushNamed(Routes.leaderboard);
+        } else if (state is HomeScreenState) {
+          navigator?.pushNamed('/');
         }
       },
       child: MaterialApp(
@@ -78,17 +83,43 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        // Define routes
         initialRoute: '/',
         routes: {
-          '/': (context) => const Home(),
-          Routes.createGame: (context) => const CreateGame(),
-          Routes.joinGame: (context) => const GameJoinScreen(),
+          '/': (context) => const PopScope(
+                canPop: false,
+                child: Home(),
+              ),
+          Routes.createGame: (context) => PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (bool didPop, Object? result) async {
+                  context.read<GameBloc>().add(SwitchToHomeScreenEvent());
+                },
+                child: const CreateGame(),
+              ),
+          Routes.joinGame: (context) => PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (bool didPop, Object? result) async {
+                  context.read<GameBloc>().add(SwitchToHomeScreenEvent());
+                },
+                child: const GameJoinScreen(),
+              ),
           Routes.howToPlay: (context) => const HowToPlay(),
-          Routes.voteCategory: (context) => const VoteCategory(),
-          Routes.question: (context) => const Question(),
-          Routes.categoryPreparation: (context) => const CategoryPreparation(),
-          Routes.leaderboard: (context) => const PodiumScreen(),
+          Routes.voteCategory: (context) => const PopScope(
+                canPop: false,
+                child: VoteCategory(),
+              ),
+          Routes.question: (context) => const PopScope(
+                canPop: false,
+                child: Question(),
+              ),
+          Routes.categoryPreparation: (context) => const PopScope(
+                canPop: false,
+                child: CategoryPreparation(),
+              ),
+          Routes.leaderboard: (context) => const PopScope(
+                canPop: false,
+                child: PodiumScreen(),
+              ),
         },
       ),
     );

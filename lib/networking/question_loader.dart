@@ -37,9 +37,9 @@ class QuestionLoader {
     return unescape.convert(html);
   }
 
-  static Future<QuestionAnswerPair?> loadQuestion() async {
-    const url =
-        'https://opentdb.com/api.php?amount=1&category=10&type=multiple';
+  static Future<QuestionAnswerPair?> loadQuestion(String difficulty, int categoryId) async {
+    final url =
+        'https://opentdb.com/api.php?amount=1&category=$categoryId&type=multiple&difficulty=$difficulty';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -49,9 +49,14 @@ class QuestionLoader {
         if (data['results'] != null && data['results'].isNotEmpty) {
           final questionData = data['results'][0];
           final currentQuestion = decodeHtml(questionData['question']);
-          final correctAnswer = questionData['correct_answer'];
+          final correctAnswer = decodeHtml(questionData['correct_answer']);
+          final incorrectAnswers = (questionData['incorrect_answers'] as List<dynamic>)
+              .map((answer) => decodeHtml(answer))
+              .toList();
+
+          // Combine and shuffle answers
           final answers = [
-            ...(questionData['incorrect_answers'] as List<dynamic>),
+            ...incorrectAnswers,
             correctAnswer
           ]..shuffle();
 

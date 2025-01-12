@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
@@ -145,12 +146,25 @@ class PodiumScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<GameBloc>().add(SwitchToHomeScreenEvent());
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         minimumSize: const Size(double.infinity, 50),
                       ),
-                      child: const Text("Play again"),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.home, color: Colors.white), // Home icon
+                          SizedBox(width: 8), // Space between icon and text
+                          Text(
+                            "Home",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

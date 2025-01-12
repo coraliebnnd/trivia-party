@@ -21,7 +21,7 @@ class VoteCategory extends StatelessWidget {
       builder: (context, state) {
         state as CategoryVotingState;
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF191919),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
@@ -153,8 +153,8 @@ class VoteCategory extends StatelessWidget {
           children: [
             RainbowWheel(
                 progress: calculateProgressForPlayer(player, numberOfQuestions),
-                size: 70, // Size of the rainbow circle
-                borderWidth: 5, // Border width
+                size: 90, // Size of the rainbow circle
+                borderWidth: 7, // Border width
                 borderColor: color),
           ],
         ),

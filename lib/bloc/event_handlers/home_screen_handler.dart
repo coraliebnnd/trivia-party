@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
+import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
 import 'package:trivia_party/bloc/models/player.dart';
@@ -15,17 +15,22 @@ class HomeScreenHandler {
   final GameBloc gameBloc;
   LobbySettings? settings;
 
-  final colors = [
+ /* final colors = [
     Colors.blue,
     Colors.red,
-    Colors.yellow,
-    Colors.amber,
+    Colors.yellow[600],
+    Colors.orange[600],
     Colors.deepPurpleAccent,
     Colors.lightGreen,
   ];
-  int colorIndex = 0;
+  int colorIndex = 0;*/
 
   HomeScreenHandler({required this.gameBloc});
+
+  Future<void> onSwitchToHomeScreen(
+      SwitchToHomeScreenEvent event, Emitter<GameState> emit) async {
+    emit(const HomeScreenState());
+  }
 
   Future<void> onCreateGame(
       CreateGameEvent event, Emitter<GameState> emit) async {

@@ -24,7 +24,7 @@ class Category {
   final int id;
   final List<int> apiIds;
   final String displayName;
-  final MaterialColor color;
+  final Color color;
   List<String> playerVotes = [];
 
   Category(this.id, this.apiIds, this.displayName, this.color);
