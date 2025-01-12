@@ -153,8 +153,8 @@ class VoteCategory extends StatelessWidget {
           children: [
             RainbowWheel(
                 progress: calculateProgressForPlayer(player, numberOfQuestions),
-                size: 70, // Size of the rainbow circle
-                borderWidth: 5, // Border width
+                size: 90, // Size of the rainbow circle
+                borderWidth: 7, // Border width
                 borderColor: color),
           ],
         ),

@@ -182,7 +182,7 @@ class _QuestionState extends State<Question>
                         progress: calculateProgressForPlayer(
                             state.currentPlayer,
                             state.lobbySettings.numberOfQuestions),
-                        size: 50,
+                        size: 90,
                         borderWidth: 3,
                         borderColor: state.currentPlayer.color,
                       ),
