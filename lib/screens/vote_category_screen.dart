@@ -21,7 +21,7 @@ class VoteCategory extends StatelessWidget {
       builder: (context, state) {
         state as CategoryVotingState;
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF191919),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(

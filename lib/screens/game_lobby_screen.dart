@@ -18,7 +18,7 @@ class CreateGame extends StatelessWidget {
       builder: (context, state) {
         state as GameLobbyState;
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF191919),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
