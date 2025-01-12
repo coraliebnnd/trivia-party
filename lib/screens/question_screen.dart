@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/models/categories.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/widgets/countdown_with_loading_bar_widget.dart';
@@ -61,20 +62,20 @@ class _QuestionState extends State<Question>
         if (answer == state.selectedAnswer) {
           // Animate to a green-yellow blend for correct selected answer
           return _blendColors(
-              Colors.yellow, Colors.green, _colorAnimation.value);
+              state.currentPlayer.color, Colors.green, _colorAnimation.value);
         }
         // Animate to a green-white blend for correct unselected answer
         return _blendColors(Colors.white, Colors.green, _colorAnimation.value);
       } else if (answer == state.selectedAnswer) {
         // Animate to a red-yellow blend for incorrect selected answer
-        return _blendColors(Colors.yellow, Colors.red, _colorAnimation.value);
+        return _blendColors(state.currentPlayer.color, Colors.red, _colorAnimation.value);
       }
       // Subtle desaturation for non-selected answers when revealed
-      return Colors.grey.withOpacity(0.5 * (1 - _colorAnimation.value));
+      return _blendColors(Colors.white, Colors.black54, _colorAnimation.value);
     } else {
       if (answer == state.selectedAnswer) {
         // Blend between white and yellow for selection
-        return _blendColors(Colors.white, Colors.yellow, 0.5);
+        return _blendColors(Colors.white, state.currentPlayer.color, 0.5);
       }
       return Colors.white;
     }
@@ -90,7 +91,7 @@ class _QuestionState extends State<Question>
         state as QuestionState;
         return Scaffold(
           body: Container(
-            color: Colors.black87,
+            color: const Color(0xFF191919),
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -108,7 +109,7 @@ class _QuestionState extends State<Question>
                             horizontal: 20,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE91E63),
+                            color: state.category.color,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -182,8 +183,8 @@ class _QuestionState extends State<Question>
                         progress: calculateProgressForPlayer(
                             state.currentPlayer,
                             state.lobbySettings.numberOfQuestions),
-                        size: 90,
-                        borderWidth: 3,
+                        size: 120,
+                        borderWidth: 8,
                         borderColor: state.currentPlayer.color,
                       ),
                     ),

@@ -25,13 +25,13 @@ class Player extends Equatable {
 
   static final List<Color> _availableColors = [
     Colors.red,
-    Colors.green,
+    const Color.fromARGB(255, 69, 152, 54),
     Colors.blue,
-    Colors.yellow,
-    Colors.orange,
-    Colors.purple,
+    const Color.fromARGB(255, 255, 204, 0),
+    const Color.fromARGB(255, 239, 124, 0),
+    const Color.fromARGB(255, 136, 39, 175),
     Colors.cyan,
-    Colors.pink,
+    const Color.fromARGB(255, 214, 0, 132),
     Colors.teal,
   ];
 

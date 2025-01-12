@@ -80,20 +80,10 @@ class RainbowWheelPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Colors for the wheel segments
-    final colors = [
-      Colors.pink,
-      Colors.purple,
-      Colors.blue,
-      Colors.orange,
-      Colors.yellow,
-      Colors.green,
-    ];
-
     // Draw segments
-    for (var i = 0; i < colors.length; i++) {
-      final startAngle = (i * 2 * 3.14159) / colors.length;
-      final sweepAngle = (2 * 3.14159) / colors.length;
+    for (var i = 0; i < categories.length; i++) {
+      final startAngle = (i * 2 * 3.14159) / categories.length;
+      final sweepAngle = (2 * 3.14159) / categories.length;
       var adjustedProgress = progress[i] + 0.15; // Minimum de 10%
       
       if (progress[i] == 0) {
@@ -102,8 +92,8 @@ class RainbowWheelPainter extends CustomPainter {
 
       final currentRadius = radius * adjustedProgress.clamp(0.0, 1.0);
 
-      paint.color = colors[i];
-      backgroundPaint.color = colors[i].withOpacity(0.3);
+      paint.color = categories[i+1]!.color;
+      backgroundPaint.color = categories[i+1]!.color.withOpacity(0.3);
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: currentRadius),
@@ -131,8 +121,8 @@ class RainbowWheelPainter extends CustomPainter {
         linePaint,
       );
 
-      for (var i = 0; i < colors.length; i++) {
-        final startAngle = (i * 2 * 3.14159) / colors.length;
+      for (var i = 0; i < categories.length; i++) {
+        final startAngle = (i * 2 * 3.14159) / categories.length;
 
         final endX = center.dx + radius * cos(startAngle);
         final endY = center.dy + radius * sin(startAngle);
