@@ -16,15 +16,15 @@ class HomeScreenHandler {
   final GameBloc gameBloc;
   LobbySettings? settings;
 
-  final colors = [
+ /* final colors = [
     Colors.blue,
     Colors.red,
-    Colors.yellow,
-    Colors.amber,
+    Colors.yellow[600],
+    Colors.orange[600],
     Colors.deepPurpleAccent,
     Colors.lightGreen,
   ];
-  int colorIndex = 0;
+  int colorIndex = 0;*/
 
   HomeScreenHandler({required this.gameBloc});
 
