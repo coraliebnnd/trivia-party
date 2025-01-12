@@ -38,20 +38,23 @@ class GameLobbyScreenHandler {
   }
 
   Future<void> onSettingsChangedGame(
-      SettingsChangedEvent event, Emitter<GameState> emit) async {
+      SettingsChangedGameEvent event, Emitter<GameState> emit) async {
     if (gameBloc.state is GameLobbyState) {
       final currentState = gameBloc.state as GameLobbyState;
       if (!currentState.currentPlayer.isHost) {
         return;
       }
       emit(GameLobbyState(
-          lobbySettings: LobbySettings(
-              pin: currentState.lobbySettings.pin,
-              numberOfQuestions: event.numberOfQuestions),
+          lobbySettings: currentState.lobbySettings.copyWith(
+            numberOfQuestions: event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions,
+            difficulty: event.difficulty ?? currentState.lobbySettings.difficulty,
+          ),
           currentPlayer: currentState.currentPlayer,
           players: currentState.players));
       pushNumberOfQuestions(
-          currentState.lobbySettings.pin, event.numberOfQuestions);
+          currentState.lobbySettings.pin, event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions);
+      pushDifficulty(
+          currentState.lobbySettings.pin, event.difficulty ?? currentState.lobbySettings.difficulty);
     }
   }
 
@@ -65,9 +68,37 @@ class GameLobbyScreenHandler {
       emit(GameLobbyState(
           lobbySettings: LobbySettings(
               pin: currentState.lobbySettings.pin,
-              numberOfQuestions: event.numberOfQuestions),
+              numberOfQuestions: event.numberOfQuestions,
+              difficulty: event.difficulty),
           currentPlayer: currentState.currentPlayer,
           players: currentState.players));
+    }
+  }
+}
+
+class GameLobbyHandler {
+  final GameBloc gameBloc;
+
+  GameLobbyHandler({required this.gameBloc});
+
+  Future<void> onSettingsChangedGame(
+      SettingsChangedGameEvent event, Emitter<GameState> emit) async {
+    if (gameBloc.state is GameLobbyState) {
+      final currentState = gameBloc.state as GameLobbyState;
+      if (!currentState.currentPlayer.isHost) {
+        return;
+      }
+      emit(GameLobbyState(
+          lobbySettings: currentState.lobbySettings.copyWith(
+            numberOfQuestions: event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions,
+            difficulty: event.difficulty ?? currentState.lobbySettings.difficulty,
+          ),
+          currentPlayer: currentState.currentPlayer,
+          players: currentState.players));
+      pushNumberOfQuestions(
+          currentState.lobbySettings.pin, event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions);
+      pushDifficulty(
+          currentState.lobbySettings.pin, event.difficulty ?? currentState.lobbySettings.difficulty);
     }
   }
 }

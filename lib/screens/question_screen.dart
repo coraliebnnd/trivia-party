@@ -179,10 +179,18 @@ class _QuestionState extends State<Question>
                       duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
                       child: RainbowWheel(
+<<<<<<< lib/screens/question_screen.dart
                         progress:
                             calculateProgressForPlayer(state.currentPlayer, 10),
                         size: 90,
                         borderWidth: 7,
+=======
+                        progress: calculateProgressForPlayer(
+                            state.currentPlayer,
+                            state.lobbySettings.numberOfQuestions),
+                        size: 90,
+                        borderWidth: 3,
+>>>>>>> lib/screens/question_screen.dart
                         borderColor: state.currentPlayer.color,
                       ),
                     ),

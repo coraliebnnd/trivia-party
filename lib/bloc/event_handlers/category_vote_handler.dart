@@ -25,7 +25,7 @@ class CategoryVoteScreenHandler {
     final currentState = gameBloc.state;
 
     if (currentState is GameLobbyState) {
-      resetCategoryVotes();
+      resetCategoryVotes(currentState.lobbySettings.pin);
       emit(
         CategoryVotingState(
           currentPlayer: currentState.currentPlayer,
@@ -35,7 +35,7 @@ class CategoryVoteScreenHandler {
         ),
       );
     } else if (currentState is QuestionState) {
-      resetCategoryVotes();
+      resetCategoryVotes(currentState.lobbySettings.pin);
       emit(
         CategoryVotingState(
             currentPlayer: currentState.currentPlayer,

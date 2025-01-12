@@ -7,10 +7,13 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:trivia_party/bloc/event_handlers/category_vote_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/game_lobby_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/home_screen_handler.dart';
+import 'package:trivia_party/bloc/event_handlers/leaderboard_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.dart';
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
+import 'package:trivia_party/bloc/events/home_screen_events.dart';
+import 'package:trivia_party/bloc/events/leaderboard_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/models/categories.dart' as category_model;
@@ -51,10 +54,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     GameLobbyScreenHandler gameLobbyHandler =
         GameLobbyScreenHandler(gameBloc: this);
     HomeScreenHandler homeScreenHandler = HomeScreenHandler(gameBloc: this);
+    LeaderBoardHandler leaderBoardHandler = LeaderBoardHandler(gameBloc: this);
 
     on<CreateGameEvent>(homeScreenHandler.onCreateGame);
     on<JoinGameEvent>(homeScreenHandler.onJoinGame);
     on<ShowJoinScreenEvent>(homeScreenHandler.onSwitchToJoinGame);
+    on<SwitchToHomeScreenEvent>(homeScreenHandler.onSwitchToHomeScreen);
     on<SettingsChangedFirebaseEvent>(
         gameLobbyHandler.onSettingsChangedFirebase);
     on<SettingsChangedGameEvent>(gameLobbyHandler.onSettingsChangedGame);
@@ -77,6 +82,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     on<SubmitAnswerEvent>(questionHandler.onSubmitAnswer);
     on<RevealAnswerEvent>(questionHandler.onRevealAnswer);
+
+    on<ShowLeaderBoardEvent>(leaderBoardHandler.onShowLeaderBoard);
   }
 
   Player getPlayerForKey(String name, List<Player> players) {
@@ -128,7 +135,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           final settingsData =
               Map<String, dynamic>.from(event.snapshot.value as Map);
           add(SettingsChangedFirebaseEvent(
-              numberOfQuestions: settingsData["numberOfQuestions"]));
+              numberOfQuestions: settingsData["numberOfQuestions"],
+              difficulty: settingsData["difficulty"]
+              ));
         } else {
           if (kDebugMode) {
             print('Child was removed or no longer exists');
@@ -224,9 +233,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           .listen((event) {
         var currentState = state;
         if (currentState is CategoryVotingState) {
-          currentState as CategoryVotingState;
           if (event.snapshot.exists) {
             final categoryIDData = event.snapshot.value;
+            bool categoryWasReset = categoryIDData == UNDEFINED_CATEGORY;
+            if (categoryWasReset) {
+              return; // CATEGORY was reset. Ignore
+            }
             category_model.Category category = categories[categoryIDData]!;
             add(CategorySetFirebase(category: category));
           }

@@ -48,17 +48,27 @@ class StartGameEvent extends GameEvent {}
 
 abstract class SettingsChangedEvent extends GameEvent {
   final int numberOfQuestions;
+  final String difficulty;
 
-  SettingsChangedEvent({required this.numberOfQuestions});
+  SettingsChangedEvent({required this.numberOfQuestions, required this.difficulty});
 
   @override
-  List<Object?> get props => [numberOfQuestions];
+  List<Object?> get props => [numberOfQuestions, difficulty];
 }
 
 class SettingsChangedFirebaseEvent extends SettingsChangedEvent {
-  SettingsChangedFirebaseEvent({required super.numberOfQuestions});
+  SettingsChangedFirebaseEvent({required super.numberOfQuestions, required super.difficulty});
 }
 
-class SettingsChangedGameEvent extends SettingsChangedEvent {
-  SettingsChangedGameEvent({required super.numberOfQuestions});
+class SettingsChangedGameEvent extends GameEvent {
+  final int? numberOfQuestions;
+  final String? difficulty;
+
+  SettingsChangedGameEvent({
+    this.numberOfQuestions,
+    this.difficulty,
+  });
+
+  @override
+  List<Object?> get props => [numberOfQuestions, difficulty];
 }

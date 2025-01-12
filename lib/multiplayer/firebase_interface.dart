@@ -20,10 +20,10 @@ String _generateLobbyCode() {
 
 Future<LobbySettings> createLobby(Player player) async {
   String lobbyCode = _generateLobbyCode();
-  final settings = LobbySettings(pin: lobbyCode, numberOfQuestions: 10);
+  final settings = LobbySettings(pin: lobbyCode, numberOfQuestions: 10, difficulty: "medium");
 
   await database.child('lobbies/$lobbyCode/settings').set(
-      {"pin": settings.pin, "numberOfQuestions": settings.numberOfQuestions});
+      {"pin": settings.pin, "numberOfQuestions": settings.numberOfQuestions, "difficulty": settings.difficulty});
 
   await database
       .child('lobbies/$lobbyCode/gameState')
@@ -71,7 +71,8 @@ Future<LobbySettings> getLobbySettings(String pin) async {
 
   return LobbySettings(
       pin: lobby['settings']['pin'],
-      numberOfQuestions: lobby['settings']['numberOfQuestions']);
+      numberOfQuestions: lobby['settings']['numberOfQuestions'],
+      difficulty: lobby['settings']['difficulty']);
 }
 
 Future<void> pushNumberOfQuestions(String pin, int numberOfQuestions) async {
@@ -96,6 +97,12 @@ Future<void> pushQuestion(String pin, QuestionAnswerPair question) async {
   });
 }
 
+Future<void> pushDifficulty(String pin, String difficulty) async {
+  database.child('lobbies/$pin/settings').update({
+    'difficulty': difficulty,
+  });
+}
+
 Future<void> startGame(String pin) async {
   await switchToVoting(pin);
   await initCategory(pin);
@@ -115,6 +122,12 @@ Future<void> switchToVoting(String pin) async {
     "kind": "voting",
     "state": {"votes": categoryVotingMap}
   });
+}
+
+Future<void> resetVotingInFirebase(String pin) async {
+  await database.child('lobbies/$pin/gameState/state/votes').set({});
+  await database.child('lobbies/$pin/gameState/state/category/category_id').set(
+      UNDEFINED_CATEGORY); // We need a value in category_id to get an update
 }
 
 Future<void> voteForCategory(
