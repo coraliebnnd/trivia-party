@@ -68,11 +68,13 @@ class CategoryVoteScreenHandler {
     final currentState = gameBloc.state;
     if (currentState is CategoryVotingState &&
         currentState.currentPlayer.isHost) {
-      final maxVotes = event.categoryVotes.values.reduce(max);
-      final tiedCategories = event.categoryVotes.entries
-          .where((entry) => entry.value == maxVotes)
-          .map((entry) => entry.key)
+      final maxVotes = event.categoryVotes.values.isNotEmpty ? event.categoryVotes.values.reduce(max) : 0;
+
+      final tiedCategories = categories.values
+          .where((entry) => entry.playerVotes.length == maxVotes)
+          .map((entry) => entry.id)
           .toList();
+
       final random = Random();
       final mostVotedCategory =
           tiedCategories[random.nextInt(tiedCategories.length)];
