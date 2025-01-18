@@ -20,10 +20,14 @@ String _generateLobbyCode() {
 
 Future<LobbySettings> createLobby(Player player) async {
   String lobbyCode = _generateLobbyCode();
-  final settings = LobbySettings(pin: lobbyCode, numberOfQuestions: 10, difficulty: "medium");
+  final settings = LobbySettings(
+      pin: lobbyCode, numberOfQuestions: 10, difficulty: "medium");
 
-  await database.child('lobbies/$lobbyCode/settings').set(
-      {"pin": settings.pin, "numberOfQuestions": settings.numberOfQuestions, "difficulty": settings.difficulty});
+  await database.child('lobbies/$lobbyCode/settings').set({
+    "pin": settings.pin,
+    "numberOfQuestions": settings.numberOfQuestions,
+    "difficulty": settings.difficulty
+  });
 
   await database
       .child('lobbies/$lobbyCode/gameState')
@@ -34,6 +38,14 @@ Future<LobbySettings> createLobby(Player player) async {
 
 Future<LobbySettings> joinLobby(String pin, Player player) async {
   final playerName = player.name;
+
+  // Check if the lobby exists
+  final lobbySnapshot = await database.child('lobbies/$pin').get();
+  if (!lobbySnapshot.exists) {
+    throw Exception('Lobby with pin $pin does not exist');
+  }
+
+  // Add the player to the lobby
   await database.child('lobbies/$pin/players/$playerName').set({
     "id": player.id,
     "name": player.name,
