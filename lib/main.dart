@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/services/error_handling_service.dart';
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_join_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
