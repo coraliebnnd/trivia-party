@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
-const UNDEFINED_CATEGORY = -1;
-int RANDOM_ID = 7;
+const undefinedCategory = -1;
+int randomId = 7;
 final Map<int, Category> categories = {
   1: Category(1, [25], "Art", Colors.pink),
   2: Category(2, [15], "Video Games", Colors.purple),
@@ -10,7 +10,7 @@ final Map<int, Category> categories = {
   4: Category(4, [21], "Sport", Colors.orange),
   5: Category(5, [12], "Music", Colors.yellow),
   6: Category(6, [10], "Books", Colors.green),
-  RANDOM_ID: Category(RANDOM_ID, [-1], "Random", Colors.grey)
+  randomId: Category(randomId, [-1], "Random", Colors.grey)
 };
 
 void resetCategoryVotes(String pin) {

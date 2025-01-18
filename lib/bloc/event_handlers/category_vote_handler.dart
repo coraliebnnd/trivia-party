@@ -68,7 +68,9 @@ class CategoryVoteScreenHandler {
     final currentState = gameBloc.state;
     if (currentState is CategoryVotingState &&
         currentState.currentPlayer.isHost) {
-      final maxVotes = event.categoryVotes.values.isNotEmpty ? event.categoryVotes.values.reduce(max) : 0;
+      final maxVotes = event.categoryVotes.values.isNotEmpty
+          ? event.categoryVotes.values.reduce(max)
+          : 0;
 
       final tiedCategories = categories.values
           .where((entry) => entry.playerVotes.length == maxVotes)
@@ -78,7 +80,7 @@ class CategoryVoteScreenHandler {
       final random = Random();
       var mostVotedCategory =
           tiedCategories[random.nextInt(tiedCategories.length)];
-      if (mostVotedCategory == RANDOM_ID) {
+      if (mostVotedCategory == randomId) {
         mostVotedCategory = getRandomCategory();
       }
       setCategory(currentState.lobbySettings.pin, mostVotedCategory);
@@ -87,12 +89,12 @@ class CategoryVoteScreenHandler {
 
   int getRandomCategory() {
     final random = Random();
-    var categories_map_without_random = Map.from(categories);
-    categories_map_without_random.remove(RANDOM_ID);
-    List<Category> categories_without_random =
-        List<Category>.from(categories_map_without_random.values);
-    return categories_without_random[
-            random.nextInt(categories_without_random.length)]
+    var categoriesMapWithoutRandom = Map.from(categories);
+    categoriesMapWithoutRandom.remove(randomId);
+    List<Category> categoriesWithoutRandom =
+        List<Category>.from(categoriesMapWithoutRandom.values);
+    return categoriesWithoutRandom[
+            random.nextInt(categoriesWithoutRandom.length)]
         .id;
   }
 
