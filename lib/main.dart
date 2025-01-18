@@ -40,7 +40,9 @@ Future<void> main() async {
 class TriviaPartyApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  const TriviaPartyApp({super.key, required this.navigatorKey});
+  TriviaPartyApp({super.key, required this.navigatorKey}) {
+    ErrorHandlingService.navigatorKey = navigatorKey;
+  }
 
   @override
   State<TriviaPartyApp> createState() => _TriviaPartyAppState();
