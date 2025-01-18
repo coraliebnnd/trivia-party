@@ -81,19 +81,21 @@ class RainbowWheelPainter extends CustomPainter {
     final radius = size.width / 2;
 
     // Draw segments
-    for (var i = 0; i < categories.length; i++) {
-      final startAngle = (i * 2 * 3.14159) / categories.length;
-      final sweepAngle = (2 * 3.14159) / categories.length;
+    for (var i = 0; i < lengthOfCategoriesWithoutRandom(categories); i++) {
+      final startAngle =
+          (i * 2 * 3.14159) / lengthOfCategoriesWithoutRandom(categories);
+      final sweepAngle =
+          (2 * 3.14159) / lengthOfCategoriesWithoutRandom(categories);
       var adjustedProgress = progress[i] + 0.15; // Minimum de 10%
-      
+
       if (progress[i] == 0) {
         adjustedProgress = 0;
       }
 
       final currentRadius = radius * adjustedProgress.clamp(0.0, 1.0);
 
-      paint.color = categories[i+1]!.color;
-      backgroundPaint.color = categories[i+1]!.color.withOpacity(0.3);
+      paint.color = categories[i + 1]!.color;
+      backgroundPaint.color = categories[i + 1]!.color.withOpacity(0.3);
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: currentRadius),
@@ -121,8 +123,9 @@ class RainbowWheelPainter extends CustomPainter {
         linePaint,
       );
 
-      for (var i = 0; i < categories.length; i++) {
-        final startAngle = (i * 2 * 3.14159) / categories.length;
+      for (var i = 0; i < lengthOfCategoriesWithoutRandom(categories); i++) {
+        final startAngle =
+            (i * 2 * 3.14159) / lengthOfCategoriesWithoutRandom(categories);
 
         final endX = center.dx + radius * cos(startAngle);
         final endY = center.dy + radius * sin(startAngle);
@@ -130,6 +133,11 @@ class RainbowWheelPainter extends CustomPainter {
         canvas.drawLine(center, Offset(endX, endY), linePaint);
       }
     }
+  }
+
+  int lengthOfCategoriesWithoutRandom(Map<int, Category> categoryMap) {
+    // We don't draw the random category. So we just ignore it.
+    return categoryMap.length - 1;
   }
 
   @override

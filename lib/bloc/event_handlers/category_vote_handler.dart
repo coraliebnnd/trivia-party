@@ -76,14 +76,24 @@ class CategoryVoteScreenHandler {
           .toList();
 
       final random = Random();
-      final mostVotedCategory =
+      var mostVotedCategory =
           tiedCategories[random.nextInt(tiedCategories.length)];
+      if (mostVotedCategory == RANDOM_ID) {
+        mostVotedCategory = getRandomCategory();
+      }
       setCategory(currentState.lobbySettings.pin, mostVotedCategory);
-      //emit(QuestionPreparationState(categories[mostVotedCategory]!,
-      //    event.currentPlayer, event.players, currentState.lobbySettings));
-      //gameBloc.add(QuestionPeparationEvent(categories[mostVotedCategory]!,
-      //    currentPlayer: event.currentPlayer));
     }
+  }
+
+  int getRandomCategory() {
+    final random = Random();
+    var categories_map_without_random = Map.from(categories);
+    categories_map_without_random.remove(RANDOM_ID);
+    List<Category> categories_without_random =
+        List<Category>.from(categories_map_without_random.values);
+    return categories_without_random[
+            random.nextInt(categories_without_random.length)]
+        .id;
   }
 
   Future<void> onVotesUpdated(
