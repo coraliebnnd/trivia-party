@@ -20,8 +20,8 @@ String _generateLobbyCode() {
 
 Future<LobbySettings> createLobby(Player player) async {
   String lobbyCode = _generateLobbyCode();
-  final settings = LobbySettings(
-      pin: lobbyCode, numberOfQuestions: 10, difficulty: "medium");
+  final settings =
+      LobbySettings(pin: lobbyCode, numberOfQuestions: 3, difficulty: "medium");
 
   await database.child('lobbies/$lobbyCode/settings').set({
     "pin": settings.pin,
