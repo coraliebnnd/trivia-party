@@ -8,7 +8,7 @@ final Map<int, Category> categories = {
   2: Category(2, [15], "Video Games", Colors.purple),
   3: Category(3, [11, 14], "Movies & TV", Colors.blue),
   4: Category(4, [21], "Sport", Colors.orange),
-  5: Category(5, [12], "Music", Colors.yellow),
+  5: Category(5, [12], "Music", Colors.yellow[700]!),
   6: Category(6, [10], "Books", Colors.green),
   randomId: Category(randomId, [-1], "Random", Colors.grey)
 };
