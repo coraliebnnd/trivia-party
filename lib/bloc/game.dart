@@ -4,27 +4,35 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:flutter_bloc/flutter_bloc.dart";
+
 import 'package:trivia_party/bloc/event_handlers/category_vote_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/game_lobby_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/home_screen_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/leaderboard_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_handler.dart';
 import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.dart';
+import 'package:trivia_party/bloc/event_handlers/question_result_handler.dart';
+
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/events/leaderboard_events.dart';
 import 'package:trivia_party/bloc/events/question_preparation_events.dart';
+import 'package:trivia_party/bloc/events/question_result_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
+
 import 'package:trivia_party/bloc/models/categories.dart' as category_model;
 import 'package:trivia_party/bloc/models/lobby_settings.dart';
+
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/home_screen_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
+
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
+
 import 'events/game_event.dart';
 import 'models/categories.dart';
 import 'models/player.dart';
@@ -51,6 +59,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         QuestionPreparationScreenHandler(gameBloc: this);
     QuestionScreenHandler questionHandler =
         QuestionScreenHandler(gameBloc: this);
+    QuestionResultHandler questionResultHandler =
+    QuestionResultHandler(gameBloc: this);
     GameLobbyScreenHandler gameLobbyHandler =
         GameLobbyScreenHandler(gameBloc: this);
     HomeScreenHandler homeScreenHandler = HomeScreenHandler(gameBloc: this);
@@ -84,6 +94,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<RevealAnswerEvent>(questionHandler.onRevealAnswer);
 
     on<ShowLeaderBoardEvent>(leaderBoardHandler.onShowLeaderBoard);
+
+    on<ShowQuestionResultEvent>(questionResultHandler.onShowQuestionResult);
   }
 
   Player getPlayerForKey(String name, List<Player> players) {
