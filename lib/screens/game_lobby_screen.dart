@@ -87,12 +87,13 @@ class CreateGame extends StatelessWidget {
                                   ? (int? value) {
                                       if (value != null) {
                                         context.read<GameBloc>().add(
-                                            SettingsChangedGameEvent(numberOfQuestions: value));
+                                            SettingsChangedGameEvent(
+                                                numberOfQuestions: value));
                                       }
                                     }
                                   : null,
                               items: List.generate(
-                                10,
+                                5,
                                 (index) => DropdownMenuItem(
                                   value: index + 1,
                                   child: Text(
@@ -122,7 +123,8 @@ class CreateGame extends StatelessWidget {
                                   ? (String? value) {
                                       if (value != null) {
                                         context.read<GameBloc>().add(
-                                            SettingsChangedGameEvent(difficulty: value));
+                                            SettingsChangedGameEvent(
+                                                difficulty: value));
                                       }
                                     }
                                   : null,
@@ -156,7 +158,7 @@ class CreateGame extends StatelessWidget {
                     ),
                   ),
                   // Start Game Button
-                  const SizedBox(height: 20), 
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       splashFactory: state.currentPlayer.isHost

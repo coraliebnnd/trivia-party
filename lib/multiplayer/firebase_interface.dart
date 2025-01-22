@@ -20,8 +20,8 @@ String _generateLobbyCode() {
 
 Future<LobbySettings> createLobby(Player player) async {
   String lobbyCode = _generateLobbyCode();
-  final settings = LobbySettings(
-      pin: lobbyCode, numberOfQuestions: 10, difficulty: "medium");
+  final settings =
+      LobbySettings(pin: lobbyCode, numberOfQuestions: 3, difficulty: "medium");
 
   await database.child('lobbies/$lobbyCode/settings').set({
     "pin": settings.pin,
@@ -139,7 +139,7 @@ Future<void> switchToVoting(String pin) async {
 Future<void> resetVotingInFirebase(String pin) async {
   await database.child('lobbies/$pin/gameState/state/votes').set({});
   await database.child('lobbies/$pin/gameState/state/category/category_id').set(
-      UNDEFINED_CATEGORY); // We need a value in category_id to get an update
+      undefinedCategory); // We need a value in category_id to get an update
 }
 
 Future<void> voteForCategory(

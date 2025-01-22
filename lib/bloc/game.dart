@@ -136,8 +136,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
               Map<String, dynamic>.from(event.snapshot.value as Map);
           add(SettingsChangedFirebaseEvent(
               numberOfQuestions: settingsData["numberOfQuestions"],
-              difficulty: settingsData["difficulty"]
-              ));
+              difficulty: settingsData["difficulty"]));
         } else {
           if (kDebugMode) {
             print('Child was removed or no longer exists');
@@ -235,7 +234,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         if (currentState is CategoryVotingState) {
           if (event.snapshot.exists) {
             final categoryIDData = event.snapshot.value;
-            bool categoryWasReset = categoryIDData == UNDEFINED_CATEGORY;
+            bool categoryWasReset = categoryIDData == undefinedCategory;
             if (categoryWasReset) {
               return; // CATEGORY was reset. Ignore
             }

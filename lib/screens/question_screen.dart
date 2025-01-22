@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/models/categories.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/widgets/countdown_with_loading_bar_widget.dart';
@@ -68,7 +67,8 @@ class _QuestionState extends State<Question>
         return _blendColors(Colors.white, Colors.green, _colorAnimation.value);
       } else if (answer == state.selectedAnswer) {
         // Animate to a red-yellow blend for incorrect selected answer
-        return _blendColors(state.currentPlayer.color, Colors.red, _colorAnimation.value);
+        return _blendColors(
+            state.currentPlayer.color, Colors.red, _colorAnimation.value);
       }
       // Subtle desaturation for non-selected answers when revealed
       return _blendColors(Colors.white, Colors.black54, _colorAnimation.value);
