@@ -43,7 +43,7 @@ class QuestionState extends GameState {
       ];
 
   QuestionState copyWith(
-      {String? category,
+      {Category? category,
       String? currentQuestion,
       List<String>? currentAnswers,
       String? selectedAnswer,
@@ -54,7 +54,7 @@ class QuestionState extends GameState {
       List<Player>? players,
       LobbySettings? settings}) {
     return QuestionState(
-        category: (category ?? this.category) as Category,
+        category: category ?? this.category,
         currentQuestion: currentQuestion ?? this.currentQuestion,
         currentAnswers: currentAnswers ?? this.currentAnswers,
         selectedAnswer: selectedAnswer ?? this.selectedAnswer,

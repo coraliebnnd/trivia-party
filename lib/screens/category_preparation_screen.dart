@@ -12,7 +12,7 @@ class CategoryPreparation extends StatelessWidget {
 
   const CategoryPreparation({
     super.key,
-    this.countdown = 5,
+    this.countdown = 2,
   });
 
   @override

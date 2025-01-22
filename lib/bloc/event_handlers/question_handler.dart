@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/bloc/events/category_vote_events.dart';
 import 'package:trivia_party/bloc/events/leaderboard_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_result_events.dart';
@@ -24,17 +23,12 @@ class QuestionScreenHandler {
       }
       emit(currentState.copyWith(isAnswerRevealed: true));
       Future.delayed(const Duration(seconds: 3), () {
-        if (isAnyPlayerFinished(currentState.players,
-            currentState.lobbySettings.numberOfQuestions)) {
-          gameBloc.add(ShowLeaderBoardEvent());
-        } else {
           gameBloc.add(ShowQuestionResultEvent());
-        }
       });
     }
   }
 
-  bool isAnyPlayerFinished(List<Player> players, int numberOfQuestions) {
+/*  bool isAnyPlayerFinished(List<Player> players, int numberOfQuestions) {
     for (var player in players) {
       if (isPlayerFinished(player, numberOfQuestions)) {
         return true;
@@ -50,7 +44,7 @@ class QuestionScreenHandler {
       }
     }
     return true;
-  }
+  } */
 
   Future<void> onSubmitAnswer(
       SubmitAnswerEvent event, Emitter<GameState> emit) async {
