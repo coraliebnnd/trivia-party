@@ -1,9 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:trivia_party/bloc/events/leaderboard_events.dart';
 import 'package:trivia_party/bloc/events/question_screen_events.dart';
 import 'package:trivia_party/bloc/events/question_result_events.dart';
 import 'package:trivia_party/bloc/game.dart';
-import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';

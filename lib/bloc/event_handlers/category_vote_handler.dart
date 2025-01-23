@@ -10,7 +10,6 @@ import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_preparation_state.dart';
-import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
 import '../states/question_result_state.dart';

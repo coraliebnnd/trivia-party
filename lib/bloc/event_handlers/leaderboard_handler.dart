@@ -5,7 +5,6 @@ import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/leaderboard_state.dart';
 import 'package:trivia_party/bloc/states/question_result_state.dart';
-import 'package:trivia_party/bloc/states/question_state.dart';
 
 class LeaderBoardHandler {
   final GameBloc gameBloc;
