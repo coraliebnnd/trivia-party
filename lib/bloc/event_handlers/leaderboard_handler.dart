@@ -4,6 +4,7 @@ import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/leaderboard_state.dart';
+import 'package:trivia_party/bloc/states/question_result_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 
 class LeaderBoardHandler {
@@ -13,8 +14,8 @@ class LeaderBoardHandler {
 
   Future<void> onShowLeaderBoard(
       ShowLeaderBoardEvent event, Emitter<GameState> emit) async {
-    if (gameBloc.state is QuestionState) {
-      var currentState = gameBloc.state as QuestionState;
+    if (gameBloc.state is QuestionResultState) {
+      var currentState = gameBloc.state as QuestionResultState;
       var playersInOrder = createSortedPlayerListForScoreboard(
           currentState.players, currentState);
       emit(LeaderboardState(
@@ -25,7 +26,7 @@ class LeaderBoardHandler {
   }
 
   List<Player> createSortedPlayerListForScoreboard(
-      List<Player> players, QuestionState currentState) {
+      List<Player> players, QuestionResultState currentState) {
     List<Player> playersInOrder = List.from(currentState.players);
     playersInOrder.sort((a, b) =>
         (numberOfCorrectAnswers(b, currentState) * 10000 + getTotalScore(a)) -
@@ -47,7 +48,7 @@ class LeaderBoardHandler {
     return player.getTotalScore();
   }
 
-  int numberOfCorrectAnswers(Player player, QuestionState state) {
+  int numberOfCorrectAnswers(Player player, QuestionResultState state) {
     var numberOfQuestionsToBeAnswered = state.lobbySettings.numberOfQuestions;
     int numberOfCategoriesFilled = 0;
     for (var score in player.score.values) {

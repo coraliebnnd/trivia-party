@@ -13,6 +13,8 @@ import 'package:trivia_party/bloc/states/question_preparation_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/multiplayer/firebase_interface.dart';
 
+import '../states/question_result_state.dart';
+
 class CategoryVoteScreenHandler {
   final GameBloc gameBloc;
 
@@ -34,7 +36,7 @@ class CategoryVoteScreenHandler {
           categoryIdToNumberOfVotesMap: const {},
         ),
       );
-    } else if (currentState is QuestionState) {
+    } else if (currentState is QuestionResultState) {
       resetCategoryVotes(currentState.lobbySettings.pin);
       emit(
         CategoryVotingState(

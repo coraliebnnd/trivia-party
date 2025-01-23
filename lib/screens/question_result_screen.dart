@@ -22,13 +22,14 @@ class QuestionResult extends StatelessWidget {
         state as QuestionResultState;
 
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF191919),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.fromLTRB(0, 30, 100, 30),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const Spacer(),
                   const SizedBox(height: 30),
                   Expanded(
                     child: ListView.builder(
@@ -36,8 +37,8 @@ class QuestionResult extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final player = state.players[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 30.0),
-                          child:  _buildPlayerPie(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child:  _buildPlayerRow(
                             player,
                             player.color,
                             state.currentCategory,
@@ -48,6 +49,7 @@ class QuestionResult extends StatelessWidget {
                       },
                     ),
                   ),
+                  const Spacer(),
                 ],
               ),
             ),
@@ -57,21 +59,35 @@ class QuestionResult extends StatelessWidget {
     );
   }
 
-  // Widget for player pies
-  Widget _buildPlayerPie(Player player, Color color, Category currentCategory,
+  // Widget for player row
+  Widget _buildPlayerRow(Player player, Color color, Category currentCategory,
       {int numberOfQuestions = 10}) {
     final int? score = player.score[currentCategory.displayName] ;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Center(
-              child: Text(
-                player.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color:  Colors.white,
-                ),
+              child:Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                Text(
+                      player.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color:  Colors.white,
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                      '$score / $numberOfQuestions',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color:  Colors.white,
+                      ),
+                  ),
+                ]
               ),
             ),
             const SizedBox(width: 20),
@@ -83,17 +99,17 @@ class QuestionResult extends StatelessWidget {
                 borderColor: color
               ),
             ),
-            const SizedBox(width: 20),
-            Center(
+            /*const SizedBox(width: 20),
+            const Center(
               child: Text(
-                '$score / $numberOfQuestions',
-                style: const TextStyle(
+                "+1",
+                style: TextStyle(
+                  color: Colors.pink,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color:  Colors.white,
                 ),
               ),
-            ),
+            ),*/
           ],
     );
   }

@@ -22,7 +22,7 @@ class QuestionScreenHandler {
             currentState.category.displayName, currentState.currentPlayer);
       }
       emit(currentState.copyWith(isAnswerRevealed: true));
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 2), () {
           gameBloc.add(ShowQuestionResultEvent());
       });
     }

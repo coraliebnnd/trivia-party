@@ -21,7 +21,7 @@ class QuestionResultHandler {
           players: currentState.players,
           currentCategory: currentState.category,
           lobbySettings: currentState.lobbySettings));
-      Future.delayed(const Duration(seconds: 5), () {
+      Future.delayed(const Duration(seconds: 3), () {
         if (isAnyPlayerFinished(currentState.players,
             currentState.lobbySettings.numberOfQuestions)) {
           gameBloc.add(ShowLeaderBoardEvent());
