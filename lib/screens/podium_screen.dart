@@ -6,17 +6,22 @@ import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/leaderboard_state.dart';
+import 'package:trivia_party/podium_screen_utils.dart';
 
 class PodiumScreen extends StatelessWidget {
   const PodiumScreen({super.key});
 
-  Map<String, int> calculatePlayerRanks(List<Player> players) {
+  Map<String, int> calculatePlayerRanks(
+      List<Player> players, numberOfQuestionsPerCategory) {
     // Create a map to store player ranks
     final Map<String, int> ranks = {};
 
     // Sort players by total score in descending order
     final sortedPlayers = List<Player>.from(players)
-      ..sort((a, b) => b.getTotalScore().compareTo(a.getTotalScore()));
+      ..sort((a, b) => b
+          .getNumberOfCorrectCategories(numberOfQuestionsPerCategory)
+          .compareTo(
+              a.getNumberOfCorrectCategories(numberOfQuestionsPerCategory)));
 
     // Initialize variables for rank calculation
     int currentRank = 1;
@@ -56,12 +61,14 @@ class PodiumScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final players = state.players;
+        final players =
+            createSortedPlayerListForScoreboard(state.players, state);
         final topPlayers = players.take(3).toList();
         final remainingPlayers =
             players.length > 3 ? players.skip(3).toList() : [];
 
-        Map<String, int> playerRanks = calculatePlayerRanks(state.players);
+        Map<String, int> playerRanks = calculatePlayerRanks(
+            players, state.lobbySettings.numberOfQuestions);
 
         return Container(
           decoration: BoxDecoration(
@@ -176,9 +183,9 @@ class RaysPainter extends CustomPainter {
       ..color = Colors.white10
       ..style = PaintingStyle.fill;
 
-    var xOffsetForTwoPlayers = isTwoPlayers ? size.width / 8 : 0.0;
+    var xOffsetForTwoPlayers = isTwoPlayers ? size.width / 9 : 0.0;
     final center =
-        Offset(size.width / 2 - xOffsetForTwoPlayers, size.height / 4);
+        Offset(size.width / 2 + xOffsetForTwoPlayers, size.height / 4);
 
     final radius = size.width * 1.5;
 
