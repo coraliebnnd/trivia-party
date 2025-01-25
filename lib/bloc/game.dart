@@ -14,6 +14,7 @@ import 'package:trivia_party/bloc/event_handlers/question_preparation_handler.da
 import 'package:trivia_party/bloc/event_handlers/question_result_handler.dart';
 
 import 'package:trivia_party/bloc/events/category_vote_events.dart';
+import 'package:trivia_party/bloc/events/debug.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/events/leaderboard_events.dart';
@@ -60,7 +61,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     QuestionScreenHandler questionHandler =
         QuestionScreenHandler(gameBloc: this);
     QuestionResultHandler questionResultHandler =
-    QuestionResultHandler(gameBloc: this);
+        QuestionResultHandler(gameBloc: this);
     GameLobbyScreenHandler gameLobbyHandler =
         GameLobbyScreenHandler(gameBloc: this);
     HomeScreenHandler homeScreenHandler = HomeScreenHandler(gameBloc: this);
@@ -96,6 +97,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<ShowLeaderBoardEvent>(leaderBoardHandler.onShowLeaderBoard);
 
     on<ShowQuestionResultEvent>(questionResultHandler.onShowQuestionResult);
+
+    on<DebugEvent>(_onDebugEvent);
+  }
+
+  void _onDebugEvent(DebugEvent event, Emitter<GameState> emit) {
+    emit(event.newState);
   }
 
   Player getPlayerForKey(String name, List<Player> players) {
