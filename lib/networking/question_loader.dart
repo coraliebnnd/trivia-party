@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:html_unescape/html_unescape.dart';
 import 'package:trivia_party/bloc/models/answer.dart';
+import 'package:trivia_party/networking/backup_question_loader.dart';
 
 class QuestionAnswerPair {
   String question;
@@ -37,7 +38,8 @@ class QuestionLoader {
     return unescape.convert(html);
   }
 
-  static Future<QuestionAnswerPair?> loadQuestion(String difficulty, int categoryId) async {
+  static Future<QuestionAnswerPair?> loadQuestion(
+      String difficulty, int categoryId) async {
     final url =
         'https://opentdb.com/api.php?amount=1&category=$categoryId&type=multiple&difficulty=$difficulty';
     try {
@@ -50,15 +52,13 @@ class QuestionLoader {
           final questionData = data['results'][0];
           final currentQuestion = decodeHtml(questionData['question']);
           final correctAnswer = decodeHtml(questionData['correct_answer']);
-          final incorrectAnswers = (questionData['incorrect_answers'] as List<dynamic>)
-              .map((answer) => decodeHtml(answer))
-              .toList();
+          final incorrectAnswers =
+              (questionData['incorrect_answers'] as List<dynamic>)
+                  .map((answer) => decodeHtml(answer))
+                  .toList();
 
           // Combine and shuffle answers
-          final answers = [
-            ...incorrectAnswers,
-            correctAnswer
-          ]..shuffle();
+          final answers = [...incorrectAnswers, correctAnswer]..shuffle();
 
           final answerList = answers
               .map((answer) => Answer(answer, answer == correctAnswer))
@@ -71,6 +71,13 @@ class QuestionLoader {
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching question: $e');
+      }
+      try {
+        return loadCannedQuestion(categoryId);
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error fetching backup question: $e');
+        }
       }
     }
     return null;
