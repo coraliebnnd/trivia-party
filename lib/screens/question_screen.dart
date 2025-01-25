@@ -6,6 +6,7 @@ import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/question_state.dart';
 import 'package:trivia_party/widgets/countdown_with_loading_bar_widget.dart';
 import 'package:trivia_party/widgets/rainbow_wheel_widget.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class Question extends StatefulWidget {
   const Question({super.key});
@@ -18,6 +19,8 @@ class _QuestionState extends State<Question>
     with SingleTickerProviderStateMixin {
   late AnimationController _colorController;
   late Animation<double> _colorAnimation;
+  bool _soundPlayed = false;
+  final AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -57,24 +60,34 @@ class _QuestionState extends State<Question>
   Color _getButtonColor(String answer, QuestionState state) {
     // Advanced color selection logic with animated color transitions
     if (state.isAnswerRevealed) {
+
+      // Correct answer
       if (answer == state.correctAnswer) {
         if (answer == state.selectedAnswer) {
-          // Animate to a green-yellow blend for correct selected answer
+          if (!_soundPlayed) {
+            audioPlayer.play(AssetSource('sounds/correct_answer_sound_effect.mp3'));
+            _soundPlayed = true;
+          }
           return _blendColors(
               state.currentPlayer.color, Colors.green, _colorAnimation.value);
         }
-        // Animate to a green-white blend for correct unselected answer
         return _blendColors(Colors.white, Colors.green, _colorAnimation.value);
-      } else if (answer == state.selectedAnswer) {
-        // Animate to a red-yellow blend for incorrect selected answer
+      } 
+      
+      // Wrong answer
+      else if (answer == state.selectedAnswer) {
+        if (!_soundPlayed) {
+          audioPlayer.play(AssetSource('sounds/wrong_answer_sound_effect.mp3'));
+          _soundPlayed = true;
+        }
         return _blendColors(
             state.currentPlayer.color, Colors.red, _colorAnimation.value);
       }
-      // Subtle desaturation for non-selected answers when revealed
       return _blendColors(Colors.white, Colors.black54, _colorAnimation.value);
-    } else {
+    } 
+    // Answer selected
+    else { 
       if (answer == state.selectedAnswer) {
-        // Blend between white and yellow for selection
         return _blendColors(Colors.white, state.currentPlayer.color, 0.5);
       }
       return Colors.white;
