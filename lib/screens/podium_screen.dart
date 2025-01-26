@@ -14,7 +14,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  static final AudioPlayer audioPlayer = AudioPlayer(); 
+  static final AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +198,7 @@ class RaysPainter extends CustomPainter {
 
     var xOffsetForTwoPlayers = isTwoPlayers ? size.width / 8 : 0.0;
     final center =
-        Offset(size.width / 2 - xOffsetForTwoPlayers, size.height / 4);
+        Offset(size.width / 2 + xOffsetForTwoPlayers, size.height / 4);
 
     final radius = size.width * 1.5;
 
