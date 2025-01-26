@@ -10,7 +10,7 @@ final Map<int, Category> categories = {
   4: Category(4, [21], "Sport", Colors.orange[600]!),
   5: Category(5, [12], "Music", Colors.yellow[700]!),
   6: Category(6, [10], "Books", Colors.green[600]!),
-  randomId: Category(randomId, [-1], "Random", Colors.grey)
+  randomId: Category(randomId, [-1], "Random", Colors.grey[600]!)
 };
 
 void resetCategoryVotes(String pin) {
