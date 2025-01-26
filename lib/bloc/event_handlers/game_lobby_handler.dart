@@ -19,7 +19,8 @@ class GameLobbyScreenHandler {
       StartGameEvent event, Emitter<GameState> emit) async {
     if (gameBloc.state is GameLobbyState) {
       final currentState = gameBloc.state as GameLobbyState;
-      if (!currentState.currentPlayer.isHost) {
+      if (!currentState.currentPlayer.isHost ||
+          currentState.players.length < 2) {
         return;
       }
       await startGame(currentState.lobbySettings.pin);
@@ -46,15 +47,19 @@ class GameLobbyScreenHandler {
       }
       emit(GameLobbyState(
           lobbySettings: currentState.lobbySettings.copyWith(
-            numberOfQuestions: event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions,
-            difficulty: event.difficulty ?? currentState.lobbySettings.difficulty,
+            numberOfQuestions: event.numberOfQuestions ??
+                currentState.lobbySettings.numberOfQuestions,
+            difficulty:
+                event.difficulty ?? currentState.lobbySettings.difficulty,
           ),
           currentPlayer: currentState.currentPlayer,
           players: currentState.players));
       pushNumberOfQuestions(
-          currentState.lobbySettings.pin, event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions);
-      pushDifficulty(
-          currentState.lobbySettings.pin, event.difficulty ?? currentState.lobbySettings.difficulty);
+          currentState.lobbySettings.pin,
+          event.numberOfQuestions ??
+              currentState.lobbySettings.numberOfQuestions);
+      pushDifficulty(currentState.lobbySettings.pin,
+          event.difficulty ?? currentState.lobbySettings.difficulty);
     }
   }
 
@@ -90,15 +95,19 @@ class GameLobbyHandler {
       }
       emit(GameLobbyState(
           lobbySettings: currentState.lobbySettings.copyWith(
-            numberOfQuestions: event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions,
-            difficulty: event.difficulty ?? currentState.lobbySettings.difficulty,
+            numberOfQuestions: event.numberOfQuestions ??
+                currentState.lobbySettings.numberOfQuestions,
+            difficulty:
+                event.difficulty ?? currentState.lobbySettings.difficulty,
           ),
           currentPlayer: currentState.currentPlayer,
           players: currentState.players));
       pushNumberOfQuestions(
-          currentState.lobbySettings.pin, event.numberOfQuestions ?? currentState.lobbySettings.numberOfQuestions);
-      pushDifficulty(
-          currentState.lobbySettings.pin, event.difficulty ?? currentState.lobbySettings.difficulty);
+          currentState.lobbySettings.pin,
+          event.numberOfQuestions ??
+              currentState.lobbySettings.numberOfQuestions);
+      pushDifficulty(currentState.lobbySettings.pin,
+          event.difficulty ?? currentState.lobbySettings.difficulty);
     }
   }
 }
