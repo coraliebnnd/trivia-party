@@ -173,10 +173,15 @@ Future<void> increaseScoreForCategory(
     String pin, String category, Player player) async {
   var firebaseIdPath = convertToFirebasePath(player.name);
   var firebaseCategory = convertToFirebasePath(category);
-  int increasedScore = player.score[firebaseCategory]! + 1;
-  await database
-      .child('lobbies/$pin/players/$firebaseIdPath/score/$firebaseCategory')
-      .set(increasedScore);
+  int currentScore = player.score[firebaseCategory]!;
+  int numberOfQuestions = (await getLobbySettings(pin)).numberOfQuestions;
+
+  if (currentScore < numberOfQuestions) {
+    int increasedScore = currentScore + 1;
+    await database
+        .child('lobbies/$pin/players/$firebaseIdPath/score/$firebaseCategory')
+        .set(increasedScore);
+  }
 }
 
 Future<void> setCategory(String pin, int id) async {
