@@ -27,14 +27,16 @@ class VoteCategory extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(
+                  height: 80,
+                ),
                 // Title
                 const Center(
                   child: Text(
                     "Vote for the next\nquestion's category!",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -53,11 +55,11 @@ class VoteCategory extends StatelessWidget {
                 Expanded(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      double buttonWidth = (constraints.maxWidth - 10) / 2;
+                      double buttonWidth = (constraints.maxWidth - 15) / 2;
                       double buttonHeight = (constraints.maxHeight) / 5;
                       return Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
+                        spacing: 15,
+                        runSpacing: 15,
                         children: categories.entries.map((entry) {
                           final isRandomCategory = entry.value.displayName == "Random";
                           return SizedBox(
@@ -76,7 +78,6 @@ class VoteCategory extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(height: 10),
                 // Players and their pies
                 Wrap(
                   spacing: 20,
@@ -88,7 +89,9 @@ class VoteCategory extends StatelessWidget {
                             state.lobbySettings.numberOfQuestions);
                   }).toList(),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(
+                  height: 50,
+                ),
               ],
             ),
           ),
@@ -123,7 +126,7 @@ class VoteCategory extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

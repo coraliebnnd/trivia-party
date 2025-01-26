@@ -142,7 +142,7 @@ class _QuestionState extends State<Question>
                         SizedBox(
                           height: countdownHeight,
                           child: CountdownWithLoadingBar(
-                            countdownSeconds: 20,
+                            countdownSeconds: 10,
                             height: 20,
                             onCountdownComplete: () => _revealAnswer(context),
                           ),
