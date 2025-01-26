@@ -42,8 +42,6 @@ class HomeScreenHandler {
         isHost: true,
         score: generateScoreMap());
 
-    emit(const HomeScreenState());
-
     settings = await createLobby(currentPlayer);
     List<Player> players = [currentPlayer];
     gameBloc.lobbySettings = settings;
