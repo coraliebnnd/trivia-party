@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/events/home_screen_events.dart';
@@ -59,7 +58,7 @@ class HomeScreenHandler {
       settings = await joinLobby(event.gamePin, event.player);
     } catch (e) {
       ErrorHandlingService.showError(
-          "There is no lobby with pin '${event.gamePin}'");
+          e.toString().replaceFirst("Exception: ", ""));
       return;
     }
     emit(const HomeScreenState());

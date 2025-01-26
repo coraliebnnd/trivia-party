@@ -45,6 +45,15 @@ Future<LobbySettings> joinLobby(String pin, Player player) async {
     throw Exception('Lobby with pin $pin does not exist');
   }
 
+  var lobby = lobbySnapshot.value;
+  if (lobby != null &&
+      lobby is Map &&
+      lobby["players"] != null &&
+      lobby["players"] is Map &&
+      lobby["players"].length > 6) {
+    throw Exception('Lobby with pin $pin is full');
+  }
+
   // Add the player to the lobby
   await database.child('lobbies/$pin/players/$playerName').set({
     "id": player.id,
