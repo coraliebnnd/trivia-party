@@ -9,7 +9,6 @@ import '../bloc/states/game_state.dart';
 import '../widgets/rainbow_wheel_widget.dart';
 
 class QuestionResult extends StatelessWidget {
-
   const QuestionResult({super.key});
 
   @override
@@ -23,35 +22,25 @@ class QuestionResult extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: const Color(0xFF191919),
-          body: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 30, 100, 30),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(),
-                  const SizedBox(height: 30),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: state.players.length,
-                      itemBuilder: (context, index) {
-                        final player = state.players[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child:  _buildPlayerRow(
-                            player,
-                            player.color,
-                            state.currentCategory,
-                            numberOfQuestions:
-                            state.lobbySettings.numberOfQuestions,
-                          ),
-                        );
-                      },
-                    ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: state.players.length,
+                    itemBuilder: (context, index) {
+                      final player = state.players[index];
+                      return _buildPlayerRow(
+                        player,
+                        state.currentCategory,
+                        numberOfQuestions: state.lobbySettings.numberOfQuestions,
+                      );
+                    },
                   ),
-                  const Spacer(),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
@@ -59,58 +48,52 @@ class QuestionResult extends StatelessWidget {
     );
   }
 
-  // Widget for player row
-  Widget _buildPlayerRow(Player player, Color color, Category currentCategory,
+ Widget _buildPlayerRow(Player player, Category currentCategory,
       {int numberOfQuestions = 10}) {
-    final int? score = player.score[currentCategory.displayName] ;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Center(
-              child:Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
+    final int? score = player.score[currentCategory.displayName];
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
                 Text(
-                      player.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color:  Colors.white,
-                      ),
-                    ),
-                  const SizedBox(height: 4),
-                  Text(
-                      '$score / $numberOfQuestions',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color:  Colors.white,
-                      ),
+                  player.name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                ]
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$score / $numberOfQuestions',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 20),
-            Center(
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 4,
+            child: Align(
+              alignment: Alignment.centerLeft,
               child: RainbowWheel(
                 progress: calculateProgressForPlayer(player, numberOfQuestions),
-                size: 80, // Size of the rainbow circle
-                borderWidth: 5, // Border width
-                borderColor: color
+                size: 60,
+                borderWidth: 4,
+                borderColor: player.color,
               ),
             ),
-            /*const SizedBox(width: 20),
-            const Center(
-              child: Text(
-                "+1",
-                style: TextStyle(
-                  color: Colors.pink,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),*/
-          ],
+          ),
+        ],
+      ),
     );
   }
 }
