@@ -34,6 +34,7 @@ dependencies:
   equatable: ^2.0.5
   flutter:
     sdk: flutter
+  audioplayers: ^6.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -70,6 +71,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/img/trivia_party_logo.png
+    - assets/sounds/correct_answer_sound_effect.mp3
+    - assets/sounds/wrong_answer_sound_effect.mp3
+    - assets/sounds/clapping_sound_effect.mp3
+    - assets/sounds/music.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

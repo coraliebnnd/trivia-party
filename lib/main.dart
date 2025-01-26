@@ -21,6 +21,7 @@ import 'package:trivia_party/screens/question_screen.dart';
 import 'package:trivia_party/screens/podium_screen.dart';
 import 'package:trivia_party/screens/vote_category_screen.dart';
 
+import 'services/audio_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'bloc/states/home_screen_state.dart';
 import 'firebase_options.dart';
@@ -32,6 +33,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  AudioManager.playBackgroundMusic();
 
   runApp(BlocProvider(
     create: (context) => GameBloc(navigatorKey),
