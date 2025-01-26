@@ -95,13 +95,12 @@ class _QuestionState extends State<Question>
             color: const Color(0xFF191919),
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
+                padding: const EdgeInsets.all(16),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final countdownHeight = constraints.maxHeight * 0.03;
                     final answersHeight = constraints.maxHeight * 0.5;
                     final rainbowWheelHeight = constraints.maxHeight * 0.2;
-                    final adaptedFontSize = constraints.maxHeight * 0.03;
 
                     return Column(
                       children: [
@@ -126,7 +125,7 @@ class _QuestionState extends State<Question>
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 26,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -147,7 +146,6 @@ class _QuestionState extends State<Question>
                             onCountdownComplete: () => _revealAnswer(context),
                           ),
                         ),
-                        const Spacer(),
                         // Answer Buttons Section
                         SizedBox(
                           height: answersHeight,
@@ -164,7 +162,7 @@ class _QuestionState extends State<Question>
                                 itemBuilder: (context, index) {
                                   final answer = state.currentAnswers[index];
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: padding),
+                                    padding: const EdgeInsets.only(top: padding),
                                     child: AnimatedBuilder(
                                       animation: _colorAnimation,
                                       builder: (context, child) {
@@ -188,7 +186,7 @@ class _QuestionState extends State<Question>
                                             child: Text(
                                               answer,
                                               style: TextStyle(
-                                                fontSize: adaptedFontSize,
+                                                fontSize: 18,
                                                 fontWeight: FontWeight.w500,
                                                 color: state.isAnswerRevealed
                                                     ? Colors.white
@@ -205,7 +203,6 @@ class _QuestionState extends State<Question>
                             },
                           ),
                         ),
-                        const Spacer(),
                         // Rainbow Wheel Section
                         SizedBox(
                           child: AnimatedContainer(
@@ -222,7 +219,6 @@ class _QuestionState extends State<Question>
                             ),
                           ),
                         ),
-                        const Spacer(),
                       ],
                     );
                   },

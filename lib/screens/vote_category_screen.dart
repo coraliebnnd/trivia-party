@@ -23,12 +23,12 @@ class VoteCategory extends StatelessWidget {
         return Scaffold(
           backgroundColor: const Color(0xFF191919),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(
-                  height: 80,
+                  height: 50,
                 ),
                 // Title
                 const Center(
@@ -36,7 +36,7 @@ class VoteCategory extends StatelessWidget {
                     "Vote for the next\nquestion's category!",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -89,9 +89,6 @@ class VoteCategory extends StatelessWidget {
                             state.lobbySettings.numberOfQuestions);
                   }).toList(),
                 ),
-                const SizedBox(
-                  height: 50,
-                ),
               ],
             ),
           ),
@@ -126,7 +123,7 @@ class VoteCategory extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -165,8 +162,8 @@ class VoteCategory extends StatelessWidget {
           children: [
             RainbowWheel(
                 progress: calculateProgressForPlayer(player, numberOfQuestions),
-                size: 90, // Size of the rainbow circle
-                borderWidth: 7, // Border width
+                size: 80, // Size of the rainbow circle
+                borderWidth: 5, // Border width
                 borderColor: color),
           ],
         ),
