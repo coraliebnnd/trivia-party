@@ -51,20 +51,29 @@ class VoteCategory extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Categories
                 Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 2.5,
-                    children: categories.entries.map((entry) {
-                      return _buildCategoryButton(
-                        entry.value.displayName,
-                        entry.value.color,
-                        votes: entry.value.playerVotes.length,
-                        onTap: () => _voteForCategory(
-                            context, entry.value, state.currentPlayer),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      double buttonWidth = (constraints.maxWidth - 10) / 2;
+                      double buttonHeight = (constraints.maxHeight) / 5;
+                      return Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: categories.entries.map((entry) {
+                          final isRandomCategory = entry.value.displayName == "Random";
+                          return SizedBox(
+                            width: isRandomCategory ? constraints.maxWidth : buttonWidth,
+                            height: buttonHeight,
+                            child: _buildCategoryButton(
+                              entry.value.displayName,
+                              entry.value.color,
+                              votes: entry.value.playerVotes.length,
+                              onTap: () => _voteForCategory(
+                                  context, entry.value, state.currentPlayer),
+                            ),
+                          );
+                        }).toList(),
                       );
-                    }).toList(),
+                    },
                   ),
                 ),
                 const SizedBox(height: 10),
