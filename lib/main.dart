@@ -57,6 +57,12 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> with WidgetsBindingObse
   GameState? lastState;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocListener<GameBloc, GameState>(
       listener: (context, state) {
