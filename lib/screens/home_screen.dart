@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/game_lobby_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
@@ -131,6 +132,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ),
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(15),
+              ],
             ),
           ),
         ],

@@ -40,7 +40,7 @@ class PodiumScreen extends StatelessWidget {
     // Initialize variables for rank calculation
     int currentRank = 1;
     int sameRankCount = 1;
-    int lastScore = sortedPlayers.first.getTotalScore();
+    int lastScore = -1;
 
     // Iterate through sorted players to assign ranks
     for (var i = 0; i < sortedPlayers.length; i++) {
@@ -52,11 +52,12 @@ class PodiumScreen extends StatelessWidget {
       if (currentScore < lastScore) {
         currentRank += sameRankCount;
         sameRankCount = 1;
-        lastScore = currentScore;
-      } else {
+      } else if (lastScore == currentScore) {
         // If scores are equal, increment same rank counter
         sameRankCount++;
       }
+
+      lastScore = currentScore;
 
       // Assign rank to player
       ranks[player.id] = currentRank;
@@ -95,7 +96,9 @@ class PodiumScreen extends StatelessWidget {
                 builder: (context, double rotation, child) {
                   return CustomPaint(
                     size: Size.infinite,
-                    painter: RaysPainter(rotationAngle: rotation),
+                    painter: RaysPainter(
+                        rotationAngle: rotation,
+                        isTwoPlayers: players.length == 2),
                   );
                 },
                 onEnd: () {
@@ -139,7 +142,7 @@ class PodiumScreen extends StatelessWidget {
                     (entry) {
                       final player = entry.value;
                       return RankingTile(
-                        rank: entry.key + 4,
+                        rank: playerRanks[player.id]!,
                         name: player.name,
                         score: player.getTotalScore(),
                         color: player.color,
@@ -147,7 +150,7 @@ class PodiumScreen extends StatelessWidget {
                     },
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(64.0),
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<GameBloc>().add(SwitchToHomeScreenEvent());
@@ -183,7 +186,9 @@ class PodiumScreen extends StatelessWidget {
 class RaysPainter extends CustomPainter {
   final double rotationAngle;
 
-  RaysPainter({required this.rotationAngle});
+  bool isTwoPlayers;
+
+  RaysPainter({required this.rotationAngle, required this.isTwoPlayers});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -191,7 +196,10 @@ class RaysPainter extends CustomPainter {
       ..color = Colors.white10
       ..style = PaintingStyle.fill;
 
-    final center = Offset(size.width / 2, size.height / 4);
+    var xOffsetForTwoPlayers = isTwoPlayers ? size.width / 8 : 0.0;
+    final center =
+        Offset(size.width / 2 - xOffsetForTwoPlayers, size.height / 4);
+
     final radius = size.width * 1.5;
 
     for (double i = 0; i < 360; i += 15) {
