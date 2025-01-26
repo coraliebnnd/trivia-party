@@ -53,7 +53,7 @@ class TriviaPartyApp extends StatefulWidget {
   State<TriviaPartyApp> createState() => _TriviaPartyAppState();
 }
 
-class _TriviaPartyAppState extends State<TriviaPartyApp> {
+class _TriviaPartyAppState extends State<TriviaPartyApp> with WidgetsBindingObserver {
   GameState? lastState;
 
   @override
@@ -137,5 +137,34 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        AudioManager.resumeMusic();
+        break;
+      case AppLifecycleState.inactive:
+        AudioManager.pauseMusic();
+        break;
+      case AppLifecycleState.paused:
+        AudioManager.pauseMusic();
+        break;
+      case AppLifecycleState.detached:
+        AudioManager.pauseMusic();
+        break;
+      case AppLifecycleState.hidden:
+        AudioManager.pauseMusic();
+        break;
+    }
   }
 }
