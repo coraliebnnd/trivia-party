@@ -73,6 +73,7 @@ flutter:
     - assets/img/trivia_party_logo.png
     - assets/sounds/correct_answer_sound_effect.mp3
     - assets/sounds/wrong_answer_sound_effect.mp3
+    - assets/sounds/clapping_sound_effect.mp3
     - assets/sounds/music.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see

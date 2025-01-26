@@ -5,7 +5,7 @@ class AudioManager {
 
   static Future<void> playBackgroundMusic() async {
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await _audioPlayer.setVolume(0.5);
+    await _audioPlayer.setVolume(0.25);
     await _audioPlayer.play(AssetSource('sounds/music.mp3'));
   }
 
