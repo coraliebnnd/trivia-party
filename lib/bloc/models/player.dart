@@ -64,4 +64,14 @@ class Player extends Equatable {
     }
     return total;
   }
+
+  getNumberOfCorrectCategories(int numberOfQuestionsPerCategory) {
+    int total = 0;
+    for (var value in score.values) {
+      if (value >= numberOfQuestionsPerCategory) {
+        total += 1;
+      }
+    }
+    return total;
+  }
 }
