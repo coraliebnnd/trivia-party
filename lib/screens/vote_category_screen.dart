@@ -23,11 +23,13 @@ class VoteCategory extends StatelessWidget {
         return Scaffold(
           backgroundColor: const Color(0xFF191919),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(
+                  height: 50,
+                ),
                 // Title
                 const Center(
                   child: Text(
@@ -51,23 +53,31 @@ class VoteCategory extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Categories
                 Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 2.5,
-                    children: categories.entries.map((entry) {
-                      return _buildCategoryButton(
-                        entry.value.displayName,
-                        entry.value.color,
-                        votes: entry.value.playerVotes.length,
-                        onTap: () => _voteForCategory(
-                            context, entry.value, state.currentPlayer),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      double buttonWidth = (constraints.maxWidth - 15) / 2;
+                      double buttonHeight = (constraints.maxHeight) / 5;
+                      return Wrap(
+                        spacing: 15,
+                        runSpacing: 15,
+                        children: categories.entries.map((entry) {
+                          final isRandomCategory = entry.value.displayName == "Random";
+                          return SizedBox(
+                            width: isRandomCategory ? constraints.maxWidth : buttonWidth,
+                            height: buttonHeight,
+                            child: _buildCategoryButton(
+                              entry.value.displayName,
+                              entry.value.color,
+                              votes: entry.value.playerVotes.length,
+                              onTap: () => _voteForCategory(
+                                  context, entry.value, state.currentPlayer),
+                            ),
+                          );
+                        }).toList(),
                       );
-                    }).toList(),
+                    },
                   ),
                 ),
-                const SizedBox(height: 10),
                 // Players and their pies
                 Wrap(
                   spacing: 20,
@@ -79,7 +89,6 @@ class VoteCategory extends StatelessWidget {
                             state.lobbySettings.numberOfQuestions);
                   }).toList(),
                 ),
-                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -114,7 +123,7 @@ class VoteCategory extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -153,8 +162,8 @@ class VoteCategory extends StatelessWidget {
           children: [
             RainbowWheel(
                 progress: calculateProgressForPlayer(player, numberOfQuestions),
-                size: 90, // Size of the rainbow circle
-                borderWidth: 7, // Border width
+                size: 80, // Size of the rainbow circle
+                borderWidth: 5, // Border width
                 borderColor: color),
           ],
         ),

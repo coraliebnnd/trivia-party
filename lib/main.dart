@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trivia_party/bloc/events/home_screen_events.dart';
 import 'package:trivia_party/bloc/game.dart';
+import 'package:trivia_party/bloc/services/error_handling_service.dart';
 import 'package:trivia_party/bloc/states/category_voting_state.dart';
 import 'package:trivia_party/bloc/states/game_join_state.dart';
 import 'package:trivia_party/bloc/states/game_lobby_state.dart';
@@ -20,6 +21,7 @@ import 'package:trivia_party/screens/question_screen.dart';
 import 'package:trivia_party/screens/podium_screen.dart';
 import 'package:trivia_party/screens/vote_category_screen.dart';
 
+import 'services/audio_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'bloc/states/home_screen_state.dart';
 import 'firebase_options.dart';
@@ -32,6 +34,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  AudioManager.playBackgroundMusic();
+
   runApp(BlocProvider(
     create: (context) => GameBloc(navigatorKey),
     child: TriviaPartyApp(navigatorKey: navigatorKey),
@@ -41,14 +45,22 @@ Future<void> main() async {
 class TriviaPartyApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  const TriviaPartyApp({super.key, required this.navigatorKey});
+  TriviaPartyApp({super.key, required this.navigatorKey}) {
+    ErrorHandlingService.navigatorKey = navigatorKey;
+  }
 
   @override
   State<TriviaPartyApp> createState() => _TriviaPartyAppState();
 }
 
-class _TriviaPartyAppState extends State<TriviaPartyApp> {
+class _TriviaPartyAppState extends State<TriviaPartyApp> with WidgetsBindingObserver {
   GameState? lastState;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,5 +143,34 @@ class _TriviaPartyAppState extends State<TriviaPartyApp> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        AudioManager.resumeMusic();
+        break;
+      case AppLifecycleState.inactive:
+        AudioManager.pauseMusic();
+        break;
+      case AppLifecycleState.paused:
+        AudioManager.pauseMusic();
+        break;
+      case AppLifecycleState.detached:
+        AudioManager.pauseMusic();
+        break;
+      case AppLifecycleState.hidden:
+        AudioManager.pauseMusic();
+        break;
+    }
   }
 }

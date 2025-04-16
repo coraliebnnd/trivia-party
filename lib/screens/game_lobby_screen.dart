@@ -161,12 +161,11 @@ class CreateGame extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      splashFactory: state.currentPlayer.isHost
+                      splashFactory: CanStartGame(state)
                           ? InkRipple.splashFactory // Default Ripple Effect
                           : NoSplash.splashFactory, // Remove Ripple Effect
-                      backgroundColor: (state.currentPlayer.isHost)
-                          ? Colors.pink
-                          : Colors.grey,
+                      backgroundColor:
+                          CanStartGame(state) ? Colors.pink : Colors.grey,
                       padding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 40),
                       shape: RoundedRectangleBorder(
@@ -189,6 +188,9 @@ class CreateGame extends StatelessWidget {
       },
     );
   }
+
+  bool CanStartGame(GameLobbyState state) =>
+      state.currentPlayer.isHost && state.players.length > 1;
 
   Widget _buildPlayerCircle(String name, Color color) {
     return Column(

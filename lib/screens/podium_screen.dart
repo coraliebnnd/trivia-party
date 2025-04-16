@@ -6,7 +6,6 @@ import 'package:trivia_party/bloc/game.dart';
 import 'package:trivia_party/bloc/models/player.dart';
 import 'package:trivia_party/bloc/states/game_state.dart';
 import 'package:trivia_party/bloc/states/leaderboard_state.dart';
-import 'package:trivia_party/podium_screen_utils.dart';
 
 class PodiumScreen extends StatelessWidget {
   const PodiumScreen({super.key});
@@ -54,6 +53,7 @@ class PodiumScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MyApp.audioPlayer.play(AssetSource('sounds/clapping_sound_effect.mp3'));
     return BlocBuilder<GameBloc, GameState>(
       buildWhen: (previous, current) => current is LeaderboardState,
       builder: (context, state) {

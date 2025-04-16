@@ -38,6 +38,23 @@ Future<LobbySettings> createLobby(Player player) async {
 
 Future<LobbySettings> joinLobby(String pin, Player player) async {
   final playerName = player.name;
+
+  // Check if the lobby exists
+  final lobbySnapshot = await database.child('lobbies/$pin').get();
+  if (!lobbySnapshot.exists) {
+    throw Exception('Lobby with pin $pin does not exist');
+  }
+
+  var lobby = lobbySnapshot.value;
+  if (lobby != null &&
+      lobby is Map &&
+      lobby["players"] != null &&
+      lobby["players"] is Map &&
+      lobby["players"].length > 6) {
+    throw Exception('Lobby with pin $pin is full');
+  }
+
+  // Add the player to the lobby
   await database.child('lobbies/$pin/players/$playerName').set({
     "id": player.id,
     "name": player.name,
@@ -165,10 +182,15 @@ Future<void> increaseScoreForCategory(
     String pin, String category, Player player) async {
   var firebaseIdPath = convertToFirebasePath(player.name);
   var firebaseCategory = convertToFirebasePath(category);
-  int increasedScore = player.score[firebaseCategory]! + 1;
-  await database
-      .child('lobbies/$pin/players/$firebaseIdPath/score/$firebaseCategory')
-      .set(increasedScore);
+  int currentScore = player.score[firebaseCategory]!;
+  int numberOfQuestions = (await getLobbySettings(pin)).numberOfQuestions;
+
+  if (currentScore < numberOfQuestions) {
+    int increasedScore = currentScore + 1;
+    await database
+        .child('lobbies/$pin/players/$firebaseIdPath/score/$firebaseCategory')
+        .set(increasedScore);
+  }
 }
 
 Future<void> setCategory(String pin, int id) async {

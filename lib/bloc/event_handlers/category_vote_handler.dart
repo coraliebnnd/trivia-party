@@ -101,6 +101,9 @@ class CategoryVoteScreenHandler {
 
   Future<void> onVotesUpdated(
       VotesUpdatedFirebase event, Emitter<GameState> emit) async {
+    if (gameBloc.state is! CategoryVotingState) {
+      return;
+    }
     final currentState = gameBloc.state as CategoryVotingState;
     Map<int, int> categoryIdToVotes = {};
     for (var key in categories.keys) {
